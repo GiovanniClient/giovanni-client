@@ -6,7 +6,7 @@ import sb.rocket.giovanniclient.client.features.AbstractFeature;
 public class PlayerLocator extends AbstractFeature {
 
     // Would an enum with ALL the scoreboard locations be overkill? mmh...
-    private String CURRENT_PLAYER_LOCATION = "None";
+    private static String CURRENT_PLAYER_LOCATION = "None";
     private int tick = 0;
 
     @Override
@@ -30,12 +30,12 @@ public class PlayerLocator extends AbstractFeature {
         }
     }
 
-    public String getPlayerLocation() {
+    public static String getPlayerLocation() {
         return CURRENT_PLAYER_LOCATION;
     }
 
-    private void setPlayerLocation(String CURRENT_PLAYER_LOCATION) {
-        this.CURRENT_PLAYER_LOCATION = CURRENT_PLAYER_LOCATION;
+    private void setPlayerLocation(String location) {
+        CURRENT_PLAYER_LOCATION = location;
     }
 
     public static String stripLeadingSymbols(String input) {

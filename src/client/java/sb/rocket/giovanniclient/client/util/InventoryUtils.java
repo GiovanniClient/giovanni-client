@@ -1,6 +1,8 @@
 package sb.rocket.giovanniclient.client.util;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
@@ -78,5 +80,14 @@ public class InventoryUtils {
             }
         }
         return -1;
+    }
+
+    public static ItemStack getActiveItem() {
+        ClientPlayerEntity player = MinecraftClient.getInstance().player;
+        if (player == null) return ItemStack.EMPTY;
+
+        PlayerInventory playerInventory = player.getInventory();
+        int selectedSlot = playerInventory.getSelectedSlot();
+        return playerInventory.getStack(selectedSlot);
     }
 }

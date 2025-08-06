@@ -6,7 +6,7 @@ import io.github.notenoughupdates.moulconfig.annotations.*;
 public class AutoSolversConfig {
 
     @Expose
-    @ConfigOption(name = "AutoMelody", desc = "")
+    @ConfigOption(name = "Auto Harp", desc = "Automatically plays Harp songs")
     @ConfigEditorBoolean
     public boolean AUTOMELODY_TOGGLE = false;
 //
@@ -16,12 +16,12 @@ public class AutoSolversConfig {
 //    public transient SlotActionType AUTOMELODY_CLICKTYPE; // good for experiments too
     @Expose
     @Accordion
-    @ConfigOption(name = "AutoExperiments", desc = "")
+    @ConfigOption(name = "Auto Experiments", desc = "")
     public AutoExperimentsAccordion autoExperimentsAccordion = new AutoExperimentsAccordion();
     public static class AutoExperimentsAccordion {
 
         @Expose
-        @ConfigOption(name = "AutoExperiments", desc = "Main Toggle")
+        @ConfigOption(name = "Enabled", desc = "Main Toggle")
         @ConfigEditorBoolean
         public boolean AUTOEXPERIMENTS_TOGGLE = false;
 
@@ -36,9 +36,9 @@ public class AutoSolversConfig {
         public int AUTOEXPERIMENTS_CLICK_DELAY_MAX = 700;
 
         public enum MetaphysicalSerum {
-            ONE,   // ordinal = 0
-            TWO,   // ordinal = 1
-            THREE; // ordinal = 2
+            One,   // ordinal = 0
+            Two,   // ordinal = 1
+            Three; // ordinal = 2
 
             /** Returns 1,2,3 instead of 0,1,2 */
             public int toInt() {
@@ -49,7 +49,7 @@ public class AutoSolversConfig {
         @Expose
         @ConfigOption(name = "Metaphysical Serum", desc = "Select how many you've eaten")
         @ConfigEditorDropdown
-        public MetaphysicalSerum METAPHYSICAL_SERUM = MetaphysicalSerum.THREE;
+        public MetaphysicalSerum METAPHYSICAL_SERUM = MetaphysicalSerum.One;
 
         @Expose
         @ConfigOption(name = "AutoQuit", desc = "Quits the experiments at the end")

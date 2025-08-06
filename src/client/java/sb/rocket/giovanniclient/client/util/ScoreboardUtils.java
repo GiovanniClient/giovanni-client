@@ -8,7 +8,6 @@ import net.minecraft.text.Text;
 import java.util.*;
 
 public class ScoreboardUtils {
-
     /**
      * Removes all Minecraft formatting codes (e.g., §a, §l) from a string.
      * @param input The input string
@@ -113,6 +112,28 @@ public class ScoreboardUtils {
      */
     public static boolean scoreboardContainsRaw(String searchString) {
         return getCleanedSidebarLines().stream().anyMatch(line -> line.contains(searchString));
+    }
+
+    /**
+     * Returns the index of string in the scoreboard.
+     * @param searchString The string to look for
+     * @return -1 if not found, otherwise a non-negative integer
+     */
+    public static int getLineIndexOfString(String searchString) {
+        if (scoreboardContainsRaw(searchString)) return getCleanedSidebarLines().indexOf(searchString);
+
+        return -1;
+    }
+
+    /**
+     * Checks if the cleaned sidebar lines contain a given substring.
+     * @param index The index to look for
+     * @return String at given index
+     */
+    public static String getStringAtIndex(int index) {
+        if (index > 15 || index < 0) return "";
+
+        return getCleanedSidebarLines().get(index);
     }
 
     /**
