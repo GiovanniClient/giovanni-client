@@ -18,7 +18,7 @@ public class MainConfig extends Config {
     public AboutConfig about = new AboutConfig();
 
     @Expose
-    @Category(name = "AutoSolvers", desc = "Various auto solvers for GUIs")
+    @Category(name = "Solvers", desc = "Various auto solvers for GUIs")
     public AutoSolversConfig asc = new AutoSolversConfig();
 
     @Expose
@@ -32,5 +32,4 @@ public class MainConfig extends Config {
     @Expose
     @Category(name = "Debug", desc = "here be dragons")
     public DebugConfig dc = new DebugConfig();
-
 }

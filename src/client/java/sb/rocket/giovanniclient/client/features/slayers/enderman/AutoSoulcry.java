@@ -13,7 +13,8 @@ public class AutoSoulcry extends AbstractFeature {
     @Unique
     private final SlayersConfig sc = ConfigManager.getConfig().sc;
     private final String[] katanas = {"Voidedge Katana", "Vorpal Katana", "Atomsplit Katana"};
-    private boolean canUse = true;
+    private volatile boolean canUse = true;  // volatile для потокобезопасности
+    private Thread clickThread = null;
 
     private boolean isKatanaInHand() {
         ItemStack activeItem = InventoryUtils.getActiveItem();
@@ -28,20 +29,27 @@ public class AutoSoulcry extends AbstractFeature {
 
     @Override
     public void onTick(MinecraftClient client) {
-        // TODO: Add boosfight check
-        if(sc.eman.soulcry.AUTO_SOULCRY && client.currentScreen == null && isKatanaInHand() && canUse && StatusBarUtils.getMana() > sc.eman.soulcry.MINIMAL_MANA) new Thread(() -> {
+        if (sc.eman.soulcry.AUTO_SOULCRY
+                && canUse
+                && (clickThread == null || !clickThread.isAlive())
+                && client.currentScreen == null
+                && isKatanaInHand()
+                && StatusBarUtils.getMana() >= sc.eman.soulcry.MINIMAL_MANA
+                && !sc.eman.soulcry.BOSSFIGHT_ONLY || (SlayerUtils.getCurrentSlayer() == SlayerUtils.Slayer.VOIDGLOOM_SERAPH && SlayerUtils.getIsBossAlive())
+        ) {
             canUse = false;
-
-            try {
-                Thread.sleep(sc.eman.soulcry.ADDITIONAL_DELAY);
-            } catch (InterruptedException ignored) {}
-
-            PlayerUtils.simulateClick();
-            try {
-                Thread.sleep(3900);
-            } catch (InterruptedException ignored) {}
-
-            canUse = true;
-        }).start();
+            clickThread = new Thread(() -> {
+                try {
+                    Thread.sleep(sc.eman.soulcry.ADDITIONAL_DELAY);
+                    PlayerUtils.simulateClick();
+                    Thread.sleep(4000);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                } finally {
+                    canUse = true;
+                }
+            });
+            clickThread.start();
+        }
     }
 }

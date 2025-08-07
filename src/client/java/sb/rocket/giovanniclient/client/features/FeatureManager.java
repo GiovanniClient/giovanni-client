@@ -7,6 +7,7 @@ import sb.rocket.giovanniclient.client.features.autosolvers.AutoExperiments;
 import sb.rocket.giovanniclient.client.features.autosolvers.AutoFusion;
 import sb.rocket.giovanniclient.client.features.autosolvers.AutoMelody;
 import sb.rocket.giovanniclient.client.features.autosolvers.AutoShardsClaim;
+import sb.rocket.giovanniclient.client.features.fun.CloseChocolateEggs;
 import sb.rocket.giovanniclient.client.features.slayers.enderman.AutoSoulcry;
 import sb.rocket.giovanniclient.client.features.updater.StartupMessageFeature;
 import sb.rocket.giovanniclient.client.util.PlayerLocator;
@@ -33,6 +34,7 @@ public class FeatureManager {
         register(new AutoExperiments());
         register(new AutoFusion());
         register(new AutoSoulcry());
+        register(new CloseChocolateEggs());
 
         ScreenEvents.AFTER_INIT.register((client, screen, width, height) -> {
             for (AbstractFeature f : FEATURES)

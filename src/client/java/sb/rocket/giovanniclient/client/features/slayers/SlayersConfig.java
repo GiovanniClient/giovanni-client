@@ -18,7 +18,7 @@ public class SlayersConfig {
         public AutoSoulcry soulcry = new AutoSoulcry();
         public static class AutoSoulcry {
             @Expose
-            @ConfigOption(name = "Auto Soulcry ability", desc = "Automatically uses the slayer's katana's Soulcry ability during boss fights")
+            @ConfigOption(name = "Enable", desc = "Automatically uses the slayer's katana's Soulcry ability during boss fights")
             @ConfigEditorBoolean
             public boolean AUTO_SOULCRY = false;
 
@@ -31,6 +31,11 @@ public class SlayersConfig {
             @ConfigOption(name = "Minimal mana", desc = "The minimum amount of mana a player needs to use an ability")
             @ConfigEditorSlider(minValue = 200, maxValue = 3000, minStep = 25)
             public int MINIMAL_MANA = 400;
+
+            @Expose
+            @ConfigOption(name = "Only in bossfight", desc = "Uses ability only when boss is alive")
+            @ConfigEditorBoolean
+            public boolean BOSSFIGHT_ONLY = false;
         }
     }
 }

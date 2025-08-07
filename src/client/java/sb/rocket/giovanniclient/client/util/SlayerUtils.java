@@ -1,6 +1,8 @@
 package sb.rocket.giovanniclient.client.util;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.util.collection.ArrayListDeque;
 import sb.rocket.giovanniclient.client.features.AbstractFeature;
 
 public class SlayerUtils extends AbstractFeature {
@@ -37,6 +39,7 @@ public class SlayerUtils extends AbstractFeature {
 
     private int tick = 0;
     private static Slayer CURRENT_SLAYER;
+    private static boolean bossAlive = false;
 
     private final Slayer[] slayers = {
         Slayer.REVENANT_HORROR,
@@ -94,11 +97,27 @@ public class SlayerUtils extends AbstractFeature {
                 if (!currentSlayer.isEmpty()) {
                     CURRENT_SLAYER = parseSlayerString(currentSlayer);
                 }
+
+                String currentState = ScoreboardUtils.getStringAtIndex(slayerQuest + 2);
+                if (currentState.equals("Slay the boss!")) {
+                    bossAlive = true;
+                    return;
+                }
             }
+
+            ArrayListDeque<String> messageHistory = client.inGameHud.getChatHud().getMessageHistory();
         }
     }
 
     public static Slayer getCurrentSlayer() {
         return CURRENT_SLAYER;
+    }
+
+    public static boolean getIsBossAlive() {
+        return bossAlive;
+    }
+
+    public static void setIsBossAlive(boolean state) {
+        bossAlive = state;
     }
 }
