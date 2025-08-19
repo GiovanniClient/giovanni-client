@@ -13,31 +13,21 @@ public class AutoSoulcry extends AbstractFeature {
     @Unique
     private final SlayersConfig sc = ConfigManager.getConfig().sc;
     private final String[] katanas = {"Voidedge Katana", "Vorpal Katana", "Atomsplit Katana"};
-    private volatile boolean canUse = true;  // volatile для потокобезопасности
+    private volatile boolean canUse_thead_safety = true;
     private Thread clickThread = null;
 
-    private boolean isKatanaInHand() {
-        ItemStack activeItem = InventoryUtils.getActiveItem();
-        if (activeItem.getItem() == Items.GOLDEN_SWORD || activeItem.getItem() != Items.DIAMOND_SWORD) return false;
-
-        for (String katana : katanas) {
-            if (activeItem.getFormattedName().getString().endsWith(katana)) return true;
-        }
-
-        return false;
-    }
 
     @Override
     public void onTick(MinecraftClient client) {
         if (sc.eman.soulcry.AUTO_SOULCRY
-                && canUse
+                && canUse_thead_safety
                 && (clickThread == null || !clickThread.isAlive())
                 && client.currentScreen == null
                 && isKatanaInHand()
                 && StatusBarUtils.getMana() >= sc.eman.soulcry.MINIMAL_MANA
-                && !sc.eman.soulcry.BOSSFIGHT_ONLY || (SlayerUtils.getCurrentSlayer() == SlayerUtils.Slayer.VOIDGLOOM_SERAPH && SlayerUtils.getIsBossAlive())
+                && (SlayerUtils.getCurrentSlayer() == SlayerUtils.Slayer.VOIDGLOOM_SERAPH && SlayerUtils.isBossAlive())
         ) {
-            canUse = false;
+            canUse_thead_safety = false;
             clickThread = new Thread(() -> {
                 try {
                     Thread.sleep(sc.eman.soulcry.ADDITIONAL_DELAY);
@@ -46,10 +36,21 @@ public class AutoSoulcry extends AbstractFeature {
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 } finally {
-                    canUse = true;
+                    canUse_thead_safety = true;
                 }
             });
             clickThread.start();
         }
+    }
+
+    private boolean isKatanaInHand() {
+        ItemStack activeItem = InventoryUtils.getHeldItem();
+        if (activeItem.getItem() == Items.GOLDEN_SWORD || activeItem.getItem() != Items.DIAMOND_SWORD) return false;
+
+        for (String katana : katanas) {
+            if (activeItem.getFormattedName().getString().endsWith(katana)) return true;
+        }
+
+        return false;
     }
 }

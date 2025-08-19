@@ -1,8 +1,6 @@
 package sb.rocket.giovanniclient.client.util;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.util.collection.ArrayListDeque;
 import sb.rocket.giovanniclient.client.features.AbstractFeature;
 
 public class SlayerUtils extends AbstractFeature {
@@ -104,8 +102,6 @@ public class SlayerUtils extends AbstractFeature {
                     return;
                 }
             }
-
-            ArrayListDeque<String> messageHistory = client.inGameHud.getChatHud().getMessageHistory();
         }
     }
 
@@ -113,7 +109,7 @@ public class SlayerUtils extends AbstractFeature {
         return CURRENT_SLAYER;
     }
 
-    public static boolean getIsBossAlive() {
+    public static boolean isBossAlive() {
         return bossAlive;
     }
 

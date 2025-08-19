@@ -1,8 +1,9 @@
 package sb.rocket.giovanniclient.client.util;
 
+import java.util.Optional;
+
 public class StatusBarUtils {
     public static String statusBarText;
-    private static final String[] EMPTY_BAR = {};
 
     // 1,000/1,000❤     1000❈ Defense     1,000/1,000✎ Mana
     public static String getStatusBarText() {
@@ -14,12 +15,11 @@ public class StatusBarUtils {
     }
 
     private static String[] getSplittedStatusBar() {
-        try {
-            return getStatusBarText().replaceAll(",", "").split(" {5}");
-        } catch(NullPointerException ignored) {
-            return EMPTY_BAR;
-        }
+        return Optional.of(getStatusBarText())
+                .map(text -> text.replace(",", "").split(" {5}"))
+                .orElse(new String[0]);
     }
+
 
     public static int getMana() {
         try {

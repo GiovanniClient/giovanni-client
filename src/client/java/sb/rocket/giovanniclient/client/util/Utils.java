@@ -41,7 +41,7 @@ public class Utils {
     public static void debug(String message) {
         LOGGER.debug("DEBUG (Giovanni): {}", message);
         if (debugConfig != null && debugConfig.DEBUG) {
-            sendFormattedChatMessage("Giovanni > ", Formatting.BLUE, message);
+            sendFormattedChatMessage("DEBUG (Giovanni): ", Formatting.RED, message);
         } else if (debugConfig == null) {
             LOGGER.warn("Utils.debug() called before initialization of DebugConfig: {}", message);
         }

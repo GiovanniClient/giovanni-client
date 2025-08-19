@@ -17,17 +17,22 @@ public class MainConfig extends Config {
     @Category(name = "About", desc = "Information about GiovanniClient and updates.")
     public AboutConfig about = new AboutConfig();
 
+    // solvers are stuff that tells you how to play, autosolvers are stuff that plays the game for you
     @Expose
-    @Category(name = "Solvers", desc = "Various auto solvers for GUIs")
+    @Category(name = "Auto Solvers", desc = "Various auto solvers for GUIs")
     public AutoSolversConfig asc = new AutoSolversConfig();
-
-    @Expose
-    @Category(name = "Fun", desc = "becuater bagu")
-    public FunConfig fc = new FunConfig();
 
     @Expose
     @Category(name = "Slayers", desc = "QOL mods for different slayers")
     public SlayersConfig sc = new SlayersConfig();
+
+    @Expose
+    @Category(name = "Misc", desc = "Stuff I don't know where to put")
+    public MiscConfig msc = new MiscConfig();
+
+    @Expose
+    @Category(name = "Fun", desc = "becuater bagu")
+    public FunConfig fc = new FunConfig();
 
     @Expose
     @Category(name = "Debug", desc = "here be dragons")

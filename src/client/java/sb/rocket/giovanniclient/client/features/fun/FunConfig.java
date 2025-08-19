@@ -15,8 +15,4 @@ public class FunConfig {
     @ConfigEditorBoolean
     public boolean TROLL_FEATURES = true;
 
-    @Expose
-    @ConfigOption(name = "No egg GUI", desc = "Automatically close chocolate egg GUI during Hoppity's hunt")
-    @ConfigEditorBoolean
-    public boolean CLOSE_EGGS = false;
 }

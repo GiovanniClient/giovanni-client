@@ -82,12 +82,11 @@ public class InventoryUtils {
         return -1;
     }
 
-    public static ItemStack getActiveItem() {
+    public static ItemStack getHeldItem() {
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
         if (player == null) return ItemStack.EMPTY;
 
         PlayerInventory playerInventory = player.getInventory();
-        int selectedSlot = playerInventory.getSelectedSlot();
-        return playerInventory.getStack(selectedSlot);
+        return playerInventory.getStack(playerInventory.getSelectedSlot());
     }
 }
