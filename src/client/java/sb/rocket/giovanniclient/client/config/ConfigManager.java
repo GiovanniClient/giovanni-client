@@ -109,7 +109,7 @@ public class ConfigManager {
             // Now that we're on the render thread, textRenderer != null
             editor = new MoulConfigEditor<>(processor);
         }
-        IMinecraft.instance.openWrappedScreen(editor);
+        IMinecraft.getInstance().openWrappedScreen(editor);
     }
 
     public static void openConfigScreenFromCommand() {

@@ -3,14 +3,16 @@ package sb.rocket.giovanniclient.client.config;
 import com.google.gson.annotations.Expose;
 import io.github.notenoughupdates.moulconfig.Config;
 import io.github.notenoughupdates.moulconfig.annotations.Category;
+import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
 import sb.rocket.giovanniclient.client.features.autosolvers.AutoSolversConfig;
 import sb.rocket.giovanniclient.client.features.fun.FunConfig;
+import sb.rocket.giovanniclient.client.features.render.RenderConfig;
 import sb.rocket.giovanniclient.client.features.slayers.SlayersConfig;
 
 public class MainConfig extends Config {
     @Override
-    public String getTitle() {
-        return "§bGiovanni Client";
+    public StructuredText getTitle() {
+        return StructuredText.of("§bGiovanni Client");
     }
 
     @Expose
@@ -25,6 +27,10 @@ public class MainConfig extends Config {
     @Expose
     @Category(name = "Slayers", desc = "QOL mods for different slayers")
     public SlayersConfig sc = new SlayersConfig();
+
+    @Expose
+    @Category(name = "Render", desc = "See stuff you shouldn't :P")
+    public RenderConfig rc = new RenderConfig();
 
     @Expose
     @Category(name = "Misc", desc = "Stuff I don't know where to put")

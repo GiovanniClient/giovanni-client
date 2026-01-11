@@ -6,8 +6,11 @@
     "defaultRequire": 1
   },
   "client": [
-    "ChatMessageMixin",
     "ActionBarMixin",
-    "ClientPlayNetworkHandlerMixin"
+    "ChatMessageMixin",
+    "ClientPlayNetworkHandlerMixin",
+    "EntityGlowColorOverrideMixin",
+    "EntityGlowOverrideMixin",
+    "UndoInvisibilityMixin"
   ]
 }
