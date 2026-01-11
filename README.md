@@ -10,8 +10,7 @@ current progress:
 :white_check_mark: chat output instead of log output
 
 # old features
-- ghost blocks
-- show hidden mobs
+:white_check_mark: show hidden mobs
 - mobs esp (**corpses esp**)
 - gemstones esp
 - anti nausea / blindness
