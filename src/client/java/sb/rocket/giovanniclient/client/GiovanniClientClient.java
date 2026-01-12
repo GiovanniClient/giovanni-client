@@ -37,6 +37,8 @@ public class GiovanniClientClient implements ClientModInitializer {
 
     public static final UpdateManager UPDATE_MANAGER = new UpdateManager();
 
+    private static boolean OPEN_INV_BUTTON_EDITOR_PENDING = false;
+
     @Override
     public void onInitializeClient() {
         Runtime.getRuntime().addShutdownHook(new Thread(ConfigManager::shutdown));
@@ -50,6 +52,46 @@ public class GiovanniClientClient implements ClientModInitializer {
                 tickClient.execute(ConfigManager::openConfigScreen);
             }
         });
+
+        KeyBinding editInventoryButtons = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "key.giovanniclient.open_inv_button_editor",
+                InputUtil.Type.KEYSYM,
+                GLFW.GLFW_KEY_O,
+                "category.giovanniclient"
+        ));
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            while (editInventoryButtons.wasPressed()) {
+
+                // Debug: vedi sempre se il keybind viene letto
+                if (client.player != null) {
+                    client.player.sendMessage(Text.literal("O pressed. currentScreen=" +
+                            (client.currentScreen == null ? "null" : client.currentScreen.getClass().getName())), false);
+                }
+
+                // Apri editor se sei nel player inventory (più robusto di instanceof InventoryScreen)
+                if (client.currentScreen instanceof net.minecraft.client.gui.screen.ingame.HandledScreen<?> hs
+                        && hs.getScreenHandler() instanceof net.minecraft.screen.PlayerScreenHandler) {
+                    client.execute(() -> client.setScreen(new sb.rocket.giovanniclient.client.features.inventorybuttons.InventoryButtonEditorScreen()));
+                } else {
+                    if (client.player != null) {
+                        client.player.sendMessage(Text.literal("Open your inventory first."), false);
+                    }
+                }
+            }
+        });
+
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            if (!OPEN_INV_BUTTON_EDITOR_PENDING) return;
+
+            if (client.currentScreen instanceof net.minecraft.client.gui.screen.ingame.InventoryScreen) {
+                OPEN_INV_BUTTON_EDITOR_PENDING = false;
+                client.execute(() -> client.setScreen(
+                        new sb.rocket.giovanniclient.client.features.inventorybuttons.InventoryButtonEditorScreen()
+                ));
+            }
+        });
+
+
 
         registerClientCommands();
 
@@ -110,6 +152,27 @@ public class GiovanniClientClient implements ClientModInitializer {
                 }))
         );
 
+        ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) ->
+                dispatcher.register(ClientCommandManager.literal("gioeditbuttons").executes(context -> {
+                    MinecraftClient client = MinecraftClient.getInstance();
+
+                    if (client.player == null) {
+                        context.getSource().sendFeedback(Text.literal("Player not available."));
+                        return 0;
+                    }
+
+                    // 1) Apri inventario
+                    client.execute(() -> client.setScreen(
+                            new net.minecraft.client.gui.screen.ingame.InventoryScreen(client.player)
+                    ));
+
+                    // 2) Chiedi di aprire l'editor al tick successivo (quando lo screen è effettivamente InventoryScreen)
+                    OPEN_INV_BUTTON_EDITOR_PENDING = true;
+
+                    context.getSource().sendFeedback(Text.literal("Opening inventory button editor..."));
+                    return 1;
+                }))
+        );
     }
 
     private void autoUpdateStuff() {

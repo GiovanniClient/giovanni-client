@@ -12,9 +12,11 @@
     "EntityGlowColorOverrideMixin",
     "EntityGlowOverrideMixin",
     "HandledScreenAccessor",
+    "InventoryScreenButtonsMixin",
     "InventoryScreenMaskMixin",
     "InventoryScreenMixin",
     "RecipeBookScreenMixin",
+    "ScreenInvoker",
     "SlotAccessor",
     "UndoInvisibilityMixin"
   ]
