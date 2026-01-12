@@ -2,10 +2,13 @@ package sb.rocket.giovanniclient.client.config;
 
 import com.google.gson.annotations.Expose;
 import io.github.notenoughupdates.moulconfig.Config;
-import io.github.notenoughupdates.moulconfig.annotations.*;
-import sb.rocket.giovanniclient.client.GiovanniClientClient; // Import your main class
-import sb.rocket.giovanniclient.client.util.Utils;
+import io.github.notenoughupdates.moulconfig.annotations.Accordion;
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean;
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorButton;
+import io.github.notenoughupdates.moulconfig.annotations.ConfigOption;
 import net.minecraft.util.Util;
+import sb.rocket.giovanniclient.client.GiovanniClientClient;
+import sb.rocket.giovanniclient.client.util.Utils;
 
 public class AboutConfig extends Config {
 

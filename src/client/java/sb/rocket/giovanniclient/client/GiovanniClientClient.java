@@ -7,16 +7,22 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallba
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.resource.ResourceManager;
+import net.minecraft.resource.ResourceType;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 import sb.rocket.giovanniclient.client.config.ConfigManager;
 import sb.rocket.giovanniclient.client.features.FeatureManager;
+import sb.rocket.giovanniclient.client.features.misc.InventoryBackgroundColor;
 import sb.rocket.giovanniclient.client.features.updater.UpdateManager;
 import sb.rocket.giovanniclient.client.util.ScoreboardUtils;
-import sb.rocket.giovanniclient.client.util.Utils; // Keep this import
+import sb.rocket.giovanniclient.client.util.Utils;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -26,6 +32,8 @@ public class GiovanniClientClient implements ClientModInitializer {
     public static final String MODID = "giovanniclient";
     public static final String MOD_VERSION_NAME = "1.0 (beta)";
     public static final int MOD_VERSION_CODE = 10001;
+    private static final Identifier RELOAD_ID =
+            Identifier.of("giovanniclient", "inventory_bg_color_reload");
 
     public static final UpdateManager UPDATE_MANAGER = new UpdateManager();
 
@@ -55,6 +63,21 @@ public class GiovanniClientClient implements ClientModInitializer {
 
             Utils.debug("GiovanniClient initialized successfully! Version: " + MOD_VERSION_NAME);
         });
+
+        ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(
+                new SimpleSynchronousResourceReloadListener() {
+                    @Override
+                    public Identifier getFabricId() {
+                        return RELOAD_ID;
+                    }
+
+                    @Override
+                    public void reload(ResourceManager manager) {
+                        InventoryBackgroundColor.invalidate();
+                    }
+                }
+        );
+
     }
 
     private void registerClientCommands() {

@@ -5,7 +5,10 @@ import net.minecraft.scoreboard.*;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 
 public class ScoreboardUtils {
     /**

@@ -1,4 +1,4 @@
-package sb.rocket.giovanniclient.client.config;
+package sb.rocket.giovanniclient.client.features.misc;
 import com.google.gson.annotations.Expose;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption;

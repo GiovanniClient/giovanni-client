@@ -7,7 +7,7 @@ import sb.rocket.giovanniclient.client.features.autosolvers.AutoExperiments;
 import sb.rocket.giovanniclient.client.features.autosolvers.AutoFusion;
 import sb.rocket.giovanniclient.client.features.autosolvers.AutoMelody;
 import sb.rocket.giovanniclient.client.features.autosolvers.AutoShardsClaim;
-import sb.rocket.giovanniclient.client.features.fun.CloseChocolateEggs;
+import sb.rocket.giovanniclient.client.features.misc.CloseChocolateEggs;
 import sb.rocket.giovanniclient.client.features.render.StarredMobESP;
 import sb.rocket.giovanniclient.client.features.slayers.enderman.AutoSoulcry;
 import sb.rocket.giovanniclient.client.features.updater.StartupMessageFeature;

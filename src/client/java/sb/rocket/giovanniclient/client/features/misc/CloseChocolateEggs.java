@@ -1,4 +1,4 @@
-package sb.rocket.giovanniclient.client.features.fun;
+package sb.rocket.giovanniclient.client.features.misc;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
@@ -6,7 +6,6 @@ import net.minecraft.client.gui.screen.ingame.GenericContainerScreen;
 import net.minecraft.client.network.ClientPlayerEntity;
 import org.spongepowered.asm.mixin.Unique;
 import sb.rocket.giovanniclient.client.config.ConfigManager;
-import sb.rocket.giovanniclient.client.config.MiscConfig;
 import sb.rocket.giovanniclient.client.features.AbstractFeature;
 
 public class CloseChocolateEggs extends AbstractFeature {

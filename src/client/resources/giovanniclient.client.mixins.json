@@ -11,6 +11,11 @@
     "ClientPlayNetworkHandlerMixin",
     "EntityGlowColorOverrideMixin",
     "EntityGlowOverrideMixin",
+    "HandledScreenAccessor",
+    "InventoryScreenMaskMixin",
+    "InventoryScreenMixin",
+    "RecipeBookScreenMixin",
+    "SlotAccessor",
     "UndoInvisibilityMixin"
   ]
 }

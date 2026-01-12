@@ -6,6 +6,8 @@ import io.github.notenoughupdates.moulconfig.annotations.Category;
 import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
 import sb.rocket.giovanniclient.client.features.autosolvers.AutoSolversConfig;
 import sb.rocket.giovanniclient.client.features.fun.FunConfig;
+import sb.rocket.giovanniclient.client.features.inventorybuttons.InventoryButtonsConfig;
+import sb.rocket.giovanniclient.client.features.misc.MiscConfig;
 import sb.rocket.giovanniclient.client.features.render.RenderConfig;
 import sb.rocket.giovanniclient.client.features.slayers.SlayersConfig;
 
@@ -31,6 +33,10 @@ public class MainConfig extends Config {
     @Expose
     @Category(name = "Render", desc = "See stuff you shouldn't :P")
     public RenderConfig rc = new RenderConfig();
+
+    @Expose
+    @Category(name = "Inventory Buttons", desc = "like NEU once did")
+    public InventoryButtonsConfig ibc = new InventoryButtonsConfig();
 
     @Expose
     @Category(name = "Misc", desc = "Stuff I don't know where to put")

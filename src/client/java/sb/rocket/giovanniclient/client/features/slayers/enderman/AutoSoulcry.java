@@ -7,7 +7,10 @@ import org.spongepowered.asm.mixin.Unique;
 import sb.rocket.giovanniclient.client.config.ConfigManager;
 import sb.rocket.giovanniclient.client.features.AbstractFeature;
 import sb.rocket.giovanniclient.client.features.slayers.SlayersConfig;
-import sb.rocket.giovanniclient.client.util.*;
+import sb.rocket.giovanniclient.client.util.InventoryUtils;
+import sb.rocket.giovanniclient.client.util.PlayerUtils;
+import sb.rocket.giovanniclient.client.util.SlayerUtils;
+import sb.rocket.giovanniclient.client.util.StatusBarUtils;
 
 public class AutoSoulcry extends AbstractFeature {
     @Unique
