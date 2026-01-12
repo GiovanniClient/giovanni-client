@@ -1,4 +1,4 @@
-package sb.rocket.giovanniclient.client.mixin;
+package sb.rocket.giovanniclient.client.mixin.invbuttons;
 
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import org.spongepowered.asm.mixin.Mixin;

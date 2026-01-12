@@ -44,7 +44,7 @@ public final class InventoryButtonEditorScreen extends Screen {
         this.commandField = new TextFieldWidget(this.textRenderer, panelX + 10, panelY + 50, PANEL_W - 20, 18, Text.literal("Command"));
         this.iconField    = new TextFieldWidget(this.textRenderer, panelX + 10, panelY + 95, PANEL_W - 20, 18, Text.literal("Icon"));
 
-        this.commandField.setMaxLength(1024);
+        this.commandField.setMaxLength(254);
         this.iconField.setMaxLength(1024);
 
         loadFieldsFromConfig();

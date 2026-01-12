@@ -39,14 +39,14 @@ public record InventoryButtonSlot(String id, int relX, int relY) {
         for (int i = 0; i < 8; i++) {
             int y = 2 + 20 * i;
             if (y < 80) s.add(new InventoryButtonSlot("right" + i, 176 + 2, 2 + 20 * i));          // fuori a destra
-            else        s.add(new InventoryButtonSlot("right" + i, 176 + 2, 2 + 20 * i - 166));     // wrap
+            //else        s.add(new InventoryButtonSlot("right" + i, 176 + 2, 2 + 20 * i - 166));     // wrap
         }
 
         // Left side
         for (int i = 0; i < 8; i++) {
             int y = 2 + 20 * i;
             if (y < 80) s.add(new InventoryButtonSlot("left" + i, -19, 2 + 20 * i));               // fuori a sinistra
-            else        s.add(new InventoryButtonSlot("left" + i, -19, 2 + 20 * i - 166));          // wrap
+            //else        s.add(new InventoryButtonSlot("left" + i, -19, 2 + 20 * i - 166));          // wrap
         }
 
         // Top side

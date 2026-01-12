@@ -19,6 +19,7 @@ import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 import sb.rocket.giovanniclient.client.config.ConfigManager;
 import sb.rocket.giovanniclient.client.features.FeatureManager;
+import sb.rocket.giovanniclient.client.features.inventorybuttons.UiButtonsConfigManager;
 import sb.rocket.giovanniclient.client.features.misc.InventoryBackgroundColor;
 import sb.rocket.giovanniclient.client.features.updater.UpdateManager;
 import sb.rocket.giovanniclient.client.util.ScoreboardUtils;
@@ -38,6 +39,8 @@ public class GiovanniClientClient implements ClientModInitializer {
     public static final UpdateManager UPDATE_MANAGER = new UpdateManager();
 
     private static boolean OPEN_INV_BUTTON_EDITOR_PENDING = false;
+    public static boolean EDIT_MODE = false;
+
 
     @Override
     public void onInitializeClient() {
@@ -81,15 +84,35 @@ public class GiovanniClientClient implements ClientModInitializer {
         });
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (!OPEN_INV_BUTTON_EDITOR_PENDING) return;
+            if (!UiButtonsConfigManager.EDIT_MODE) return;
 
-            if (client.currentScreen instanceof net.minecraft.client.gui.screen.ingame.InventoryScreen) {
-                OPEN_INV_BUTTON_EDITOR_PENDING = false;
-                client.execute(() -> client.setScreen(
-                        new sb.rocket.giovanniclient.client.features.inventorybuttons.InventoryButtonEditorScreen()
-                ));
+            if (!(client.currentScreen instanceof net.minecraft.client.gui.screen.ingame.InventoryScreen)) {
+                UiButtonsConfigManager.EDIT_MODE = false;
             }
         });
+
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            if (!OPEN_INV_BUTTON_EDITOR_PENDING) return;
+            if (client.player == null) return;
+
+            // Aspetta che la chat si sia chiusa: finché è aperta, non aprire altre GUI.
+            if (client.currentScreen instanceof net.minecraft.client.gui.screen.ChatScreen) return;
+
+            // Se non siamo ancora nell'inventario, aprilo adesso
+            if (!(client.currentScreen instanceof net.minecraft.client.gui.screen.ingame.InventoryScreen)) {
+                client.execute(() -> client.setScreen(new net.minecraft.client.gui.screen.ingame.InventoryScreen(client.player)));
+                return; // al prossimo tick saremo in InventoryScreen
+            }
+
+            // Ora siamo nell’inventario: apri l’editor
+            OPEN_INV_BUTTON_EDITOR_PENDING = false;
+            client.execute(() -> client.setScreen(
+                    new net.minecraft.client.gui.screen.ingame.InventoryScreen(client.player)
+
+                    //new sb.rocket.giovanniclient.client.features.inventorybuttons.InventoryButtonEditorScreen()
+            ));
+        });
+
 
 
 
@@ -153,26 +176,21 @@ public class GiovanniClientClient implements ClientModInitializer {
         );
 
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) ->
-                dispatcher.register(ClientCommandManager.literal("gioeditbuttons").executes(context -> {
+                dispatcher.register(ClientCommandManager.literal("gioeditbuttons").executes(ctx -> {
                     MinecraftClient client = MinecraftClient.getInstance();
+                    if (client.player == null) return 0;
 
-                    if (client.player == null) {
-                        context.getSource().sendFeedback(Text.literal("Player not available."));
-                        return 0;
-                    }
+                    UiButtonsConfigManager.EDIT_MODE = true;
 
-                    // 1) Apri inventario
-                    client.execute(() -> client.setScreen(
-                            new net.minecraft.client.gui.screen.ingame.InventoryScreen(client.player)
-                    ));
-
-                    // 2) Chiedi di aprire l'editor al tick successivo (quando lo screen è effettivamente InventoryScreen)
+                    // NON aprire schermate qui: la ChatScreen potrebbe sovrascriverle subito dopo.
                     OPEN_INV_BUTTON_EDITOR_PENDING = true;
 
-                    context.getSource().sendFeedback(Text.literal("Opening inventory button editor..."));
+                    ctx.getSource().sendFeedback(Text.literal("Inventory Buttons Editor: ON"));
                     return 1;
                 }))
         );
+
+
     }
 
     private void autoUpdateStuff() {

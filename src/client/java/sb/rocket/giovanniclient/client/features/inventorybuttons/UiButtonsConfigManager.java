@@ -9,6 +9,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public final class UiButtonsConfigManager {
+    public static boolean EDIT_MODE = false;
+    public static String EDIT_SELECTED_SLOT = "right0"; // default
+
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final Path PATH = FabricLoader.getInstance()
             .getConfigDir().resolve("giovanniclient_buttons.json");

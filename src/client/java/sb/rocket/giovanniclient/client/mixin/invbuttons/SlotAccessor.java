@@ -1,4 +1,4 @@
-package sb.rocket.giovanniclient.client.mixin;
+package sb.rocket.giovanniclient.client.mixin.invbuttons;
 
 import net.minecraft.screen.slot.Slot;
 import org.spongepowered.asm.mixin.Mixin;

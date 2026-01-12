@@ -1,4 +1,4 @@
-package sb.rocket.giovanniclient.client.mixin;
+package sb.rocket.giovanniclient.client.mixin.invbuttons;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
@@ -25,8 +25,9 @@ public class InventoryScreenMixin {
 
     @Inject(method = "init", at = @At("TAIL"))
     private void moveCraftingSlotsOffscreen(CallbackInfo ci) {
-        InventoryScreen self = (InventoryScreen)(Object)this;
+        if (!ibc.NO_CRAFTING_GRID_TOGGLE) return;
 
+        InventoryScreen self = (InventoryScreen)(Object)this;
         if (self.getScreenHandler() instanceof PlayerScreenHandler handler) {
             // PlayerScreenHandler: 0=result, 1..4=input 2x2
             for (int i = 0; i <= 4 && i < handler.slots.size(); i++) {

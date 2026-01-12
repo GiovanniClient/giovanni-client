@@ -11,6 +11,11 @@ public class InventoryButtonsConfig {
     @ConfigEditorBoolean
     public boolean NO_CRAFTING_STRING_TOGGLE = false;
 
+    @Expose
+    @ConfigOption(name = "No Vanilla Crafting Grid", desc = "Remove the crafting grid in the inventory")
+    @ConfigEditorBoolean
+    public boolean NO_CRAFTING_GRID_TOGGLE = false;
+
 
     @Expose
     @ConfigOption(name = "No Recipe Book", desc = "Remove the Recipe Book in the inventory")

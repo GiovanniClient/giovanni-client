@@ -1,4 +1,4 @@
-package sb.rocket.giovanniclient.client.mixin;
+package sb.rocket.giovanniclient.client.mixin.invbuttons;
 
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
