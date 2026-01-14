@@ -13,14 +13,12 @@
     "EntityGlowOverrideMixin",
     "UndoInvisibilityMixin",
     "invbuttons.HandledScreenAccessor",
-    "invbuttons.HandledScreenEditorClickMixin",
-    "invbuttons.InventoryScreenButtonsMixin",
-    "invbuttons.InventoryScreenEditorOverlayMixin",
+    "invbuttons.HandledScreenInvButtonsInputMixin",
+    "invbuttons.InventoryScreenInvButtonsMixin",
     "invbuttons.InventoryScreenMaskMixin",
     "invbuttons.InventoryScreenMixin",
     "invbuttons.RecipeBookScreenMixin",
     "invbuttons.ScreenInvoker",
-    "invbuttons.ScreenPreventInventoryCloseWhileTypingMixin",
     "invbuttons.SlotAccessor"
   ]
 }

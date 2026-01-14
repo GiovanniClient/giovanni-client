@@ -12,7 +12,8 @@ public class InventoryButtonsConfig {
     public boolean NO_CRAFTING_STRING_TOGGLE = false;
 
     @Expose
-    @ConfigOption(name = "No Vanilla Crafting Grid", desc = "Remove the crafting grid in the inventory")
+    @ConfigOption(name = "No Vanilla Crafting Grid", desc = "Remove the crafting grid in the inventory.\n" +
+            "If you toggle ON->OFF its bugged, restart the game to fix (i can't be bothered right now lol)")
     @ConfigEditorBoolean
     public boolean NO_CRAFTING_GRID_TOGGLE = false;
 

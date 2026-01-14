@@ -6,6 +6,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import sb.rocket.giovanniclient.client.config.ConfigManager;
 import sb.rocket.giovanniclient.client.features.misc.InventoryBackgroundColor;
 
 @Mixin(InventoryScreen.class)
@@ -13,6 +14,7 @@ public abstract class InventoryScreenMaskMixin {
 
     @Inject(method = "drawBackground", at = @At("TAIL"))
     private void maskCraftingArea(DrawContext ctx, float delta, int mouseX, int mouseY, CallbackInfo ci) {
+        if (!ConfigManager.getConfig().ibc.NO_CRAFTING_GRID_TOGGLE) return;
         int x = ((HandledScreenAccessor) this).giovanni$getX();
         int y = ((HandledScreenAccessor) this).giovanni$getY();
 
