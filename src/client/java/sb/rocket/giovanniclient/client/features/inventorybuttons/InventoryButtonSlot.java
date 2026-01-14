@@ -1,12 +1,50 @@
 package sb.rocket.giovanniclient.client.features.inventorybuttons;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public record InventoryButtonSlot(String id, int relX, int relY) {
 
+    private static final int INV_W = 176;
+    private static final int INV_H = 166;
+
+    public static final String DEFAULT_ID = "right0";
+
+    // Build once
+    private static final List<InventoryButtonSlot> ALL = buildAll();
+    private static final Map<String, InventoryButtonSlot> BY_ID =
+            ALL.stream().collect(Collectors.toUnmodifiableMap(
+                    s -> canon(s.id),
+                    s -> s
+            ));
+
     public static List<InventoryButtonSlot> all() {
-        List<InventoryButtonSlot> s = new ArrayList<>();
+        return ALL;
+    }
+
+    public static InventoryButtonSlot fromId(String id) {
+        if (id == null) return null;
+        return BY_ID.get(canon(id));
+    }
+
+    public static InventoryButtonSlot fromIdOrDefault(String id) {
+        InventoryButtonSlot s = fromId(id);
+        return s != null ? s : BY_ID.get(canon(DEFAULT_ID));
+    }
+
+    public static InventoryButtonSlot defaultSlot() {
+        // Lazy getter avoids static init cycles entirely
+        return BY_ID.get(canon(DEFAULT_ID));
+    }
+
+    private static String canon(String id) {
+        return id.trim().toLowerCase(Locale.ROOT);
+    }
+
+    private static List<InventoryButtonSlot> buildAll() {
+        var s = new java.util.ArrayList<InventoryButtonSlot>();
 
         // Below crafting
         s.add(new InventoryButtonSlot("below0", 87, 63));
@@ -35,39 +73,28 @@ public record InventoryButtonSlot(String id, int relX, int relY) {
         s.add(new InventoryButtonSlot("player2", 26, 8));
         s.add(new InventoryButtonSlot("player3", 26, 60));
 
-        // Right side (wrap come NEU)
+        // Right side
         for (int i = 0; i < 8; i++) {
             int y = 2 + 20 * i;
-            if (y < 80) s.add(new InventoryButtonSlot("right" + i, 176 + 2, 2 + 20 * i));          // fuori a destra
-            //else        s.add(new InventoryButtonSlot("right" + i, 176 + 2, 2 + 20 * i - 166));     // wrap
+            if (y < 80) s.add(new InventoryButtonSlot("right" + i, INV_W + 2, y));
         }
 
         // Left side
         for (int i = 0; i < 8; i++) {
             int y = 2 + 20 * i;
-            if (y < 80) s.add(new InventoryButtonSlot("left" + i, -19, 2 + 20 * i));               // fuori a sinistra
-            //else        s.add(new InventoryButtonSlot("left" + i, -19, 2 + 20 * i - 166));          // wrap
+            if (y < 80) s.add(new InventoryButtonSlot("left" + i, -19, y));
         }
 
         // Top side
         for (int i = 0; i < 8; i++) {
-            s.add(new InventoryButtonSlot("top" + i, 4 + 21 * i, -19));                             // fuori sopra
+            s.add(new InventoryButtonSlot("top" + i, 4 + 21 * i, -19));
         }
 
         // Bottom side
         for (int i = 0; i < 8; i++) {
-            s.add(new InventoryButtonSlot("bottom" + i, 4 + 21 * i, 166 + 2));                      // fuori sotto
+            s.add(new InventoryButtonSlot("bottom" + i, 4 + 21 * i, INV_H + 2));
         }
 
-        return s;
-    }
-
-    public static InventoryButtonSlot fromId(String id) {
-        if (id == null) return null;
-        String k = id.toLowerCase();
-        for (InventoryButtonSlot s : all()) {
-            if (s.id.equalsIgnoreCase(k)) return s;
-        }
-        return null;
+        return List.copyOf(s);
     }
 }

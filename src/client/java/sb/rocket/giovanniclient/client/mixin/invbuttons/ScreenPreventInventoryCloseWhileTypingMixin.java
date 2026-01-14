@@ -16,7 +16,7 @@ public abstract class ScreenPreventInventoryCloseWhileTypingMixin {
 
     @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
     private void giovanni$blockInventoryKeyWhileTyping(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
-        if (!UiButtonsConfigManager.EDIT_MODE) return;
+        if (!UiButtonsConfigManager.isEditMode()) return;
 
         Screen self = (Screen)(Object)this;
         if (!(self instanceof InventoryScreen)) return;

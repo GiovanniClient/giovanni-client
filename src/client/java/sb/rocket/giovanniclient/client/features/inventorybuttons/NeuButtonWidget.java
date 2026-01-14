@@ -12,6 +12,9 @@ public final class NeuButtonWidget extends ClickableWidget {
 
     private final UiButtonDef def;
 
+    private static final Identifier FALLBACK_ICON =
+            Identifier.of("minecraft", "textures/item/paper.png");
+
     public NeuButtonWidget(int x, int y, UiButtonDef def) {
         super(x, y, def.w, def.h, Text.empty());
         this.def = def;
@@ -41,7 +44,7 @@ public final class NeuButtonWidget extends ClickableWidget {
         ctx.fill(x + w - 1, y, x + w, y + h, border);   // right
 
         // === ICON (14x14 centrata) ===
-        Identifier icon = Identifier.of(def.icon);
+        Identifier icon = safeIcon(def.icon);
 
         int ix = x + (w - 14) / 2;
         int iy = y + (h - 14) / 2;
@@ -58,7 +61,7 @@ public final class NeuButtonWidget extends ClickableWidget {
 
     @Override
     public void onClick(double mouseX, double mouseY) {
-        if (UiButtonsConfigManager.get().editMode) return;
+        if (UiButtonsConfigManager.isEditMode()) return;
 
         var mc = MinecraftClient.getInstance();
         if (mc.player == null) return;
@@ -69,6 +72,14 @@ public final class NeuButtonWidget extends ClickableWidget {
         } else {
             mc.player.networkHandler.sendChatMessage(cmd);
         }
+    }
+
+    private static Identifier safeIcon(String raw) {
+        if (raw == null || raw.isBlank()) return FALLBACK_ICON;
+
+        // Prefer tryParse when available (no exceptions).
+        Identifier parsed = Identifier.tryParse(raw.trim());
+        return parsed != null ? parsed : FALLBACK_ICON;
     }
 
     @Override

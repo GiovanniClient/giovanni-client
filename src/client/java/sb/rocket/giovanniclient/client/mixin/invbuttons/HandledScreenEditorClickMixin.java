@@ -13,23 +13,21 @@ public abstract class HandledScreenEditorClickMixin {
 
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
     private void giovanni$editorClick(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
-        if (!UiButtonsConfigManager.EDIT_MODE) return;
+        if (!UiButtonsConfigManager.isEditMode()) return;
 
         HandledScreen<?> self = (HandledScreen<?>)(Object)this;
 
         // attiva solo per player inventory
         if (!(self instanceof net.minecraft.client.gui.screen.ingame.InventoryScreen)) return;
 
-        int bgW = ((HandledScreenAccessor)(Object)self).giovanni$getBackgroundWidth();
-        int bgH = ((HandledScreenAccessor)(Object)self).giovanni$getBackgroundHeight();
-        int guiX = (self.width - bgW) / 2;
-        int guiY = (self.height - bgH) / 2;
+        int guiX = ((HandledScreenAccessor)(Object)self).giovanni$getX();
+        int guiY = ((HandledScreenAccessor)(Object)self).giovanni$getY();
 
         for (InventoryButtonSlot slot : InventoryButtonSlot.all()) {
             int x = guiX + slot.relX();
             int y = guiY + slot.relY();
             if (mouseX >= x && mouseX < x + 18 && mouseY >= y && mouseY < y + 18) {
-                UiButtonsConfigManager.EDIT_SELECTED_SLOT = slot.id();
+                UiButtonsConfigManager.setSelectedSlot(slot.id());
                 cir.setReturnValue(true);
                 return;
             }

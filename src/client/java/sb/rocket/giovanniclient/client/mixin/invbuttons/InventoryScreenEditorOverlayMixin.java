@@ -30,7 +30,7 @@ public abstract class InventoryScreenEditorOverlayMixin {
 
     @Inject(method = "init", at = @At("TAIL"))
     private void giovanni$initEditorWidgets(CallbackInfo ci) {
-        if (!UiButtonsConfigManager.EDIT_MODE) return;
+        if (!UiButtonsConfigManager.isEditMode()) return;
 
         InventoryScreen self = (InventoryScreen)(Object)this;
         int guiX = giovanni$getGuiX(self);
@@ -50,7 +50,7 @@ public abstract class InventoryScreenEditorOverlayMixin {
 
         giovanni$loadFields();
 
-        giovanni$lastSelectedSlot = UiButtonsConfigManager.EDIT_SELECTED_SLOT;
+        giovanni$lastSelectedSlot = UiButtonsConfigManager.getSelectedSlot();
 
         giovanni$commandField.setChangedListener(s -> giovanni$saveFields());
         giovanni$iconField.setChangedListener(s -> giovanni$saveFields());
@@ -62,9 +62,9 @@ public abstract class InventoryScreenEditorOverlayMixin {
 
     @Inject(method = "render", at = @At("TAIL"))
     private void giovanni$renderEditorOverlay(DrawContext ctx, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        if (!UiButtonsConfigManager.EDIT_MODE) return;
+        if (!UiButtonsConfigManager.isEditMode()) return;
 
-        String current = UiButtonsConfigManager.EDIT_SELECTED_SLOT;
+        String current = UiButtonsConfigManager.getSelectedSlot();
         if (giovanni$lastSelectedSlot == null || !giovanni$lastSelectedSlot.equalsIgnoreCase(current)) {
             giovanni$lastSelectedSlot = current;
             giovanni$loadFields();
@@ -88,7 +88,7 @@ public abstract class InventoryScreenEditorOverlayMixin {
         ctx.fill(panelX, panelY, panelX + 1, panelY + bgH, br);
         ctx.fill(panelX + PANEL_W - 1, panelY, panelX + PANEL_W, panelY + bgH, br);
 
-        ctx.drawTextWithShadow(self.getTextRenderer(), Text.literal("Slot: " + UiButtonsConfigManager.EDIT_SELECTED_SLOT), panelX + 10, panelY + 10, 0xFFFFFF);
+        ctx.drawTextWithShadow(self.getTextRenderer(), Text.literal("Slot: " + UiButtonsConfigManager.getSelectedSlot()), panelX + 10, panelY + 10, 0xFFFFFF);
         ctx.drawTextWithShadow(self.getTextRenderer(), Text.literal("Command (blank = hidden)"), panelX + 10, panelY + 35, 0xFFFFFF);
         ctx.drawTextWithShadow(self.getTextRenderer(), Text.literal("Icon texture id"), panelX + 10, panelY + 80, 0xFFFFFF);
 
@@ -97,7 +97,7 @@ public abstract class InventoryScreenEditorOverlayMixin {
             int x = guiX + slot.relX();
             int y = guiY + slot.relY();
 
-            boolean sel = slot.id().equalsIgnoreCase(UiButtonsConfigManager.EDIT_SELECTED_SLOT);
+            boolean sel = slot.id().equalsIgnoreCase(UiButtonsConfigManager.getSelectedSlot());
             int overlay = sel ? 0x8040A0FF : 0x40111111;
             int border  = sel ? 0xFF40A0FF : 0xFF3A3A3A;
 
@@ -124,7 +124,7 @@ public abstract class InventoryScreenEditorOverlayMixin {
     @Unique
     private UiButtonDef giovanni$getOrCreateDef() {
         UiButtonsConfig cfg = UiButtonsConfigManager.get();
-        String slotId = UiButtonsConfigManager.EDIT_SELECTED_SLOT;
+        String slotId = UiButtonsConfigManager.getSelectedSlot();
 
         Optional<UiButtonDef> existing = cfg.buttons.stream()
                 .filter(b -> "inventory".equals(b.screen))

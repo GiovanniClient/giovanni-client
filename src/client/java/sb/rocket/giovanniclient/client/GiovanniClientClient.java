@@ -14,11 +14,13 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
+import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 import sb.rocket.giovanniclient.client.config.ConfigManager;
 import sb.rocket.giovanniclient.client.features.FeatureManager;
+import sb.rocket.giovanniclient.client.features.inventorybuttons.InventoryButtonEditorScreen;
 import sb.rocket.giovanniclient.client.features.inventorybuttons.UiButtonsConfigManager;
 import sb.rocket.giovanniclient.client.features.misc.InventoryBackgroundColor;
 import sb.rocket.giovanniclient.client.features.updater.UpdateManager;
@@ -33,26 +35,35 @@ public class GiovanniClientClient implements ClientModInitializer {
     public static final String MODID = "giovanniclient";
     public static final String MOD_VERSION_NAME = "1.0 (beta)";
     public static final int MOD_VERSION_CODE = 10001;
+
     private static final Identifier RELOAD_ID =
             Identifier.of("giovanniclient", "inventory_bg_color_reload");
 
     public static final UpdateManager UPDATE_MANAGER = new UpdateManager();
 
+    /**
+     * When true, we will (a) ensure the player inventory is open and then (b) open the editor
+     * as an overlay, using the real InventoryScreen as parent.
+     */
     private static boolean OPEN_INV_BUTTON_EDITOR_PENDING = false;
-    public static boolean EDIT_MODE = false;
-
+    private static int OPEN_INV_BUTTON_EDITOR_REOPEN_TICKS = 0;
 
     @Override
     public void onInitializeClient() {
         Runtime.getRuntime().addShutdownHook(new Thread(ConfigManager::shutdown));
 
-        KeyBinding openGioCliConfigKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Open Config", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_K, "GiovanniClient"));
-        ClientTickEvents.END_CLIENT_TICK.register(tickClient -> {
-            while (openGioCliConfigKey.wasPressed()) tickClient.execute(ConfigManager::openConfigScreen);
+        KeyBinding openGioCliConfigKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "Open Config",
+                InputUtil.Type.KEYSYM,
+                GLFW.GLFW_KEY_K,
+                "GiovanniClient"
+        ));
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            while (openGioCliConfigKey.wasPressed()) client.execute(ConfigManager::openConfigScreen);
 
             if (ConfigManager.shouldOpenFromCommand) {
                 ConfigManager.shouldOpenFromCommand = false;
-                tickClient.execute(ConfigManager::openConfigScreen);
+                client.execute(ConfigManager::openConfigScreen);
             }
         });
 
@@ -64,53 +75,56 @@ public class GiovanniClientClient implements ClientModInitializer {
         ));
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (editInventoryButtons.wasPressed()) {
+                if (client.player == null) return;
 
-                // Debug: vedi sempre se il keybind viene letto
-                if (client.player != null) {
-                    client.player.sendMessage(Text.literal("O pressed. currentScreen=" +
-                            (client.currentScreen == null ? "null" : client.currentScreen.getClass().getName())), false);
-                }
+                UiButtonsConfigManager.setEditMode(true);
+                OPEN_INV_BUTTON_EDITOR_PENDING = true;
+                OPEN_INV_BUTTON_EDITOR_REOPEN_TICKS = 1;
 
-                // Apri editor se sei nel player inventory (più robusto di instanceof InventoryScreen)
-                if (client.currentScreen instanceof net.minecraft.client.gui.screen.ingame.HandledScreen<?> hs
-                        && hs.getScreenHandler() instanceof net.minecraft.screen.PlayerScreenHandler) {
-                    client.execute(() -> client.setScreen(new sb.rocket.giovanniclient.client.features.inventorybuttons.InventoryButtonEditorScreen()));
-                } else {
-                    if (client.player != null) {
-                        client.player.sendMessage(Text.literal("Open your inventory first."), false);
-                    }
-                }
+                client.player.sendMessage(Text.literal("Inventory Buttons Editor: ON"), false);
             }
         });
 
+
+        // Close edit mode if not in inventory
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (!UiButtonsConfigManager.EDIT_MODE) return;
+            if (!UiButtonsConfigManager.isEditMode()) return;
+
+            // If we're in the middle of opening inventory for the editor, don't auto-disable.
+            if (OPEN_INV_BUTTON_EDITOR_PENDING) return;
 
             if (!(client.currentScreen instanceof net.minecraft.client.gui.screen.ingame.InventoryScreen)) {
-                UiButtonsConfigManager.EDIT_MODE = false;
+                UiButtonsConfigManager.setEditMode(false);
             }
         });
 
+
+        // Pending flow: chat command can be overwritten by ChatScreen closing; do it on tick safely.
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (!OPEN_INV_BUTTON_EDITOR_PENDING) return;
             if (client.player == null) return;
-
-            // Aspetta che la chat si sia chiusa: finché è aperta, non aprire altre GUI.
-            if (client.currentScreen instanceof net.minecraft.client.gui.screen.ChatScreen) return;
-
-            // Se non siamo ancora nell'inventario, aprilo adesso
-            if (!(client.currentScreen instanceof net.minecraft.client.gui.screen.ingame.InventoryScreen)) {
-                client.execute(() -> client.setScreen(new net.minecraft.client.gui.screen.ingame.InventoryScreen(client.player)));
-                return; // al prossimo tick saremo in InventoryScreen
+            if (!UiButtonsConfigManager.isEditMode()) {
+                OPEN_INV_BUTTON_EDITOR_PENDING = false;
+                return;
             }
 
-            // Ora siamo nell’inventario: apri l’editor
-            OPEN_INV_BUTTON_EDITOR_PENDING = false;
-            client.execute(() -> client.setScreen(
-                    new net.minecraft.client.gui.screen.ingame.InventoryScreen(client.player)
+            // don't fight with chat screen
+            if (client.currentScreen instanceof net.minecraft.client.gui.screen.ChatScreen) return;
 
-                    //new sb.rocket.giovanniclient.client.features.inventorybuttons.InventoryButtonEditorScreen()
-            ));
+            // ensure inventory open
+            if (!(client.currentScreen instanceof net.minecraft.client.gui.screen.ingame.InventoryScreen)) {
+                client.execute(() -> client.setScreen(new net.minecraft.client.gui.screen.ingame.InventoryScreen(client.player)));
+                return;
+            }
+
+            // force exactly one reopen so InventoryScreen.init() runs while editMode=true
+            if (OPEN_INV_BUTTON_EDITOR_REOPEN_TICKS > 0) {
+                OPEN_INV_BUTTON_EDITOR_REOPEN_TICKS--;
+                client.execute(() -> client.setScreen(new net.minecraft.client.gui.screen.ingame.InventoryScreen(client.player)));
+                return;
+            }
+
+            OPEN_INV_BUTTON_EDITOR_PENDING = false;
         });
 
 
@@ -142,18 +156,18 @@ public class GiovanniClientClient implements ClientModInitializer {
                     }
                 }
         );
-
     }
 
     private void registerClientCommands() {
         String[] aliases = {"giovanni", "giovanniclient", "gio", "giocli", "giova", "zoo"};
 
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
-            for (String alias : aliases)
+            for (String alias : aliases) {
                 dispatcher.register(ClientCommandManager.literal(alias).executes(context -> {
                     ConfigManager.openConfigScreenFromCommand();
                     return 1;
                 }));
+            }
         });
 
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) ->
@@ -166,9 +180,7 @@ public class GiovanniClientClient implements ClientModInitializer {
                     }
 
                     context.getSource().sendFeedback(Text.literal("--- Scoreboard Sidebar ---"));
-                    for (String line : lines) {
-                        context.getSource().sendFeedback(Text.literal(line));
-                    }
+                    for (String line : lines) context.getSource().sendFeedback(Text.literal(line));
                     context.getSource().sendFeedback(Text.literal("--------------------------"));
 
                     return 1;
@@ -180,22 +192,17 @@ public class GiovanniClientClient implements ClientModInitializer {
                     MinecraftClient client = MinecraftClient.getInstance();
                     if (client.player == null) return 0;
 
-                    UiButtonsConfigManager.EDIT_MODE = true;
-
-                    // NON aprire schermate qui: la ChatScreen potrebbe sovrascriverle subito dopo.
+                    UiButtonsConfigManager.setEditMode(true);
                     OPEN_INV_BUTTON_EDITOR_PENDING = true;
+                    OPEN_INV_BUTTON_EDITOR_REOPEN_TICKS = 1;
 
                     ctx.getSource().sendFeedback(Text.literal("Inventory Buttons Editor: ON"));
                     return 1;
                 }))
         );
-
-
     }
 
     private void autoUpdateStuff() {
-        System.out.println("doing update stuff!");
-
         boolean autoCheck = ConfigManager.getConfig().about.AUTO_CHECK_FOR_UPDATES;
         boolean autoDownload = ConfigManager.getConfig().about.AUTO_UPDATE;
 
@@ -204,7 +211,6 @@ public class GiovanniClientClient implements ClientModInitializer {
 
             if (autoDownload) {
                 checkFuture.thenAccept(potentialUpdate -> {
-                    System.out.println("" + potentialUpdate + " isav" + potentialUpdate.isUpdateAvailable());
                     if (potentialUpdate != null && potentialUpdate.isUpdateAvailable()) {
                         UPDATE_MANAGER.launchUpdate(potentialUpdate);
                     }
