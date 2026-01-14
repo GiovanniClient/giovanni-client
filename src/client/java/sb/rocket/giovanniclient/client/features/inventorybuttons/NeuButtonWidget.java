@@ -12,12 +12,35 @@ public final class NeuButtonWidget extends ClickableWidget {
 
     private final UiButtonDef def;
 
-    private static final Identifier FALLBACK_ICON =
+    private static final Identifier PAPER_ICON =
             Identifier.of("minecraft", "textures/item/paper.png");
 
-    public NeuButtonWidget(int x, int y, UiButtonDef def) {
-        super(x, y, def.w, def.h, Text.empty());
+    public NeuButtonWidget(int x, int y, UiButtonDef def, boolean editMode) {
+        super(x, y,
+                (def != null && def.w > 0) ? def.w : 18,
+                (def != null && def.h > 0) ? def.h : 18,
+                Text.empty()
+        );
         this.def = def;
+
+        // In edit mode, selection is handled elsewhere; don't execute.
+        this.active = !editMode && def != null && def.enabled;
+        this.visible = def == null || def.visible;
+    }
+
+    @Override
+    public void onClick(double mouseX, double mouseY) {
+        if (def == null) return;
+
+        String cmd = (def.command == null) ? "" : def.command.trim();
+        if (cmd.isBlank()) return;
+
+        MinecraftClient client = MinecraftClient.getInstance();
+        if (client.player == null) return;
+
+        // sendChatCommand expects NO leading slash.
+        if (cmd.startsWith("/")) cmd = cmd.substring(1).trim();
+        if (!cmd.isBlank()) client.player.networkHandler.sendChatCommand(cmd);
     }
 
     @Override
@@ -29,61 +52,40 @@ public final class NeuButtonWidget extends ClickableWidget {
         int w = width;
         int h = height;
 
-        // === BACKGROUND (NEU style) ===
-        int bg = hover
-                ? 0xAA3A3A3A  // hover: leggermente più chiaro
-                : 0xAA2A2A2A; // base
+        boolean emptyCommand = def == null || def.command == null || def.command.isBlank();
 
+        // Background
+        int bg = hover ? 0xAA3A3A3A : 0xAA2A2A2A;
         ctx.fill(x, y, x + w, y + h, bg);
 
-        // === BORDER (1px) ===
-        int border = 0xFF5A5A5A;
-        ctx.fill(x, y, x + w, y + 1, border);           // top
-        ctx.fill(x, y + h - 1, x + w, y + h, border);   // bottom
-        ctx.fill(x, y, x + 1, y + h, border);           // left
-        ctx.fill(x + w - 1, y, x + w, y + h, border);   // right
-
-        // === ICON (14x14 centrata) ===
-        Identifier icon = safeIcon(def.icon);
-
-        int ix = x + (w - 14) / 2;
-        int iy = y + (h - 14) / 2;
-
-        ctx.drawTexture(
-                RenderPipelines.GUI_TEXTURED,
-                icon,
-                ix, iy,
-                0, 0,
-                14, 14,
-                16, 16
-        );
-    }
-
-    @Override
-    public void onClick(double mouseX, double mouseY) {
-        if (UiButtonsConfigManager.isEditMode()) return;
-
-        var mc = MinecraftClient.getInstance();
-        if (mc.player == null) return;
-
-        String cmd = def.command.trim();
-        if (cmd.startsWith("/")) {
-            mc.player.networkHandler.sendChatCommand(cmd.substring(1));
+        // Border
+        int border;
+        if (emptyCommand) {
+            border = hover ? 0xFFDDDDDD : 0xFF999999;
         } else {
-            mc.player.networkHandler.sendChatMessage(cmd);
+            border = hover ? 0xFFFFFFFF : 0xFF444444;
         }
+        ctx.fill(x, y, x + w, y + 1, border);
+        ctx.fill(x, y + h - 1, x + w, y + h, border);
+        ctx.fill(x, y, x + 1, y + h, border);
+        ctx.fill(x + w - 1, y, x + w, y + h, border);
+
+        // Placeholder: NO ICON
+        if (emptyCommand) return;
+
+        // Icon
+        Identifier icon = safeIcon(def == null ? null : def.icon);
+        ctx.drawTexture(RenderPipelines.GUI_TEXTURED, icon, x + 1, y + 1, 0, 0, w - 2, h - 2, w - 2, h - 2);
     }
 
     private static Identifier safeIcon(String raw) {
-        if (raw == null || raw.isBlank()) return FALLBACK_ICON;
-
-        // Prefer tryParse when available (no exceptions).
+        if (raw == null || raw.isBlank()) return PAPER_ICON;
         Identifier parsed = Identifier.tryParse(raw.trim());
-        return parsed != null ? parsed : FALLBACK_ICON;
+        return parsed != null ? parsed : PAPER_ICON;
     }
 
     @Override
     protected void appendClickableNarrations(NarrationMessageBuilder builder) {
-
+        // optional
     }
 }

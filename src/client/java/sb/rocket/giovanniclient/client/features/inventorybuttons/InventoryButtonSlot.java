@@ -68,21 +68,19 @@ public record InventoryButtonSlot(String id, int relX, int relY) {
         s.add(new InventoryButtonSlot("result", 143, 35));
 
         // Player menu area
-        s.add(new InventoryButtonSlot("player0", 60, 8));
-        s.add(new InventoryButtonSlot("player1", 60, 60));
+        s.add(new InventoryButtonSlot("player0", 56, 8));
+        s.add(new InventoryButtonSlot("player1", 56, 60));
         s.add(new InventoryButtonSlot("player2", 26, 8));
         s.add(new InventoryButtonSlot("player3", 26, 60));
 
         // Right side
         for (int i = 0; i < 8; i++) {
-            int y = 2 + 20 * i;
-            if (y < 80) s.add(new InventoryButtonSlot("right" + i, INV_W + 2, y));
+            s.add(new InventoryButtonSlot("right" + i, INV_W + 2, 4 + 21 * i));
         }
 
         // Left side
         for (int i = 0; i < 8; i++) {
-            int y = 2 + 20 * i;
-            if (y < 80) s.add(new InventoryButtonSlot("left" + i, -19, y));
+            s.add(new InventoryButtonSlot("left" + i, -19, 4 + 21 * i));
         }
 
         // Top side

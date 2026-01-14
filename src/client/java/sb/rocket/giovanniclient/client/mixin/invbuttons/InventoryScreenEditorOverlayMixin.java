@@ -9,12 +9,8 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import sb.rocket.giovanniclient.client.features.inventorybuttons.InventoryButtonSlot;
 import sb.rocket.giovanniclient.client.features.inventorybuttons.UiButtonDef;
-import sb.rocket.giovanniclient.client.features.inventorybuttons.UiButtonsConfig;
 import sb.rocket.giovanniclient.client.features.inventorybuttons.UiButtonsConfigManager;
-
-import java.util.Optional;
 
 @Mixin(InventoryScreen.class)
 public abstract class InventoryScreenEditorOverlayMixin {
@@ -22,47 +18,35 @@ public abstract class InventoryScreenEditorOverlayMixin {
     @Unique private TextFieldWidget giovanni$commandField;
     @Unique private TextFieldWidget giovanni$iconField;
 
+    @Unique private boolean giovanni$widgetsAdded = false;
+
     @Unique private static final int PANEL_W = 230;
     @Unique private static final int FIELD_H = 18;
+
+    // spingi più a destra
+    @Unique private static final int PANEL_OFFSET_X = 48;
+
+    // “slash finto”: spazio dedicato prima del textfield
+    @Unique private static final int SLASH_PAD = 10;
+
+    @Unique private static final String DEFAULT_ICON = "minecraft:textures/item/paper.png";
 
     @Unique private String giovanni$lastSelectedSlot = null;
     @Unique private boolean giovanni$suppressSave = false;
 
     @Inject(method = "init", at = @At("TAIL"))
     private void giovanni$initEditorWidgets(CallbackInfo ci) {
-        if (!UiButtonsConfigManager.isEditMode()) return;
-
-        InventoryScreen self = (InventoryScreen)(Object)this;
-        int guiX = giovanni$getGuiX(self);
-        int guiY = giovanni$getGuiY(self);
-
-        int bgW = ((HandledScreenAccessor)(Object)self).giovanni$getBackgroundWidth();
-        int bgH = ((HandledScreenAccessor)(Object)self).giovanni$getBackgroundHeight();
-
-        int panelX = Math.min(guiX + bgW + 10, self.width - PANEL_W - 8);
-        int panelY = guiY;
-
-        giovanni$commandField = new TextFieldWidget(self.getTextRenderer(), panelX + 10, panelY + 50, PANEL_W - 20, FIELD_H, Text.literal("Command"));
-        giovanni$iconField    = new TextFieldWidget(self.getTextRenderer(), panelX + 10, panelY + 95, PANEL_W - 20, FIELD_H, Text.literal("Icon"));
-
-        giovanni$commandField.setMaxLength(1024);
-        giovanni$iconField.setMaxLength(2048);
-
-        giovanni$loadFields();
-
-        giovanni$lastSelectedSlot = UiButtonsConfigManager.getSelectedSlot();
-
-        giovanni$commandField.setChangedListener(s -> giovanni$saveFields());
-        giovanni$iconField.setChangedListener(s -> giovanni$saveFields());
-
-        // serve invoker: vedi blocco 2 sotto
-        ((ScreenInvoker)(Object)self).giovanni$addDrawableChild(giovanni$commandField);
-        ((ScreenInvoker)(Object)self).giovanni$addDrawableChild(giovanni$iconField);
+        // init classico (ma non affidarti SOLO a questo)
+        giovanni$ensureWidgets();
     }
 
     @Inject(method = "render", at = @At("TAIL"))
     private void giovanni$renderEditorOverlay(DrawContext ctx, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         if (!UiButtonsConfigManager.isEditMode()) return;
+
+        // CRITICO: se editMode è stato acceso dopo init(), crea i widget qui.
+        giovanni$ensureWidgets();
+        if (!giovanni$widgetsAdded || giovanni$commandField == null || giovanni$iconField == null) return;
 
         String current = UiButtonsConfigManager.getSelectedSlot();
         if (giovanni$lastSelectedSlot == null || !giovanni$lastSelectedSlot.equalsIgnoreCase(current)) {
@@ -70,110 +54,130 @@ public abstract class InventoryScreenEditorOverlayMixin {
             giovanni$loadFields();
         }
 
-        InventoryScreen self = (InventoryScreen)(Object)this;
+        InventoryScreen self = (InventoryScreen) (Object) this;
+
         int guiX = giovanni$getGuiX(self);
         int guiY = giovanni$getGuiY(self);
+        int bgW = ((HandledScreenAccessor) (Object) self).giovanni$getBackgroundWidth();
 
-        int bgW = ((HandledScreenAccessor)(Object)self).giovanni$getBackgroundWidth();
-        int bgH = ((HandledScreenAccessor)(Object)self).giovanni$getBackgroundHeight();
-
-        // pannello destro
-        int panelX = Math.min(guiX + bgW + 10, self.width - PANEL_W - 8);
+        int wantedX = guiX + bgW + PANEL_OFFSET_X;
+        int panelX = Math.min(wantedX, self.width - PANEL_W - 8);
         int panelY = guiY;
 
-        ctx.fill(panelX, panelY, panelX + PANEL_W, panelY + bgH, 0xCC111111);
-        int br = 0xFF3A3A3A;
-        ctx.fill(panelX, panelY, panelX + PANEL_W, panelY + 1, br);
-        ctx.fill(panelX, panelY + bgH - 1, panelX + PANEL_W, panelY + bgH, br);
-        ctx.fill(panelX, panelY, panelX + 1, panelY + bgH, br);
-        ctx.fill(panelX + PANEL_W - 1, panelY, panelX + PANEL_W, panelY + bgH, br);
+        // panel bg
+        ctx.fill(panelX, panelY, panelX + PANEL_W, panelY + 140, 0xAA000000);
+        ctx.drawTextWithShadow(self.getTextRenderer(), "Inventory Button Editor", panelX + 10, panelY + 10, 0xFFFFFF);
+        ctx.drawTextWithShadow(self.getTextRenderer(), "Slot: " + UiButtonsConfigManager.getSelectedSlot(), panelX + 10, panelY + 28, 0xCCCCCC);
+        ctx.drawTextWithShadow(self.getTextRenderer(), "Command:", panelX + 10, panelY + 40, 0xCCCCCC);
+        ctx.drawTextWithShadow(self.getTextRenderer(), "Icon:", panelX + 10, panelY + 85, 0xCCCCCC);
 
-        ctx.drawTextWithShadow(self.getTextRenderer(), Text.literal("Slot: " + UiButtonsConfigManager.getSelectedSlot()), panelX + 10, panelY + 10, 0xFFFFFF);
-        ctx.drawTextWithShadow(self.getTextRenderer(), Text.literal("Command (blank = hidden)"), panelX + 10, panelY + 35, 0xFFFFFF);
-        ctx.drawTextWithShadow(self.getTextRenderer(), Text.literal("Icon texture id"), panelX + 10, panelY + 80, 0xFFFFFF);
+        // slash finto: disegnalo solo se field esiste
+        int sx = giovanni$commandField.getX() - 8;
+        int sy = giovanni$commandField.getY() + (FIELD_H - self.getTextRenderer().fontHeight) / 2;
+        ctx.drawTextWithShadow(self.getTextRenderer(), "/", sx, sy, 0xFFFFFF);
+    }
 
-        // overlay slot (disegnalo DOPO per vederlo sempre)
-        for (InventoryButtonSlot slot : InventoryButtonSlot.all()) {
-            int x = guiX + slot.relX();
-            int y = guiY + slot.relY();
+    @Unique
+    private void giovanni$ensureWidgets() {
+        if (!UiButtonsConfigManager.isEditMode()) return;
+        if (giovanni$widgetsAdded) return;
 
-            boolean sel = slot.id().equalsIgnoreCase(UiButtonsConfigManager.getSelectedSlot());
-            int overlay = sel ? 0x8040A0FF : 0x40111111;
-            int border  = sel ? 0xFF40A0FF : 0xFF3A3A3A;
+        InventoryScreen self = (InventoryScreen) (Object) this;
 
-            ctx.fill(x, y, x + 18, y + 18, overlay);
-            ctx.fill(x, y, x + 18, y + 1, border);
-            ctx.fill(x, y + 17, x + 18, y + 18, border);
-            ctx.fill(x, y, x + 1, y + 18, border);
-            ctx.fill(x + 17, y, x + 18, y + 18, border);
-        }
+        int guiX = giovanni$getGuiX(self);
+        int guiY = giovanni$getGuiY(self);
+        int bgW = ((HandledScreenAccessor) (Object) self).giovanni$getBackgroundWidth();
+
+        int wantedX = guiX + bgW + PANEL_OFFSET_X;
+        int panelX = Math.min(wantedX, self.width - PANEL_W - 8);
+        int panelY = guiY;
+
+        giovanni$commandField = new TextFieldWidget(
+                self.getTextRenderer(),
+                panelX + 10 + SLASH_PAD, panelY + 50,
+                PANEL_W - 20 - SLASH_PAD, FIELD_H,
+                Text.literal("Command")
+        );
+        giovanni$iconField = new TextFieldWidget(
+                self.getTextRenderer(),
+                panelX + 10, panelY + 95,
+                PANEL_W - 20, FIELD_H,
+                Text.literal("Icon")
+        );
+
+        giovanni$commandField.setMaxLength(1024);
+        giovanni$iconField.setMaxLength(2048);
+
+        giovanni$loadFields();
+        giovanni$lastSelectedSlot = UiButtonsConfigManager.getSelectedSlot();
+
+        giovanni$commandField.setChangedListener(s -> giovanni$persistFromFields());
+        giovanni$iconField.setChangedListener(s -> giovanni$persistFromFields());
+
+        ((ScreenInvoker) self).giovanni$addDrawableChild(giovanni$commandField);
+        ((ScreenInvoker) self).giovanni$addDrawableChild(giovanni$iconField);
+
+        giovanni$widgetsAdded = true;
     }
 
     @Unique
     private static int giovanni$getGuiX(InventoryScreen self) {
-        int bgW = ((HandledScreenAccessor)(Object)self).giovanni$getBackgroundWidth();
+        int bgW = ((HandledScreenAccessor) self).giovanni$getBackgroundWidth();
         return (self.width - bgW) / 2;
     }
 
     @Unique
     private static int giovanni$getGuiY(InventoryScreen self) {
-        int bgH = ((HandledScreenAccessor)(Object)self).giovanni$getBackgroundHeight();
+        int bgH = ((HandledScreenAccessor) self).giovanni$getBackgroundHeight();
         return (self.height - bgH) / 2;
-    }
-
-    @Unique
-    private UiButtonDef giovanni$getOrCreateDef() {
-        UiButtonsConfig cfg = UiButtonsConfigManager.get();
-        String slotId = UiButtonsConfigManager.getSelectedSlot();
-
-        Optional<UiButtonDef> existing = cfg.buttons.stream()
-                .filter(b -> "inventory".equals(b.screen))
-                .filter(b -> slotId.equalsIgnoreCase(b.slot))
-                .findFirst();
-
-        if (existing.isPresent()) return existing.get();
-
-        UiButtonDef def = new UiButtonDef();
-        def.id = "inv_" + slotId.toLowerCase();
-        def.screen = "inventory";
-        def.slot = slotId;
-        def.w = 18;
-        def.h = 18;
-        def.command = "";
-        def.icon = "minecraft:textures/item/paper.png";
-        def.tooltip = "";
-        def.visible = true;
-        def.enabled = true;
-
-        cfg.buttons.add(def);
-        UiButtonsConfigManager.save();
-        return def;
     }
 
     @Unique
     private void giovanni$loadFields() {
         if (giovanni$commandField == null || giovanni$iconField == null) return;
 
-        UiButtonDef def = giovanni$getOrCreateDef();
+        String slotId = UiButtonsConfigManager.getSelectedSlot();
+        UiButtonDef def = UiButtonsConfigManager.findInventoryDef(slotId).orElse(null);
 
         giovanni$suppressSave = true;
-        giovanni$commandField.setText(def.command == null ? "" : def.command);
-        giovanni$iconField.setText(def.icon == null ? "" : def.icon);
-        giovanni$suppressSave = false;
+        try {
+            giovanni$commandField.setText(def == null || def.command == null ? "" : def.command);
+            giovanni$iconField.setText(def == null || def.icon == null ? "" : def.icon);
+        } finally {
+            giovanni$suppressSave = false;
+        }
     }
 
-
     @Unique
-    private void giovanni$saveFields() {
+    private void giovanni$persistFromFields() {
         if (giovanni$suppressSave) return;
         if (giovanni$commandField == null || giovanni$iconField == null) return;
 
-        UiButtonDef def = giovanni$getOrCreateDef();
-        def.command = giovanni$commandField.getText().trim();
-        def.icon = giovanni$iconField.getText().trim();
+        String slotId = UiButtonsConfigManager.getSelectedSlot();
+
+        String cmd = giovanni$commandField.getText().trim();
+        String icon = giovanni$iconField.getText().trim();
+
+        if (cmd.isEmpty()) {
+            boolean removed = UiButtonsConfigManager.removeInventoryDef(slotId);
+            if (removed) UiButtonsConfigManager.save();
+            return;
+        }
+
+        // Se metti un comando ma l'icona è vuota -> default paper (e popola il campo)
+        if (icon.isEmpty()) {
+            icon = DEFAULT_ICON;
+            giovanni$suppressSave = true;
+            try {
+                giovanni$iconField.setText(icon);
+            } finally {
+                giovanni$suppressSave = false;
+            }
+        }
+
+        UiButtonDef def = UiButtonsConfigManager.getOrCreateInventoryDef(slotId);
+        def.command = cmd;
+        def.icon = icon;
         UiButtonsConfigManager.save();
     }
-
-
-
 }
