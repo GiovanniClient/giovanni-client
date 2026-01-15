@@ -1,19 +1,14 @@
 package sb.rocket.giovanniclient.client.features.inventorybuttons;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 
 public final class NeuButtonWidget extends ClickableWidget {
 
     private final UiButtonDef def;
-
-    private static final Identifier PAPER_ICON =
-            Identifier.of("minecraft", "textures/item/paper.png");
 
     public NeuButtonWidget(int x, int y, UiButtonDef def, boolean editMode) {
         super(x, y,
@@ -23,7 +18,6 @@ public final class NeuButtonWidget extends ClickableWidget {
         );
         this.def = def;
 
-        // In edit mode, selection is handled elsewhere; don't execute.
         this.active = !editMode && def != null && def.enabled;
         this.visible = def == null || def.visible;
     }
@@ -38,7 +32,6 @@ public final class NeuButtonWidget extends ClickableWidget {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.player == null) return;
 
-        // sendChatCommand expects NO leading slash.
         if (cmd.startsWith("/")) cmd = cmd.substring(1).trim();
         if (!cmd.isBlank()) client.player.networkHandler.sendChatCommand(cmd);
     }
@@ -73,15 +66,12 @@ public final class NeuButtonWidget extends ClickableWidget {
         // Placeholder: NO ICON
         if (emptyCommand) return;
 
-        // Icon
-        Identifier icon = safeIcon(def == null ? null : def.icon);
-        ctx.drawTexture(RenderPipelines.GUI_TEXTURED, icon, x + 1, y + 1, 0, 0, w - 2, h - 2, w - 2, h - 2);
-    }
+        // Icon (supports item:... and texture paths)
+        String raw = def == null ? null : def.icon;
+        if (raw == null || raw.isBlank()) raw = IconSpec.DEFAULT_TEXTURE;
 
-    private static Identifier safeIcon(String raw) {
-        if (raw == null || raw.isBlank()) return PAPER_ICON;
-        Identifier parsed = Identifier.tryParse(raw.trim());
-        return parsed != null ? parsed : PAPER_ICON;
+        // render at 16x16 centered-ish in 18x18
+        IconSpec.renderIcon(ctx, raw, x + 1, y + 1);
     }
 
     @Override
