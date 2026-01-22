@@ -6,6 +6,7 @@ import net.minecraft.text.Text;
 import sb.rocket.giovanniclient.client.config.ConfigManager;
 import sb.rocket.giovanniclient.client.features.inventorybuttons.InventoryButtonEditorFlow;
 import sb.rocket.giovanniclient.client.util.ScoreboardUtils;
+import sb.rocket.giovanniclient.client.util.TabListUtils;
 
 import java.util.List;
 
@@ -17,6 +18,7 @@ public final class ClientCommands {
         registerConfigAliases();
         registerSidebar();
         registerInventoryButtonsEditor();
+        registerTabDump();
     }
 
     private static void registerConfigAliases() {
@@ -55,6 +57,25 @@ public final class ClientCommands {
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) ->
                 dispatcher.register(ClientCommandManager.literal("gioeditbuttons").executes(ctx -> {
                     InventoryButtonEditorFlow.requestOpenFromCommand(ctx.getSource());
+                    return 1;
+                }))
+        );
+    }
+
+    private static void registerTabDump() {
+        ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) ->
+                dispatcher.register(ClientCommandManager.literal("tabdump").executes(ctx -> {
+                    List<String> lines = TabListUtils.getCleanedLines(true, true);
+
+                    if (lines.isEmpty()) {
+                        ctx.getSource().sendFeedback(Text.literal("No TAB list currently available (not in-world / not connected)."));
+                        return 0;
+                    }
+
+                    ctx.getSource().sendFeedback(Text.literal("--- TAB (Player List) ---"));
+                    for (String line : lines) ctx.getSource().sendFeedback(Text.literal(line));
+                    ctx.getSource().sendFeedback(Text.literal("-------------------------"));
+
                     return 1;
                 }))
         );

@@ -5,28 +5,32 @@ import sb.rocket.giovanniclient.client.features.AbstractFeature;
 
 public class PlayerLocator extends AbstractFeature {
 
-    // Would an enum with ALL the scoreboard locations be overkill? mmh...
+    // Area is the "Island" the player is in, the one written in TAB
+    // Location is more specific, and it's on the scoreboard
     private static String CURRENT_PLAYER_LOCATION = "None";
+    private static String CURRENT_PLAYER_AREA = "None";
     private int tick = 0;
 
-    @Override
-    public void onWorldLoad(MinecraftClient client) {
-        // loop: delay 3 seconds then try to read scoreboard
-    }
-
-    // Or maybe do this, I'll think about it
     @Override
     public void onTick(MinecraftClient client) {
         tick++;
 
         if (tick % 60 == 0) {
-            if (ScoreboardUtils.scoreboardContainsRaw("⏣"))
-                setPlayerLocation(stripLeadingSymbols(ScoreboardUtils.getRawLineThatContains("⏣")));
+            if (ScoreboardUtils.scoreboardContainsRaw("⏣")) {
+                setPlayerLocation(stripLeadingSymbols(ScoreboardUtils.getRawLineContaining("⏣")));
+            } else if (ScoreboardUtils.scoreboardContainsRaw("ф")) { // rift
+                setPlayerLocation(stripLeadingSymbols(ScoreboardUtils.getRawLineContaining("ф")));
+            } else setPlayerLocation("None");
+
+            if (TabListUtils.tabContainsRaw("Area")) {
+                setPlayerArea(stripLeadingSymbols(TabListUtils.getCleanLineContaining("Area")).substring(6));
+            } else setPlayerArea("None");
+
         }
 
         if (client != null && client.inGameHud != null && client.inGameHud.getChatHud() != null) {
             if (tick % 200 == 0)
-                Utils.debug("You are located in: " + CURRENT_PLAYER_LOCATION);
+                Utils.debug("You are located in: " + CURRENT_PLAYER_AREA + ", " + CURRENT_PLAYER_LOCATION);
         }
     }
 
@@ -38,8 +42,12 @@ public class PlayerLocator extends AbstractFeature {
         CURRENT_PLAYER_LOCATION = location;
     }
 
+    private static String getPlayerArea() { return CURRENT_PLAYER_AREA; }
+
+    private void setPlayerArea(String area) { CURRENT_PLAYER_AREA = area; }
+
     public static String stripLeadingSymbols(String input) {
-        return input.replaceFirst("^[\\s\\p{So}]+", "");
+        return input.replaceFirst("^[\\s\\p{So}ф]+", "");
     }
 
 }

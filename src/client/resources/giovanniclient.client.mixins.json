@@ -11,6 +11,7 @@
     "ClientPlayNetworkHandlerMixin",
     "EntityGlowColorOverrideMixin",
     "EntityGlowOverrideMixin",
+    "PlayerListHudAccessor",
     "UndoInvisibilityMixin",
     "invbuttons.HandledScreenAccessor",
     "invbuttons.HandledScreenInvButtonsInputMixin",

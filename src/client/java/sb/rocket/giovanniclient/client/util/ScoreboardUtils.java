@@ -144,7 +144,7 @@ public class ScoreboardUtils {
      * @param searchString The string to search for
      * @return The matching line, or null if not found
      */
-    public static String getRawLineThatContains(String searchString) {
+    public static String getRawLineContaining(String searchString) {
         return getCleanedSidebarLines().stream()
                 .filter(line -> line.contains(searchString))
                 .findFirst()
