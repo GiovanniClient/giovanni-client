@@ -50,4 +50,8 @@ public class PlayerLocator extends AbstractFeature {
         return input.replaceFirst("^[\\s\\p{So}ф]+", "");
     }
 
+    public static boolean isPlayerIn(String loc) {
+        return loc.equals(CURRENT_PLAYER_AREA) || loc.equals(CURRENT_PLAYER_LOCATION);
+    }
+
 }

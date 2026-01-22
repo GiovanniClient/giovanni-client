@@ -9,6 +9,7 @@ import sb.rocket.giovanniclient.client.features.fun.FunConfig;
 import sb.rocket.giovanniclient.client.features.inventorybuttons.InventoryButtonsConfig;
 import sb.rocket.giovanniclient.client.features.misc.MiscConfig;
 import sb.rocket.giovanniclient.client.features.render.RenderConfig;
+import sb.rocket.giovanniclient.client.features.rift.RiftConfig;
 import sb.rocket.giovanniclient.client.features.slayers.SlayersConfig;
 
 public class MainConfig extends Config {
@@ -29,6 +30,10 @@ public class MainConfig extends Config {
     @Expose
     @Category(name = "Slayers", desc = "QOL mods for different slayers")
     public SlayersConfig sc = new SlayersConfig();
+
+    @Expose
+    @Category(name = "Rift", desc = "easy rift for players who hate the only actually fun part of the game")
+    public RiftConfig riftconfig = new RiftConfig();
 
     @Expose
     @Category(name = "Render", desc = "See stuff you shouldn't :P")
