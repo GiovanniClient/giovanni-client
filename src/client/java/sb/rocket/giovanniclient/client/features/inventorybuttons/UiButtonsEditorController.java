@@ -4,7 +4,6 @@ import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
-import net.minecraft.text.Text;
 
 public final class UiButtonsEditorController {
 
@@ -13,30 +12,25 @@ public final class UiButtonsEditorController {
     private static boolean openPending = false;
     private static int reopenTicks = 0;
 
-    private static void requestOpen(MinecraftClient client, Runnable feedback) {
+    private static void requestOpen(MinecraftClient client) {
         if (client == null || client.player == null) return;
 
         UiButtonsEditorState.setEditMode(true);
         openPending = true;
         reopenTicks = 1;
-
-        if (feedback != null) feedback.run();
     }
 
     public static void requestOpenFromKeybind(MinecraftClient client) {
-        requestOpen(client, () -> client.player.sendMessage(Text.literal("Inventory Buttons Editor: ON"), false));
+        requestOpen(client);
     }
 
     public static void requestOpenFromCommand(FabricClientCommandSource source) {
         if (source == null) return;
 
         MinecraftClient client = source.getClient();
-        if (client == null || client.player == null) {
-            source.sendError(Text.literal("Player not available."));
-            return;
-        }
+        if (client == null || client.player == null) return;
 
-        requestOpen(client, () -> source.sendFeedback(Text.literal("Inventory Buttons Editor: ON")));
+        requestOpen(client);
     }
 
     public static void tickAutoDisableIfNotInInventory(MinecraftClient client) {

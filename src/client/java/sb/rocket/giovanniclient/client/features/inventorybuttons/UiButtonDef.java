@@ -1,7 +1,7 @@
 package sb.rocket.giovanniclient.client.features.inventorybuttons;
 
 public final class UiButtonDef {
-    public static final String DEFAULT_ICON = "minecraft:textures/item/paper.png";
+    public static final String DEFAULT_ICON = "minecraft:paper";
 
     public String id = "btn";
     public String screen = "inventory";
@@ -29,19 +29,5 @@ public final class UiButtonDef {
         if (tooltip == null) tooltip = "";
 
         return this;
-    }
-
-    public boolean isPlaceholder() {
-        return command == null || command.isBlank();
-    }
-
-    /**
-     * Se placeholder -> niente icona (così renderizzi “vuoto”).
-     * Se ha command ma icon vuota -> paper.
-     */
-    public String effectiveIcon() {
-        if (isPlaceholder()) return "";
-        if (icon == null || icon.isBlank()) return DEFAULT_ICON;
-        return icon;
     }
 }

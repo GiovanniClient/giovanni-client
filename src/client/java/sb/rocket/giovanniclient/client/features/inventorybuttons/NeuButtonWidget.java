@@ -66,9 +66,9 @@ public final class NeuButtonWidget extends ClickableWidget {
         // Placeholder: NO ICON
         if (emptyCommand) return;
 
-        // Icon (supports item:... and texture paths)
+        // Icon (supports bare item ids and stack specs)
         String raw = def == null ? null : def.icon;
-        if (raw == null || raw.isBlank()) raw = IconSpec.DEFAULT_TEXTURE;
+        if (raw == null || raw.isBlank()) raw = IconSpec.DEFAULT_ITEM_ID;
 
         // render at 16x16 centered-ish in 18x18
         IconSpec.renderIcon(ctx, raw, x + 1, y + 1);

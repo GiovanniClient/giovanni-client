@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -18,15 +19,14 @@ public final class UiButtonsConfigManager {
     private static final Path PATH = FabricLoader.getInstance()
             .getConfigDir().resolve("giovanniclient_buttons.json");
 
-    private static UiButtonsConfig config;
+    private static UiButtonsJsonConfig config;
 
     private UiButtonsConfigManager() {}
 
-    public static UiButtonsConfig get() {
+    public static UiButtonsJsonConfig get() {
         if (config == null) config = load();
         if (config.buttons == null) config.buttons = new ArrayList<>();
-        // normalizza entry (evita null / stringhe rotte dopo edit manuale json)
-        config.buttons.removeIf(b -> b == null);
+        config.buttons.removeIf(Objects::isNull);
         config.buttons.forEach(UiButtonDef::normalize);
         return config;
     }
@@ -39,9 +39,9 @@ public final class UiButtonsConfigManager {
         } catch (IOException ignored) {}
     }
 
-    private static UiButtonsConfig load() {
+    private static UiButtonsJsonConfig load() {
         if (!Files.exists(PATH)) {
-            UiButtonsConfig c = new UiButtonsConfig();
+            UiButtonsJsonConfig c = new UiButtonsJsonConfig();
 
             UiButtonDef editBtn = new UiButtonDef();
             editBtn.id = "inv_result_edit";
@@ -49,7 +49,7 @@ public final class UiButtonsConfigManager {
             editBtn.slot = "result";
             editBtn.command = "/gioeditbuttons";
             editBtn.tooltip = "Edit inventory buttons";
-            editBtn.icon = "minecraft:textures/block/crafting_table.png";
+            editBtn.icon = "minecraft:crafting_table";
             editBtn.w = 18;
             editBtn.h = 18;
             editBtn.visible = true;
@@ -63,15 +63,15 @@ public final class UiButtonsConfigManager {
         }
 
         try {
-            UiButtonsConfig loaded = GSON.fromJson(Files.readString(PATH), UiButtonsConfig.class);
-            if (loaded == null) loaded = new UiButtonsConfig();
+            UiButtonsJsonConfig loaded = GSON.fromJson(Files.readString(PATH), UiButtonsJsonConfig.class);
+            if (loaded == null) loaded = new UiButtonsJsonConfig();
             if (loaded.buttons == null) loaded.buttons = new ArrayList<>();
-            loaded.buttons.removeIf(b -> b == null);
+            loaded.buttons.removeIf(Objects::isNull);
             loaded.buttons.forEach(UiButtonDef::normalize);
             config = loaded;
             return loaded;
         } catch (Exception e) {
-            UiButtonsConfig fallback = new UiButtonsConfig();
+            UiButtonsJsonConfig fallback = new UiButtonsJsonConfig();
             fallback.buttons = new ArrayList<>();
             config = fallback;
             return fallback;
@@ -87,7 +87,7 @@ public final class UiButtonsConfigManager {
     }
 
     public static Optional<UiButtonDef> find(String screen, String slotId) {
-        UiButtonsConfig cfg = get();
+        UiButtonsJsonConfig cfg = get();
         String scr = canon(screen);
         String key = canon(slotId);
 
@@ -98,7 +98,7 @@ public final class UiButtonsConfigManager {
     }
 
     public static UiButtonDef getOrCreate(String screen, String slotId) {
-        UiButtonsConfig cfg = get();
+        UiButtonsJsonConfig cfg = get();
         String scr = canon(screen);
         String key = canon(slotId);
 
@@ -127,7 +127,7 @@ public final class UiButtonsConfigManager {
     }
 
     public static boolean remove(String screen, String slotId) {
-        UiButtonsConfig cfg = get();
+        UiButtonsJsonConfig cfg = get();
         UiButtonDef found = find(screen, slotId).orElse(null);
         if (found == null) return false;
         cfg.buttons.remove(found);

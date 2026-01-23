@@ -19,6 +19,7 @@ public final class ClientCommands {
         registerSidebar();
         registerInventoryButtonsEditor();
         registerTabDump();
+        registerClearButtons();
     }
 
     private static void registerConfigAliases() {
@@ -75,6 +76,30 @@ public final class ClientCommands {
                     ctx.getSource().sendFeedback(Text.literal("--- TAB (Player List) ---"));
                     for (String line : lines) ctx.getSource().sendFeedback(Text.literal(line));
                     ctx.getSource().sendFeedback(Text.literal("-------------------------"));
+
+                    return 1;
+                }))
+        );
+    }
+
+    private static void registerClearButtons() {
+        ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) ->
+                dispatcher.register(ClientCommandManager.literal("clearbuttons").executes(ctx -> {
+
+                    var cfg = sb.rocket.giovanniclient.client.features.inventorybuttons.UiButtonsConfigManager.get();
+
+                    if (cfg.buttons.isEmpty()) {
+                        ctx.getSource().sendFeedback(Text.literal("No inventory buttons to clear."));
+                        return 0;
+                    }
+
+                    int count = cfg.buttons.size();
+                    cfg.buttons.clear();
+                    sb.rocket.giovanniclient.client.features.inventorybuttons.UiButtonsConfigManager.save();
+
+                    ctx.getSource().sendFeedback(
+                            Text.literal("Cleared " + count + " inventory button(s).")
+                    );
 
                     return 1;
                 }))

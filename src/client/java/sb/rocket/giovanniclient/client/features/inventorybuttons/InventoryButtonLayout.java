@@ -47,22 +47,22 @@ public record InventoryButtonLayout(String id, int relX, int relY) {
         var s = new java.util.ArrayList<InventoryButtonLayout>();
 
         // Below crafting
-        s.add(new InventoryButtonLayout("below0", 87, 63));
+        //s.add(new InventoryButtonLayout("below0", 87, 63));
         s.add(new InventoryButtonLayout("below1", 87 + 21, 63));
         s.add(new InventoryButtonLayout("below2", 87 + 21 * 2, 63));
         s.add(new InventoryButtonLayout("below3", 87 + 21 * 3, 63));
 
         // Above crafting
-        s.add(new InventoryButtonLayout("above0", 87, 5));
+        //s.add(new InventoryButtonLayout("above0", 87, 5));
         s.add(new InventoryButtonLayout("above1", 87 + 21, 5));
         s.add(new InventoryButtonLayout("above2", 87 + 21 * 2, 5));
         s.add(new InventoryButtonLayout("above3", 87 + 21 * 3, 5));
 
         // Crafting square
-        s.add(new InventoryButtonLayout("craft00", 87, 25));
-        s.add(new InventoryButtonLayout("craft10", 87 + 18, 25));
-        s.add(new InventoryButtonLayout("craft01", 87, 25 + 18));
-        s.add(new InventoryButtonLayout("craft11", 87 + 18, 25 + 18));
+        s.add(new InventoryButtonLayout("craft00", 97, 25));
+        s.add(new InventoryButtonLayout("craft10", 97 + 18, 25));
+        s.add(new InventoryButtonLayout("craft01", 97, 25 + 18));
+        s.add(new InventoryButtonLayout("craft11", 97 + 18, 25 + 18));
 
         // Crafting result
         s.add(new InventoryButtonLayout("result", 143, 35));

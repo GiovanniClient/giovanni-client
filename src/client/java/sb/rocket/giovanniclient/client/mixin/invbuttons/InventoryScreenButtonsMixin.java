@@ -3,7 +3,6 @@ package sb.rocket.giovanniclient.client.mixin.invbuttons;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
-import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
@@ -14,12 +13,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import sb.rocket.giovanniclient.client.features.inventorybuttons.*;
 
+import java.util.function.Supplier;
+
 @Mixin(InventoryScreen.class)
 public abstract class InventoryScreenButtonsMixin {
 
     @Unique private TextFieldWidget giovanni$commandField;
     @Unique private TextFieldWidget giovanni$iconField;
-    @Unique private ButtonWidget giovanni$pickIconBtn;
 
     @Unique private String giovanni$lastSelectedSlot = null;
     @Unique private boolean giovanni$suppressSave = false;
@@ -29,21 +29,24 @@ public abstract class InventoryScreenButtonsMixin {
     @Unique private static final long SAVE_DEBOUNCE_MS = 250L;
 
     @Unique private static final int PANEL_W = 230;
+    @Unique private static final int PANEL_H = 120;
     @Unique private static final int FIELD_H = 18;
-    @Unique private static final int PANEL_OFFSET_X = 48;
     @Unique private static final int SLASH_PAD = 10;
+
+    @Unique private boolean giovanni$reiDropAttached = false;
 
     @Inject(method = "init", at = @At("HEAD"))
     private void giovanni$onInitHead(CallbackInfo ci) {
         giovanni$commandField = null;
         giovanni$iconField = null;
-        giovanni$pickIconBtn = null;
 
         giovanni$lastSelectedSlot = null;
         giovanni$suppressSave = false;
 
         giovanni$dirty = false;
         giovanni$lastEditMs = 0L;
+
+        giovanni$reiDropAttached = false;
     }
 
     @Inject(method = "init", at = @At("TAIL"))
@@ -58,6 +61,7 @@ public abstract class InventoryScreenButtonsMixin {
         }
     }
 
+    // Salva su tick (NON render)
     @Inject(method = "handledScreenTick", at = @At("TAIL"))
     private void giovanni$onTick(CallbackInfo ci) {
         if (!UiButtonsConfigManager.isEditMode()) return;
@@ -80,28 +84,25 @@ public abstract class InventoryScreenButtonsMixin {
         }
 
         int[] p = giovanni$panelPos(self);
-        int px = p[0], py = p[1];
+        int px = p[0], py = p[1] - 16;
 
-        ctx.fill(px, py, px + PANEL_W, py + 170, 0xAA000000);
-        ctx.drawText(self.getTextRenderer(), "Inventory Button Editor", px + 10, py + 10, 0xFFFFFFFF, false);
-        ctx.drawText(self.getTextRenderer(), "Slot: " + UiButtonsConfigManager.getSelectedSlot(), px + 10, py + 28, 0xFFCCCCCC, false);
+        // Panel background
+        ctx.fill(px, py, px + PANEL_W, py + PANEL_H, 0xAA000000);
+
+        // Title + labels
+        ctx.drawText(self.getTextRenderer(), "Inventory Button Editor", px + 10, py + 8, 0xFFFFFFFF, false);
+        ctx.drawText(self.getTextRenderer(), "Slot: " + UiButtonsConfigManager.getSelectedSlot(), px + 10, py + 24, 0xFFCCCCCC, false);
+
         ctx.drawText(self.getTextRenderer(), "Command:", px + 10, py + 40, 0xFFCCCCCC, false);
-        ctx.drawText(self.getTextRenderer(), "Icon:", px + 10, py + 85, 0xFFCCCCCC, false);
+        ctx.drawText(self.getTextRenderer(), "Icon:", px + 10, py + 72, 0xFFCCCCCC, false);
 
+        // Hint for icon field (user-friendly)
+        ctx.drawText(self.getTextRenderer(), "Tip: drag an item from REI into the icon box.", px + 10, py + 104, 0xFF888888, false);
+
+        // Slash for command
         int sx = giovanni$commandField.getX() - 8;
         int sy = giovanni$commandField.getY() + (FIELD_H - self.getTextRenderer().fontHeight) / 2;
-        ctx.drawText(self.getTextRenderer(), "/", sx, sy + 2, 0xFFFFFFFF, false);
-
-        String raw = giovanni$iconField.getText() == null ? "" : giovanni$iconField.getText().trim();
-        if (raw.isBlank()) raw = IconSpec.DEFAULT_TEXTURE;
-
-        int previewX = px + 10;
-        int previewY = py + 125;
-
-        ctx.fill(previewX - 1, previewY - 1, previewX + 18 + 1, previewY + 18 + 1, 0xFF555555);
-        ctx.fill(previewX, previewY, previewX + 18, previewY + 18, 0xAA2A2A2A);
-        IconSpec.renderIcon(ctx, raw, previewX + 1, previewY + 1);
-        ctx.drawText(self.getTextRenderer(), "Preview", previewX + 24, previewY + 5, 0xFFCCCCCC, false);
+        ctx.drawText(self.getTextRenderer(), "/", sx + 1, sy + 1, 0xFFFFFFFF, false);
     }
 
     @Unique
@@ -113,8 +114,15 @@ public abstract class InventoryScreenButtonsMixin {
 
         if (edit) {
             for (InventoryButtonLayout slot : InventoryButtonLayout.all()) {
-                UiButtonDef def = UiButtonsConfigManager.findInventoryDef(slot.id())
-                        .orElseGet(() -> giovanni$placeholderDef(slot.id()));
+                UiButtonDef def = UiButtonsConfigManager.getOrCreateInventoryDef(slot.id());
+
+                if (def.id == null || def.id.isBlank()) def.id = "inv_" + slot.id();
+                def.screen = "inventory";
+                def.slot = slot.id();
+                def.visible = true;
+                def.enabled = true;
+                def.w = 18;
+                def.h = 18;
 
                 int x = guiX + slot.relX();
                 int y = guiY + slot.relY();
@@ -125,7 +133,7 @@ public abstract class InventoryScreenButtonsMixin {
             return;
         }
 
-        UiButtonsConfig cfg = UiButtonsConfigManager.get();
+        UiButtonsJsonConfig cfg = UiButtonsConfigManager.get();
         for (UiButtonDef def : cfg.buttons) {
             if (def == null) continue;
             if (!"inventory".equalsIgnoreCase(def.screen)) continue;
@@ -146,55 +154,98 @@ public abstract class InventoryScreenButtonsMixin {
     @Unique
     private void giovanni$ensureWidgets(InventoryScreen self) {
         if (!UiButtonsConfigManager.isEditMode()) return;
-
-        if (giovanni$commandField != null && giovanni$iconField != null && giovanni$pickIconBtn != null) return;
+        if (giovanni$commandField != null && giovanni$iconField != null) return;
 
         int[] p = giovanni$panelPos(self);
         int px = p[0], py = p[1];
 
         giovanni$commandField = new TextFieldWidget(
                 self.getTextRenderer(),
-                px + 10 + SLASH_PAD, py + 50,
+                px + 10 + SLASH_PAD, py + 50 - 16,
                 PANEL_W - 20 - SLASH_PAD, FIELD_H,
                 Text.literal("Command")
         );
 
         giovanni$iconField = new TextFieldWidget(
                 self.getTextRenderer(),
-                px + 10, py + 95,
-                PANEL_W - 20 - 44, FIELD_H,
+                px + 10, py + 82 - 16,
+                PANEL_W - 20, FIELD_H,
                 Text.literal("Icon")
         );
 
-        giovanni$pickIconBtn = ButtonWidget.builder(Text.literal("Pick"), b -> giovanni$openIconPicker(self))
-                .dimensions(px + PANEL_W - 10 - 40, py + 95, 40, FIELD_H)
-                .build();
-
         giovanni$commandField.setMaxLength(250);
-        giovanni$iconField.setMaxLength(4096);
+        giovanni$iconField.setMaxLength(8192);
 
         giovanni$loadFields();
         giovanni$lastSelectedSlot = UiButtonsConfigManager.getSelectedSlot();
 
-        giovanni$commandField.setChangedListener(s -> giovanni$markDirty());
-        giovanni$iconField.setChangedListener(s -> giovanni$markDirty());
+        // LIVE sync
+        giovanni$commandField.setChangedListener(s -> giovanni$onFieldsChangedLive());
+        giovanni$iconField.setChangedListener(s -> giovanni$onFieldsChangedLive());
 
         ((ScreenInvoker) self).giovanni$addDrawableChild(giovanni$commandField);
         ((ScreenInvoker) self).giovanni$addDrawableChild(giovanni$iconField);
-        ((ScreenInvoker) self).giovanni$addDrawableChild(giovanni$pickIconBtn);
 
-        // REI drag-drop support (safe: reflection, no hard dependency)
-        giovanni$tryAttachReiDrop(self);
+        if (!giovanni$reiDropAttached) {
+            giovanni$reiDropAttached = true;
+            giovanni$tryAttachReiDrop(self);
+        }
+    }
+
+    @Unique
+    private void giovanni$onFieldsChangedLive() {
+        if (giovanni$suppressSave) return;
+
+        giovanni$dirty = true;
+        giovanni$lastEditMs = System.currentTimeMillis();
+
+        giovanni$syncDefFromFieldsInMemory();
+    }
+
+    @Unique
+    private void giovanni$syncDefFromFieldsInMemory() {
+        if (!UiButtonsConfigManager.isEditMode()) return;
+        if (giovanni$commandField == null || giovanni$iconField == null) return;
+
+        String slotId = UiButtonsConfigManager.getSelectedSlot();
+        UiButtonDef def = UiButtonsConfigManager.getOrCreateInventoryDef(slotId);
+
+        String cmd = giovanni$commandField.getText() == null ? "" : giovanni$commandField.getText().trim();
+        String icon = giovanni$iconField.getText() == null ? "" : giovanni$iconField.getText().trim();
+
+        def.command = cmd;
+        def.icon = icon;
     }
 
     @Unique
     private void giovanni$tryAttachReiDrop(InventoryScreen self) {
         try {
             Class<?> clazz = Class.forName("sb.rocket.giovanniclient.client.compat.ReiIconDropSupport");
+
+            // Preferred signature (with bounds): attachIfPresent(InventoryScreen, Supplier<int[]>, Consumer<ItemStack>)
+            try {
+                Supplier<int[]> bounds = () -> {
+                    if (giovanni$iconField == null) return new int[]{0, 0, 0, 0};
+                    return new int[]{
+                            giovanni$iconField.getX(),
+                            giovanni$iconField.getY(),
+                            giovanni$iconField.getWidth(),
+                            giovanni$iconField.getHeight()
+                    };
+                };
+
+                clazz.getMethod("attachIfPresent", InventoryScreen.class, java.util.function.Supplier.class, java.util.function.Consumer.class)
+                        .invoke(null, self, bounds, (java.util.function.Consumer<ItemStack>) this::giovanni$applyDroppedStackAsIcon);
+
+                System.out.println("[GiovanniClient] REI drop attached (bounds)");
+                return;
+            } catch (Throwable ignored) {
+                // fallback below
+            }
+
+            // Fallback signature: attachIfPresent(InventoryScreen, Consumer<ItemStack>)
             clazz.getMethod("attachIfPresent", InventoryScreen.class, java.util.function.Consumer.class)
-                    .invoke(null, self,
-                            (java.util.function.Consumer<net.minecraft.item.ItemStack>) this::giovanni$applyDroppedStackAsIcon
-                    );
+                    .invoke(null, self, (java.util.function.Consumer<ItemStack>) this::giovanni$applyDroppedStackAsIcon);
 
             System.out.println("[GiovanniClient] REI drop attached");
         } catch (Throwable t) {
@@ -203,7 +254,7 @@ public abstract class InventoryScreenButtonsMixin {
     }
 
     @Unique
-    private void giovanni$applyDroppedStackAsIcon(net.minecraft.item.ItemStack stack) {
+    private void giovanni$applyDroppedStackAsIcon(ItemStack stack) {
         if (giovanni$iconField == null) return;
 
         String spec = IconSpec.encodeStackSpec(stack);
@@ -215,30 +266,20 @@ public abstract class InventoryScreenButtonsMixin {
             giovanni$suppressSave = false;
         }
 
-        giovanni$markDirty();
-        // se vuoi salvarlo immediatamente (consigliato):
+        String slotId = UiButtonsConfigManager.getSelectedSlot();
+        UiButtonDef def = UiButtonsConfigManager.getOrCreateInventoryDef(slotId);
+
+        def.icon = spec;
+
+        if (giovanni$commandField != null) {
+            String cmd = giovanni$commandField.getText() == null ? "" : giovanni$commandField.getText().trim();
+            def.command = cmd;
+        }
+
+        UiButtonsConfigManager.save();
+
         giovanni$dirty = false;
-        giovanni$persistFromFields();
-    }
-
-
-    @Unique
-    private void giovanni$openIconPicker(InventoryScreen self) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        if (client == null) return;
-
-        client.execute(() -> client.setScreen(new IconPickerScreen(self, picked -> {
-            if (giovanni$iconField == null) return;
-
-            giovanni$suppressSave = true;
-            try {
-                giovanni$iconField.setText(picked);
-            } finally {
-                giovanni$suppressSave = false;
-            }
-            giovanni$markDirty();
-            giovanni$forceFlushSave();
-        })));
+        giovanni$lastEditMs = System.currentTimeMillis();
     }
 
     @Unique
@@ -251,22 +292,16 @@ public abstract class InventoryScreenButtonsMixin {
         giovanni$suppressSave = true;
         try {
             giovanni$commandField.setText(def == null || def.command == null ? "" : def.command);
-
-            // support "icon:" alias: normalizziamo a quello che l'utente ha scritto, ma se vuoto lasciamo vuoto
-            String icon = (def == null || def.icon == null) ? "" : def.icon;
-            giovanni$iconField.setText(icon);
+            giovanni$iconField.setText(def == null || def.icon == null ? "" : def.icon);
         } finally {
             giovanni$suppressSave = false;
         }
 
-        giovanni$dirty = false;
-    }
+        UiButtonDef stable = UiButtonsConfigManager.getOrCreateInventoryDef(slotId);
+        if (stable.screen == null || stable.screen.isBlank()) stable.screen = "inventory";
+        stable.slot = slotId;
 
-    @Unique
-    private void giovanni$markDirty() {
-        if (giovanni$suppressSave) return;
-        giovanni$dirty = true;
-        giovanni$lastEditMs = System.currentTimeMillis();
+        giovanni$dirty = false;
     }
 
     @Unique
@@ -274,14 +309,7 @@ public abstract class InventoryScreenButtonsMixin {
         if (!giovanni$dirty) return;
         long now = System.currentTimeMillis();
         if (now - giovanni$lastEditMs < SAVE_DEBOUNCE_MS) return;
-        giovanni$dirty = false;
-        giovanni$persistFromFields();
-    }
 
-    @Unique
-    private void giovanni$forceFlushSave() {
-        if (!UiButtonsConfigManager.isEditMode()) return;
-        if (giovanni$commandField == null || giovanni$iconField == null) return;
         giovanni$dirty = false;
         giovanni$persistFromFields();
     }
@@ -296,14 +324,15 @@ public abstract class InventoryScreenButtonsMixin {
         String cmd = giovanni$commandField.getText() == null ? "" : giovanni$commandField.getText().trim();
         String icon = giovanni$iconField.getText() == null ? "" : giovanni$iconField.getText().trim();
 
-        if (cmd.isEmpty()) {
+        if (cmd.isEmpty() && icon.isEmpty()) {
             boolean removed = UiButtonsConfigManager.removeInventoryDef(slotId);
             if (removed) UiButtonsConfigManager.save();
             return;
         }
 
-        if (icon.isEmpty()) {
-            icon = IconSpec.DEFAULT_TEXTURE;
+        // If command present but icon empty -> default
+        if (!cmd.isEmpty() && icon.isEmpty()) {
+            icon = IconSpec.DEFAULT_ITEM_ID;
             giovanni$suppressSave = true;
             try {
                 giovanni$iconField.setText(icon);
@@ -314,26 +343,15 @@ public abstract class InventoryScreenButtonsMixin {
 
         UiButtonDef def = UiButtonsConfigManager.getOrCreateInventoryDef(slotId);
         def.command = cmd;
-
-        // accetta: item:, icon:, stack:, oppure texture id
         def.icon = icon;
+        def.screen = "inventory";
+        def.slot = slotId;
+        def.visible = true;
+        def.enabled = true;
+        def.w = 18;
+        def.h = 18;
 
         UiButtonsConfigManager.save();
-    }
-
-    @Unique
-    private static UiButtonDef giovanni$placeholderDef(String slotId) {
-        UiButtonDef d = new UiButtonDef();
-        d.id = "placeholder_" + slotId;
-        d.screen = "inventory";
-        d.slot = slotId;
-        d.command = "";
-        d.icon = "";
-        d.visible = true;
-        d.enabled = true;
-        d.w = 18;
-        d.h = 18;
-        return d;
     }
 
     @Unique
@@ -342,9 +360,12 @@ public abstract class InventoryScreenButtonsMixin {
         int guiY = ((HandledScreenAccessor) self).giovanni$getY();
         int bgW = ((HandledScreenAccessor) self).giovanni$getBackgroundWidth();
 
-        int wantedX = guiX + bgW + PANEL_OFFSET_X;
-        int panelX = Math.min(wantedX, self.width - PANEL_W - 8);
-        int panelY = guiY;
+        // Center panel above the inventory background
+        int panelX = guiX + (bgW / 2) - (PANEL_W / 2);
+        panelX = Math.max(8, Math.min(panelX, self.width - PANEL_W - 8));
+
+        int panelY = guiY - PANEL_H - 8;
+        panelY = Math.max(8, panelY);
 
         return new int[]{panelX, panelY};
     }
