@@ -14,11 +14,11 @@
     "PlayerListHudAccessor",
     "UndoInvisibilityMixin",
     "invbuttons.HandledScreenAccessor",
-    "invbuttons.HandledScreenInvButtonsInputMixin",
-    "invbuttons.InventoryScreenInvButtonsMixin",
-    "invbuttons.InventoryScreenMaskMixin",
-    "invbuttons.InventoryScreenMixin",
-    "invbuttons.RecipeBookScreenMixin",
+    "invbuttons.HandledScreenButtonsInputMixin",
+    "invbuttons.InventoryScreenButtonsMixin",
+    "invbuttons.InventoryScreenCraftingMaskMixin",
+    "invbuttons.InventoryScreenCraftingSuppressionMixin",
+    "invbuttons.RecipeBookDisableMixin",
     "invbuttons.ScreenInvoker",
     "invbuttons.SlotAccessor"
   ]

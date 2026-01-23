@@ -2,7 +2,7 @@ package sb.rocket.giovanniclient.client.bootstrap;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import sb.rocket.giovanniclient.client.config.ConfigManager;
-import sb.rocket.giovanniclient.client.features.inventorybuttons.InventoryButtonEditorFlow;
+import sb.rocket.giovanniclient.client.features.inventorybuttons.UiButtonsEditorController;
 
 public final class ClientTicks {
 
@@ -27,14 +27,14 @@ public final class ClientTicks {
             // Keybind: open inventory button editor
             var kb = ClientKeybinds.openInvButtonEditor();
             if (kb != null) {
-                while (kb.wasPressed()) InventoryButtonEditorFlow.requestOpenFromKeybind(client);
+                while (kb.wasPressed()) UiButtonsEditorController.requestOpenFromKeybind(client);
             }
         });
 
         // Edit-mode auto close policy
-        ClientTickEvents.END_CLIENT_TICK.register(InventoryButtonEditorFlow::tickAutoDisableIfNotInInventory);
+        ClientTickEvents.END_CLIENT_TICK.register(UiButtonsEditorController::tickAutoDisableIfNotInInventory);
 
         // Pending flow that safely forces InventoryScreen init/reopen while editMode=true
-        ClientTickEvents.END_CLIENT_TICK.register(InventoryButtonEditorFlow::tickPendingOpenFlow);
+        ClientTickEvents.END_CLIENT_TICK.register(UiButtonsEditorController::tickPendingOpenFlow);
     }
 }

@@ -6,21 +6,25 @@ import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.text.Text;
 
-public final class InventoryButtonEditorFlow {
+public final class UiButtonsEditorController {
 
-    private InventoryButtonEditorFlow() {}
+    private UiButtonsEditorController() {}
 
     private static boolean openPending = false;
     private static int reopenTicks = 0;
 
-    public static void requestOpenFromKeybind(MinecraftClient client) {
+    private static void requestOpen(MinecraftClient client, Runnable feedback) {
         if (client == null || client.player == null) return;
 
-        UiButtonsConfigManager.setEditMode(true);
+        UiButtonsEditorState.setEditMode(true);
         openPending = true;
         reopenTicks = 1;
 
-        client.player.sendMessage(Text.literal("Inventory Buttons Editor: ON"), false);
+        if (feedback != null) feedback.run();
+    }
+
+    public static void requestOpenFromKeybind(MinecraftClient client) {
+        requestOpen(client, () -> client.player.sendMessage(Text.literal("Inventory Buttons Editor: ON"), false));
     }
 
     public static void requestOpenFromCommand(FabricClientCommandSource source) {
@@ -32,29 +36,24 @@ public final class InventoryButtonEditorFlow {
             return;
         }
 
-        UiButtonsConfigManager.setEditMode(true);
-        openPending = true;
-        reopenTicks = 1;
-
-        source.sendFeedback(Text.literal("Inventory Buttons Editor: ON"));
+        requestOpen(client, () -> source.sendFeedback(Text.literal("Inventory Buttons Editor: ON")));
     }
 
     public static void tickAutoDisableIfNotInInventory(MinecraftClient client) {
         if (client == null) return;
-        if (!UiButtonsConfigManager.isEditMode()) return;
+        if (!UiButtonsEditorState.isEditMode()) return;
         if (openPending) return;
 
         if (!(client.currentScreen instanceof InventoryScreen)) {
-            UiButtonsConfigManager.setEditMode(false);
+            UiButtonsEditorState.setEditMode(false);
         }
     }
 
     public static void tickPendingOpenFlow(MinecraftClient client) {
-        if (client == null) return;
+        if (client == null || client.player == null) return;
         if (!openPending) return;
-        if (client.player == null) return;
 
-        if (!UiButtonsConfigManager.isEditMode()) {
+        if (!UiButtonsEditorState.isEditMode()) {
             openPending = false;
             return;
         }
@@ -66,8 +65,7 @@ public final class InventoryButtonEditorFlow {
             return;
         }
 
-        if (reopenTicks > 0) {
-            reopenTicks--;
+        if (reopenTicks-- > 0) {
             client.execute(() -> client.setScreen(new InventoryScreen(client.player)));
             return;
         }

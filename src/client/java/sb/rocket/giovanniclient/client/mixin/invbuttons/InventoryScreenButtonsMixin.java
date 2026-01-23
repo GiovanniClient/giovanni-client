@@ -5,6 +5,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -14,13 +15,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import sb.rocket.giovanniclient.client.features.inventorybuttons.*;
 
 @Mixin(InventoryScreen.class)
-public abstract class InventoryScreenInvButtonsMixin {
+public abstract class InventoryScreenButtonsMixin {
 
     @Unique private TextFieldWidget giovanni$commandField;
     @Unique private TextFieldWidget giovanni$iconField;
     @Unique private ButtonWidget giovanni$pickIconBtn;
 
-    @Unique private boolean giovanni$widgetsAdded = false;
     @Unique private String giovanni$lastSelectedSlot = null;
     @Unique private boolean giovanni$suppressSave = false;
 
@@ -33,8 +33,21 @@ public abstract class InventoryScreenInvButtonsMixin {
     @Unique private static final int PANEL_OFFSET_X = 48;
     @Unique private static final int SLASH_PAD = 10;
 
+    @Inject(method = "init", at = @At("HEAD"))
+    private void giovanni$onInitHead(CallbackInfo ci) {
+        giovanni$commandField = null;
+        giovanni$iconField = null;
+        giovanni$pickIconBtn = null;
+
+        giovanni$lastSelectedSlot = null;
+        giovanni$suppressSave = false;
+
+        giovanni$dirty = false;
+        giovanni$lastEditMs = 0L;
+    }
+
     @Inject(method = "init", at = @At("TAIL"))
-    private void giovanni$onInit(CallbackInfo ci) {
+    private void giovanni$onInitTail(CallbackInfo ci) {
         InventoryScreen self = (InventoryScreen) (Object) this;
         if (self.getScreenHandler() == null) return;
 
@@ -45,6 +58,12 @@ public abstract class InventoryScreenInvButtonsMixin {
         }
     }
 
+    @Inject(method = "handledScreenTick", at = @At("TAIL"))
+    private void giovanni$onTick(CallbackInfo ci) {
+        if (!UiButtonsConfigManager.isEditMode()) return;
+        giovanni$flushSaveIfDue();
+    }
+
     @Inject(method = "render", at = @At("TAIL"))
     private void giovanni$onRender(DrawContext ctx, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         if (!UiButtonsConfigManager.isEditMode()) return;
@@ -52,15 +71,13 @@ public abstract class InventoryScreenInvButtonsMixin {
         InventoryScreen self = (InventoryScreen) (Object) this;
 
         giovanni$ensureWidgets(self);
-        if (!giovanni$widgetsAdded || giovanni$commandField == null || giovanni$iconField == null) return;
+        if (giovanni$commandField == null || giovanni$iconField == null) return;
 
         String current = UiButtonsConfigManager.getSelectedSlot();
         if (giovanni$lastSelectedSlot == null || !giovanni$lastSelectedSlot.equalsIgnoreCase(current)) {
             giovanni$lastSelectedSlot = current;
             giovanni$loadFields();
         }
-
-        giovanni$flushSaveIfDue();
 
         int[] p = giovanni$panelPos(self);
         int px = p[0], py = p[1];
@@ -75,14 +92,12 @@ public abstract class InventoryScreenInvButtonsMixin {
         int sy = giovanni$commandField.getY() + (FIELD_H - self.getTextRenderer().fontHeight) / 2;
         ctx.drawText(self.getTextRenderer(), "/", sx, sy + 2, 0xFFFFFFFF, false);
 
-        // Icon preview (below icon field)
         String raw = giovanni$iconField.getText() == null ? "" : giovanni$iconField.getText().trim();
         if (raw.isBlank()) raw = IconSpec.DEFAULT_TEXTURE;
 
         int previewX = px + 10;
         int previewY = py + 125;
 
-        // frame
         ctx.fill(previewX - 1, previewY - 1, previewX + 18 + 1, previewY + 18 + 1, 0xFF555555);
         ctx.fill(previewX, previewY, previewX + 18, previewY + 18, 0xAA2A2A2A);
         IconSpec.renderIcon(ctx, raw, previewX + 1, previewY + 1);
@@ -97,7 +112,7 @@ public abstract class InventoryScreenInvButtonsMixin {
         boolean edit = UiButtonsConfigManager.isEditMode();
 
         if (edit) {
-            for (InventoryButtonSlot slot : InventoryButtonSlot.all()) {
+            for (InventoryButtonLayout slot : InventoryButtonLayout.all()) {
                 UiButtonDef def = UiButtonsConfigManager.findInventoryDef(slot.id())
                         .orElseGet(() -> giovanni$placeholderDef(slot.id()));
 
@@ -117,7 +132,7 @@ public abstract class InventoryScreenInvButtonsMixin {
             if (!def.visible) continue;
             if (def.command == null || def.command.isBlank()) continue;
 
-            InventoryButtonSlot slot = InventoryButtonSlot.fromId(def.slot);
+            InventoryButtonLayout slot = InventoryButtonLayout.fromId(def.slot);
             if (slot == null) continue;
 
             int x = guiX + slot.relX();
@@ -131,7 +146,8 @@ public abstract class InventoryScreenInvButtonsMixin {
     @Unique
     private void giovanni$ensureWidgets(InventoryScreen self) {
         if (!UiButtonsConfigManager.isEditMode()) return;
-        if (giovanni$widgetsAdded) return;
+
+        if (giovanni$commandField != null && giovanni$iconField != null && giovanni$pickIconBtn != null) return;
 
         int[] p = giovanni$panelPos(self);
         int px = p[0], py = p[1];
@@ -142,10 +158,11 @@ public abstract class InventoryScreenInvButtonsMixin {
                 PANEL_W - 20 - SLASH_PAD, FIELD_H,
                 Text.literal("Command")
         );
+
         giovanni$iconField = new TextFieldWidget(
                 self.getTextRenderer(),
                 px + 10, py + 95,
-                PANEL_W - 20 - 44, FIELD_H, // leave space for Pick
+                PANEL_W - 20 - 44, FIELD_H,
                 Text.literal("Icon")
         );
 
@@ -154,7 +171,7 @@ public abstract class InventoryScreenInvButtonsMixin {
                 .build();
 
         giovanni$commandField.setMaxLength(250);
-        giovanni$iconField.setMaxLength(2048);
+        giovanni$iconField.setMaxLength(4096);
 
         giovanni$loadFields();
         giovanni$lastSelectedSlot = UiButtonsConfigManager.getSelectedSlot();
@@ -166,8 +183,44 @@ public abstract class InventoryScreenInvButtonsMixin {
         ((ScreenInvoker) self).giovanni$addDrawableChild(giovanni$iconField);
         ((ScreenInvoker) self).giovanni$addDrawableChild(giovanni$pickIconBtn);
 
-        giovanni$widgetsAdded = true;
+        // REI drag-drop support (safe: reflection, no hard dependency)
+        giovanni$tryAttachReiDrop(self);
     }
+
+    @Unique
+    private void giovanni$tryAttachReiDrop(InventoryScreen self) {
+        try {
+            Class<?> clazz = Class.forName("sb.rocket.giovanniclient.client.compat.ReiIconDropSupport");
+            clazz.getMethod("attachIfPresent", InventoryScreen.class, java.util.function.Consumer.class)
+                    .invoke(null, self,
+                            (java.util.function.Consumer<net.minecraft.item.ItemStack>) this::giovanni$applyDroppedStackAsIcon
+                    );
+
+            System.out.println("[GiovanniClient] REI drop attached");
+        } catch (Throwable t) {
+            System.out.println("[GiovanniClient] REI drop NOT attached: " + t.getClass().getSimpleName() + " " + t.getMessage());
+        }
+    }
+
+    @Unique
+    private void giovanni$applyDroppedStackAsIcon(net.minecraft.item.ItemStack stack) {
+        if (giovanni$iconField == null) return;
+
+        String spec = IconSpec.encodeStackSpec(stack);
+
+        giovanni$suppressSave = true;
+        try {
+            giovanni$iconField.setText(spec);
+        } finally {
+            giovanni$suppressSave = false;
+        }
+
+        giovanni$markDirty();
+        // se vuoi salvarlo immediatamente (consigliato):
+        giovanni$dirty = false;
+        giovanni$persistFromFields();
+    }
+
 
     @Unique
     private void giovanni$openIconPicker(InventoryScreen self) {
@@ -184,9 +237,9 @@ public abstract class InventoryScreenInvButtonsMixin {
                 giovanni$suppressSave = false;
             }
             giovanni$markDirty();
+            giovanni$forceFlushSave();
         })));
     }
-
 
     @Unique
     private void giovanni$loadFields() {
@@ -198,7 +251,10 @@ public abstract class InventoryScreenInvButtonsMixin {
         giovanni$suppressSave = true;
         try {
             giovanni$commandField.setText(def == null || def.command == null ? "" : def.command);
-            giovanni$iconField.setText(def == null || def.icon == null ? "" : def.icon);
+
+            // support "icon:" alias: normalizziamo a quello che l'utente ha scritto, ma se vuoto lasciamo vuoto
+            String icon = (def == null || def.icon == null) ? "" : def.icon;
+            giovanni$iconField.setText(icon);
         } finally {
             giovanni$suppressSave = false;
         }
@@ -223,14 +279,22 @@ public abstract class InventoryScreenInvButtonsMixin {
     }
 
     @Unique
+    private void giovanni$forceFlushSave() {
+        if (!UiButtonsConfigManager.isEditMode()) return;
+        if (giovanni$commandField == null || giovanni$iconField == null) return;
+        giovanni$dirty = false;
+        giovanni$persistFromFields();
+    }
+
+    @Unique
     private void giovanni$persistFromFields() {
         if (giovanni$suppressSave) return;
         if (giovanni$commandField == null || giovanni$iconField == null) return;
 
         String slotId = UiButtonsConfigManager.getSelectedSlot();
 
-        String cmd = giovanni$commandField.getText().trim();
-        String icon = giovanni$iconField.getText().trim();
+        String cmd = giovanni$commandField.getText() == null ? "" : giovanni$commandField.getText().trim();
+        String icon = giovanni$iconField.getText() == null ? "" : giovanni$iconField.getText().trim();
 
         if (cmd.isEmpty()) {
             boolean removed = UiButtonsConfigManager.removeInventoryDef(slotId);
@@ -238,7 +302,6 @@ public abstract class InventoryScreenInvButtonsMixin {
             return;
         }
 
-        // If empty icon: choose a sane default (keep your previous behavior)
         if (icon.isEmpty()) {
             icon = IconSpec.DEFAULT_TEXTURE;
             giovanni$suppressSave = true;
@@ -251,7 +314,10 @@ public abstract class InventoryScreenInvButtonsMixin {
 
         UiButtonDef def = UiButtonsConfigManager.getOrCreateInventoryDef(slotId);
         def.command = cmd;
+
+        // accetta: item:, icon:, stack:, oppure texture id
         def.icon = icon;
+
         UiButtonsConfigManager.save();
     }
 

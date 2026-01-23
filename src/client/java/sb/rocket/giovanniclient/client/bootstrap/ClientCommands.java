@@ -4,7 +4,7 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.minecraft.text.Text;
 import sb.rocket.giovanniclient.client.config.ConfigManager;
-import sb.rocket.giovanniclient.client.features.inventorybuttons.InventoryButtonEditorFlow;
+import sb.rocket.giovanniclient.client.features.inventorybuttons.UiButtonsEditorController;
 import sb.rocket.giovanniclient.client.util.ScoreboardUtils;
 import sb.rocket.giovanniclient.client.util.TabListUtils;
 
@@ -56,7 +56,7 @@ public final class ClientCommands {
     private static void registerInventoryButtonsEditor() {
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) ->
                 dispatcher.register(ClientCommandManager.literal("gioeditbuttons").executes(ctx -> {
-                    InventoryButtonEditorFlow.requestOpenFromCommand(ctx.getSource());
+                    UiButtonsEditorController.requestOpenFromCommand(ctx.getSource());
                     return 1;
                 }))
         );

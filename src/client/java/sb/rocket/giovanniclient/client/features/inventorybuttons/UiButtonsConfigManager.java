@@ -7,11 +7,12 @@ import net.fabricmc.loader.api.FabricLoader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public final class UiButtonsConfigManager {
-    private static boolean editMode = false;
-    private static String selectedSlot = "right0"; // default
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final Path PATH = FabricLoader.getInstance()
@@ -23,7 +24,10 @@ public final class UiButtonsConfigManager {
 
     public static UiButtonsConfig get() {
         if (config == null) config = load();
-        if (config.buttons == null) config.buttons = new java.util.ArrayList<>();
+        if (config.buttons == null) config.buttons = new ArrayList<>();
+        // normalizza entry (evita null / stringhe rotte dopo edit manuale json)
+        config.buttons.removeIf(b -> b == null);
+        config.buttons.forEach(UiButtonDef::normalize);
         return config;
     }
 
@@ -36,15 +40,13 @@ public final class UiButtonsConfigManager {
     }
 
     private static UiButtonsConfig load() {
-        // No config file yet: create defaults and persist them once.
         if (!Files.exists(PATH)) {
             UiButtonsConfig c = new UiButtonsConfig();
 
-            // Default editor button on crafting result slot
             UiButtonDef editBtn = new UiButtonDef();
             editBtn.id = "inv_result_edit";
             editBtn.screen = "inventory";
-            editBtn.slot = "result"; // matches InventoryButtonSlot("result", 143, 35)
+            editBtn.slot = "result";
             editBtn.command = "/gioeditbuttons";
             editBtn.tooltip = "Edit inventory buttons";
             editBtn.icon = "minecraft:textures/block/crafting_table.png";
@@ -53,7 +55,7 @@ public final class UiButtonsConfigManager {
             editBtn.visible = true;
             editBtn.enabled = true;
 
-            c.buttons.add(editBtn);
+            c.buttons.add(editBtn.normalize());
 
             config = c;
             save();
@@ -63,90 +65,104 @@ public final class UiButtonsConfigManager {
         try {
             UiButtonsConfig loaded = GSON.fromJson(Files.readString(PATH), UiButtonsConfig.class);
             if (loaded == null) loaded = new UiButtonsConfig();
-            if (loaded.buttons == null) loaded.buttons = new java.util.ArrayList<>();
+            if (loaded.buttons == null) loaded.buttons = new ArrayList<>();
+            loaded.buttons.removeIf(b -> b == null);
+            loaded.buttons.forEach(UiButtonDef::normalize);
             config = loaded;
             return loaded;
         } catch (Exception e) {
-            // fallback
             UiButtonsConfig fallback = new UiButtonsConfig();
-            fallback.buttons = new java.util.ArrayList<>();
+            fallback.buttons = new ArrayList<>();
             config = fallback;
             return fallback;
         }
     }
 
     // =========================
-    // Editor helpers (inventory)
+    // CRUD generico
     // =========================
 
-    private static String canonSlot(String slotId) {
-        return slotId == null ? "" : slotId.trim().toLowerCase();
+    private static String canon(String s) {
+        return s == null ? "" : s.trim().toLowerCase(Locale.ROOT);
     }
 
-    public static Optional<UiButtonDef> findInventoryDef(String slotId) {
+    public static Optional<UiButtonDef> find(String screen, String slotId) {
         UiButtonsConfig cfg = get();
-        String key = canonSlot(slotId);
+        String scr = canon(screen);
+        String key = canon(slotId);
 
         return cfg.buttons.stream()
-                .filter(b -> b != null)
-                .filter(b -> "inventory".equalsIgnoreCase(b.screen))
-                .filter(b -> canonSlot(b.slot).equals(key))
+                .filter(b -> canon(b.screen).equals(scr))
+                .filter(b -> canon(b.slot).equals(key))
                 .findFirst();
     }
 
-    public static UiButtonDef getOrCreateInventoryDef(String slotId) {
+    public static UiButtonDef getOrCreate(String screen, String slotId) {
         UiButtonsConfig cfg = get();
-        String key = canonSlot(slotId);
+        String scr = canon(screen);
+        String key = canon(slotId);
 
-        Optional<UiButtonDef> existing = findInventoryDef(slotId);
+        Optional<UiButtonDef> existing = find(scr, key);
         if (existing.isPresent()) return existing.get();
 
         UiButtonDef def = new UiButtonDef();
-        def.id = "inv_" + key;
-        def.screen = "inventory";
-        def.slot = slotId;
-        def.w = 18;
-        def.h = 18;
+        def.screen = scr.isEmpty() ? "inventory" : scr;
+        def.slot = slotId == null ? InventoryButtonLayout.DEFAULT_ID : slotId;
+        def.id = def.screen + "_" + key;
         def.command = "";
-        def.icon = "minecraft:textures/item/paper.png";
+        def.icon = UiButtonDef.DEFAULT_ICON;
         def.tooltip = "";
         def.visible = true;
         def.enabled = true;
 
-        cfg.buttons.add(def);
+        cfg.buttons.add(def.normalize());
         return def;
     }
 
-    public static boolean removeInventoryDef(String slotId) {
+    public static UiButtonDef upsert(String screen, String slotId, Consumer<UiButtonDef> mut) {
+        UiButtonDef def = getOrCreate(screen, slotId);
+        if (mut != null) mut.accept(def);
+        def.normalize();
+        return def;
+    }
+
+    public static boolean remove(String screen, String slotId) {
         UiButtonsConfig cfg = get();
-        String key = canonSlot(slotId);
-
-        UiButtonDef found = cfg.buttons.stream()
-                .filter(b -> b != null)
-                .filter(b -> "inventory".equalsIgnoreCase(b.screen))
-                .filter(b -> canonSlot(b.slot).equals(key))
-                .findFirst()
-                .orElse(null);
-
+        UiButtonDef found = find(screen, slotId).orElse(null);
         if (found == null) return false;
-
         cfg.buttons.remove(found);
         return true;
     }
 
+    // =========================
+    // Convenience inventory
+    // =========================
+
+    public static Optional<UiButtonDef> findInventoryDef(String slotId) {
+        return find("inventory", slotId);
+    }
+
+    public static UiButtonDef getOrCreateInventoryDef(String slotId) {
+        return getOrCreate("inventory", slotId);
+    }
+
+    public static boolean removeInventoryDef(String slotId) {
+        return remove("inventory", slotId);
+    }
     public static boolean isEditMode() {
-        return editMode;
+        return sb.rocket.giovanniclient.client.features.inventorybuttons.UiButtonsEditorState.isEditMode();
     }
 
     public static void setEditMode(boolean on) {
-        editMode = on;
+        sb.rocket.giovanniclient.client.features.inventorybuttons.UiButtonsEditorState.setEditMode(on);
     }
 
     public static String getSelectedSlot() {
-        return selectedSlot;
+        return sb.rocket.giovanniclient.client.features.inventorybuttons.UiButtonsEditorState.getSelectedSlot();
     }
 
     public static void setSelectedSlot(String s) {
-        selectedSlot = (s == null ? "right0" : s);
+        sb.rocket.giovanniclient.client.features.inventorybuttons.UiButtonsEditorState.setSelectedSlot(s);
     }
+
 }

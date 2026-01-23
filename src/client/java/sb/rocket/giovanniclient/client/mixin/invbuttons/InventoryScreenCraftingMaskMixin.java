@@ -10,7 +10,7 @@ import sb.rocket.giovanniclient.client.config.ConfigManager;
 import sb.rocket.giovanniclient.client.features.misc.InventoryBackgroundColor;
 
 @Mixin(InventoryScreen.class)
-public abstract class InventoryScreenMaskMixin {
+public abstract class InventoryScreenCraftingMaskMixin {
 
     @Inject(method = "drawBackground", at = @At("TAIL"))
     private void maskCraftingArea(DrawContext ctx, float delta, int mouseX, int mouseY, CallbackInfo ci) {

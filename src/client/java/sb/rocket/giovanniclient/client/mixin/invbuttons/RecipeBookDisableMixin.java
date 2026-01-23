@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import sb.rocket.giovanniclient.client.config.ConfigManager;
 
 @Mixin(RecipeBookScreen.class)
-public abstract class RecipeBookScreenMixin {
+public abstract class RecipeBookDisableMixin {
 
     @Inject(method = "addRecipeBook", at = @At("HEAD"), cancellable = true)
     private void disableRecipeBook(CallbackInfo ci) {

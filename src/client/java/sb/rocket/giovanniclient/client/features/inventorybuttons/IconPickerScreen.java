@@ -4,8 +4,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.item.Item;
-import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -16,7 +14,6 @@ import java.util.Locale;
 import java.util.function.Consumer;
 
 public final class IconPickerScreen extends Screen {
-
     private final Screen parent;
     private final Consumer<String> onPick;
 
@@ -24,17 +21,21 @@ public final class IconPickerScreen extends Screen {
     private final List<net.minecraft.item.ItemStack> allStacks = new ArrayList<>();
     private final List<net.minecraft.item.ItemStack> filteredStacks = new ArrayList<>();
 
-
-    private int scrollRows = 0;     // row offset
+    private int scrollRows = 0;
     private int maxScrollRows = 0;
 
     // Layout
     private int panelX, panelY, panelW, panelH;
     private int gridX, gridY, cols, rows;
+
     private static final int PAD = 10;
     private static final int SLOT = 18;
     private static final int TITLE_H = 16;
     private static final int SEARCH_H = 18;
+
+    // Scrollbar drag
+    private boolean draggingBar = false;
+    private int dragGrabOffsetY = 0;
 
     public IconPickerScreen(Screen parent, Consumer<String> onPick) {
         super(Text.literal("Icon Selector"));
@@ -46,7 +47,6 @@ public final class IconPickerScreen extends Screen {
     protected void init() {
         super.init();
 
-        // panel sizing close to mockup proportions
         panelW = 230;
         panelH = 220;
 
@@ -68,21 +68,17 @@ public final class IconPickerScreen extends Screen {
 
         addDrawableChild(this.search);
 
-        // Build items list once
         allStacks.clear();
 
-        // 1) prova REI
         var rei = sb.rocket.giovanniclient.client.compat.ReiCompat.tryGetAllItemStacksFromRei();
         if (!rei.isEmpty()) {
             allStacks.addAll(rei);
         } else {
-            // 2) fallback vanilla registry
             net.minecraft.registry.Registries.ITEM.stream().forEach(it -> allStacks.add(it.getDefaultStack()));
         }
 
-        // ordina per id item
-        allStacks.sort(java.util.Comparator.comparing(s -> {
-            var id = net.minecraft.registry.Registries.ITEM.getId(s.getItem());
+        allStacks.sort(Comparator.comparing(st -> {
+            var id = net.minecraft.registry.Registries.ITEM.getId(st.getItem());
             return id == null ? "" : id.toString();
         }));
 
@@ -92,20 +88,19 @@ public final class IconPickerScreen extends Screen {
 
     private void rebuildFilter() {
         filteredStacks.clear();
-        String q = search.getText() == null ? "" : search.getText().trim().toLowerCase(java.util.Locale.ROOT);
 
+        String q = search.getText() == null ? "" : search.getText().trim().toLowerCase(Locale.ROOT);
         if (q.isBlank()) {
             filteredStacks.addAll(allStacks);
         } else {
             for (var st : allStacks) {
                 var id = net.minecraft.registry.Registries.ITEM.getId(st.getItem());
                 if (id == null) continue;
-                String s = id.toString().toLowerCase(java.util.Locale.ROOT);
+                String s = id.toString().toLowerCase(Locale.ROOT);
                 if (s.contains(q)) filteredStacks.add(st);
             }
         }
 
-        // grid area
         gridX = panelX + PAD;
         gridY = panelY + PAD + TITLE_H + 6 + SEARCH_H + 10;
 
@@ -117,7 +112,7 @@ public final class IconPickerScreen extends Screen {
 
         int totalRows = (int) Math.ceil(filteredStacks.size() / (double) cols);
         maxScrollRows = Math.max(0, totalRows - rows);
-        scrollRows = Math.min(scrollRows, maxScrollRows);
+        scrollRows = clamp(scrollRows, 0, maxScrollRows);
     }
 
     @Override
@@ -127,8 +122,7 @@ public final class IconPickerScreen extends Screen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        // Esc
-        if (keyCode == 256) {
+        if (keyCode == 256) { // ESC
             close();
             return true;
         }
@@ -138,8 +132,6 @@ public final class IconPickerScreen extends Screen {
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
         if (verticalAmount == 0) return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
-
-        // scroll rows
         int delta = (verticalAmount > 0) ? -1 : 1;
         scrollRows = clamp(scrollRows + delta, 0, maxScrollRows);
         return true;
@@ -148,17 +140,60 @@ public final class IconPickerScreen extends Screen {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == 0) {
+            // scrollbar grab?
+            if (maxScrollRows > 0) {
+                int[] knob = scrollbarKnobRect();
+                int kx = knob[0], ky = knob[1], kw = knob[2], kh = knob[3];
+                if (mouseX >= kx && mouseX < kx + kw && mouseY >= ky && mouseY < ky + kh) {
+                    draggingBar = true;
+                    dragGrabOffsetY = (int) mouseY - ky;
+                    return true;
+                }
+            }
+
             int idx = gridIndexAt((int) mouseX, (int) mouseY);
             if (idx >= 0 && idx < filteredStacks.size()) {
                 var st = filteredStacks.get(idx);
                 var id = net.minecraft.registry.Registries.ITEM.getId(st.getItem());
-                onPick.accept("item:" + id);
+                if (id != null) {
+                    onPick.accept("item:" + id);
+                }
                 close();
                 return true;
             }
-
         }
         return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        if (button == 0 && draggingBar && maxScrollRows > 0) {
+            int[] track = scrollbarTrackRect();
+            int tx = track[0], ty = track[1], tw = track[2], th = track[3];
+
+            int[] knob = scrollbarKnobRect();
+            int kh = knob[3];
+
+            int newKnobY = (int) mouseY - dragGrabOffsetY;
+            int minY = ty;
+            int maxY = ty + th - kh;
+
+            newKnobY = clamp(newKnobY, minY, maxY);
+
+            float t = (maxY == minY) ? 0f : (newKnobY - minY) / (float) (maxY - minY);
+            scrollRows = clamp(Math.round(t * maxScrollRows), 0, maxScrollRows);
+            return true;
+        }
+        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (button == 0 && draggingBar) {
+            draggingBar = false;
+            return true;
+        }
+        return super.mouseReleased(mouseX, mouseY, button);
     }
 
     private int gridIndexAt(int mx, int my) {
@@ -173,25 +208,42 @@ public final class IconPickerScreen extends Screen {
         int row = (my - gy0) / SLOT;
 
         int visibleIndex = row * cols + col;
-        int absoluteIndex = (scrollRows * cols) + visibleIndex;
-        return absoluteIndex;
+        return (scrollRows * cols) + visibleIndex;
+    }
+
+    private int[] scrollbarTrackRect() {
+        int gx0 = gridX - 1;
+        int gy0 = gridY - 1;
+        int gx1 = gridX + cols * SLOT + 1;
+        int gy1 = gridY + rows * SLOT + 1;
+
+        int barX = gx1 + 6;
+        int barY0 = gy0;
+        int barH = (gy1 - gy0);
+        return new int[]{barX, barY0, 4, barH};
+    }
+
+    private int[] scrollbarKnobRect() {
+        int[] tr = scrollbarTrackRect();
+        int barX = tr[0], barY0 = tr[1], barW = tr[2], barH = tr[3];
+
+        float t = (maxScrollRows == 0) ? 0f : (scrollRows / (float) maxScrollRows);
+        int knobH = Math.max(10, (int) (barH * (rows / (float) (rows + maxScrollRows))));
+        int knobY = barY0 + (int) ((barH - knobH) * t);
+
+        return new int[]{barX, knobY, barW, knobH};
     }
 
     @Override
     public void render(DrawContext ctx, int mouseX, int mouseY, float delta) {
-        // NON chiamare renderBackground(ctx) perché applica blur e può crashare se un'altra screen lo ha già fatto nello stesso frame
         ctx.fill(0, 0, this.width, this.height, 0xAA000000);
 
-        // Panel
         ctx.fill(panelX, panelY, panelX + panelW, panelY + panelH, 0xCC000000);
 
-        // Title
         ctx.drawText(this.textRenderer, "Icon Selector", panelX + PAD, panelY + PAD, 0xFFFFFFFF, false);
 
-        // Widgets (search box)
         super.render(ctx, mouseX, mouseY, delta);
 
-        // Grid frame
         int gx0 = gridX - 1;
         int gy0 = gridY - 1;
         int gx1 = gridX + cols * SLOT + 1;
@@ -202,7 +254,6 @@ public final class IconPickerScreen extends Screen {
         ctx.fill(gx0, gy0, gx0 + 1, gy1, 0xFF555555);
         ctx.fill(gx1 - 1, gy0, gx1, gy1, 0xFF555555);
 
-        // Items
         int start = scrollRows * cols;
         int end = Math.min(filteredStacks.size(), start + (cols * rows));
 
@@ -221,20 +272,12 @@ public final class IconPickerScreen extends Screen {
             }
         }
 
-
-        // Scrollbar
         if (maxScrollRows > 0) {
-            int barX = gx1 + 6;
-            int barY0 = gy0;
-            int barH = (gy1 - gy0);
+            int[] tr = scrollbarTrackRect();
+            ctx.fill(tr[0], tr[1], tr[0] + tr[2], tr[1] + tr[3], 0xFF333333);
 
-            ctx.fill(barX, barY0, barX + 4, barY0 + barH, 0xFF333333);
-
-            float t = scrollRows / (float) maxScrollRows;
-            int knobH = Math.max(10, (int) (barH * (rows / (float) (rows + maxScrollRows))));
-            int knobY = barY0 + (int) ((barH - knobH) * t);
-
-            ctx.fill(barX, knobY, barX + 4, knobY + knobH, 0xFF888888);
+            int[] knob = scrollbarKnobRect();
+            ctx.fill(knob[0], knob[1], knob[0] + knob[2], knob[1] + knob[3], 0xFF888888);
         }
     }
 

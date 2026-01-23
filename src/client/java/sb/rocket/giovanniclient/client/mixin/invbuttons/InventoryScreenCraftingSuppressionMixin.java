@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import sb.rocket.giovanniclient.client.config.ConfigManager;
 
 @Mixin(InventoryScreen.class)
-public class InventoryScreenMixin {
+public class InventoryScreenCraftingSuppressionMixin {
 
     // in this context this call only draws the "Crafting" string in the inventory
     @Inject(method = "drawForeground", at = @At("HEAD"), cancellable = true)
