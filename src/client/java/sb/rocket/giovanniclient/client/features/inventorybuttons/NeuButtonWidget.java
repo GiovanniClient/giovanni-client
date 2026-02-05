@@ -1,6 +1,7 @@
 package sb.rocket.giovanniclient.client.features.inventorybuttons;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
@@ -23,7 +24,7 @@ public final class NeuButtonWidget extends ClickableWidget {
     }
 
     @Override
-    public void onClick(double mouseX, double mouseY) {
+    public void onClick(Click click, boolean doubled) {
         if (def == null) return;
 
         String cmd = (def.command == null) ? "" : def.command.trim();
@@ -33,7 +34,9 @@ public final class NeuButtonWidget extends ClickableWidget {
         if (client.player == null) return;
 
         if (cmd.startsWith("/")) cmd = cmd.substring(1).trim();
-        if (!cmd.isBlank()) client.player.networkHandler.sendChatCommand(cmd);
+        if (!cmd.isBlank()) {
+            client.player.networkHandler.sendChatCommand(cmd);
+        }
     }
 
     @Override

@@ -45,7 +45,7 @@ public final class TabListUtils {
                     continue;
                 }
 
-                String name = e.getProfile().getName();
+                String name = e.getProfile().name();
                 Team team = e.getScoreboardTeam();
 
                 MutableText line = Text.empty();
@@ -125,5 +125,5 @@ public final class TabListUtils {
                         Team t = e.getScoreboardTeam();
                         return t != null ? t.getName() : "";
                     }, String::compareToIgnoreCase)
-                    .thenComparing(e -> e.getProfile() != null ? e.getProfile().getName() : "", String::compareToIgnoreCase);
+                    .thenComparing(e -> e.getProfile() != null ? e.getProfile().name() : "", String::compareToIgnoreCase);
 }

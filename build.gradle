@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.11.4'
+    id 'fabric-loom' version '1.15.3'
     id 'maven-publish'
     id 'org.jetbrains.kotlin.jvm'
 }
@@ -53,7 +53,7 @@ dependencies {
     modCompileOnly "me.shedaniel:RoughlyEnoughItems-api-fabric:${project.REI_version}"
     modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.REI_version}"
 
-    modRuntimeOnly "me.djtheredstoner:DevAuth-fabric:1.2.1"
+    modRuntimeOnly "me.djtheredstoner:DevAuth-fabric:1.2.2"
 }
 
 processResources {
