@@ -59,14 +59,14 @@ public class RenderConfig {
         public boolean NO_NAUSEA = false;
 
         @Expose
-        @ConfigOption(name = "No Lava Overlay", desc = "see under lava")
+        @ConfigOption(name = "No Fire Overlay", desc = "i can't see sh*t when i'm on fire!")
         @ConfigEditorBoolean
-        public boolean NO_LAVA_OVERLAY = false;
+        public boolean NO_FIRE_OVERLAY = false;
 
         @Expose
-        @ConfigOption(name = "No Water Overlay", desc = "see under water")
+        @ConfigOption(name = "No In-Wall overlay", desc = "stop rendering a flat texture when you've got a block on your head")
         @ConfigEditorBoolean
-        public boolean NO_WATER_OVERLAY = false;
+        public boolean NO_BLOCK_OVERLAY = false;
 
         @Expose
         @ConfigOption(name = "No Pumpkin Overlay", desc = "")
@@ -75,7 +75,7 @@ public class RenderConfig {
     }
 
     @Expose
-    @ConfigOption(name = "No Fog", desc = "")
+    @ConfigOption(name = "No Fog", desc = "also makes you see better underwater/lava and when you've got blindness/darkness")
     @ConfigEditorBoolean
     public boolean NO_FOG = false;
 
