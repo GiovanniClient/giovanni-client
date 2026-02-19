@@ -1,4 +1,4 @@
-package sb.rocket.giovanniclient.client.mixin;
+package sb.rocket.giovanniclient.client.mixin.render;
 
 import net.minecraft.client.render.fog.DarknessEffectFogModifier;
 import net.minecraft.entity.LivingEntity;

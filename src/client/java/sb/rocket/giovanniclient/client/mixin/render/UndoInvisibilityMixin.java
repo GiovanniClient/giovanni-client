@@ -1,4 +1,4 @@
-package sb.rocket.giovanniclient.client.mixin;
+package sb.rocket.giovanniclient.client.mixin.render;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.EndermanEntity;
