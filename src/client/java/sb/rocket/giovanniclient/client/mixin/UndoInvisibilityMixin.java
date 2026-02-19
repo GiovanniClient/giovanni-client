@@ -2,7 +2,6 @@ package sb.rocket.giovanniclient.client.mixin;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.EndermanEntity;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,7 +19,7 @@ public abstract class UndoInvisibilityMixin {
         String currentLocation = PlayerLocator.getPlayerLocation();
 
         Entity entity = (Entity) (Object) this;
-        var rc = ConfigManager.getConfig().rc;
+        var rc = ConfigManager.getConfig().rc.renderEntitiesAccordion;
 
         if (rc.EVERYTHING_VISIBLE_TOGGLE) {
             cir.setReturnValue(false);

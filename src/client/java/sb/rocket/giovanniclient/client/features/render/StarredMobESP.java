@@ -36,7 +36,7 @@ public class StarredMobESP extends AbstractFeature {
     public void onTick(MinecraftClient client) {
         if (client == null || client.world == null) return;
 
-        var rc = ConfigManager.getConfig().rc;
+        var rc = ConfigManager.getConfig().rc.renderEntitiesAccordion;
 
         if (!rc.STARRED_MOB_ESP || !isInCatacombs()) {
             clearPreviouslyApplied();

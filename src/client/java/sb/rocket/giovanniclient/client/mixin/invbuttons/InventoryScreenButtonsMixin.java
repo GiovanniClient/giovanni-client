@@ -1,6 +1,5 @@
 package sb.rocket.giovanniclient.client.mixin.invbuttons;
 
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
