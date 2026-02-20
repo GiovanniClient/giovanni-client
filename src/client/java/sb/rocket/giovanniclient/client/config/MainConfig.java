@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import io.github.notenoughupdates.moulconfig.Config;
 import io.github.notenoughupdates.moulconfig.annotations.Category;
 import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
+import net.wimods.freecam.FreecamConfig;
 import sb.rocket.giovanniclient.client.features.autosolvers.AutoSolversConfig;
 import sb.rocket.giovanniclient.client.features.fun.FunConfig;
 import sb.rocket.giovanniclient.client.features.inventorybuttons.InventoryButtonsConfig;
@@ -38,6 +39,10 @@ public class MainConfig extends Config {
     @Expose
     @Category(name = "Render", desc = "See stuff you shouldn't :P")
     public RenderConfig rc = new RenderConfig();
+
+    @Expose
+    @Category(name = "Freecam", desc = "")
+    public FreecamConfig freecamConfig = new FreecamConfig();
 
     @Expose
     @Category(name = "Inventory Buttons", desc = "like NEU once did")

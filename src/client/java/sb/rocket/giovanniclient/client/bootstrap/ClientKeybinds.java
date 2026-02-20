@@ -12,8 +12,16 @@ public final class ClientKeybinds {
 
     private static KeyBinding openConfig;
     private static KeyBinding openInvButtonEditor;
+    public static KeyBinding toggleFreecam;
+    public static KeyBinding openFreecamSettings;
+    public static KeyBinding switchFreecamControlKey;
+    public static KeyBinding[] ALL_KEYS = {null, null, null};
 
     public static final KeyBinding.Category GIOVANNI = KeyBinding.Category.create(Identifier.of("giovanni"));
+    //public static final String GIOVANNI = "key.categories.giovanni";
+
+    public static final KeyBinding.Category WURST = KeyBinding.Category.create(Identifier.of("wurst"));
+    //public static final String CATEGORY = "key.categories.wi_freecam";
 
     public static void register() {
         openConfig = KeyBindingHelper.registerKeyBinding(new KeyBinding(
@@ -29,6 +37,30 @@ public final class ClientKeybinds {
                 GLFW.GLFW_KEY_O,
                 GIOVANNI
         ));
+
+
+        toggleFreecam = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "key.wi_freecam.toggle",
+                InputUtil.Type.KEYSYM,
+                GLFW.GLFW_KEY_U,
+                WURST
+        ));
+
+        openFreecamSettings = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "key.wi_freecam.open_settings",
+                InputUtil.Type.KEYSYM,
+                GLFW.GLFW_KEY_RIGHT_CONTROL,
+                WURST
+        ));
+
+        switchFreecamControlKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "key.wi_freecam.switch_control",
+                InputUtil.Type.KEYSYM,
+                InputUtil.UNKNOWN_KEY.getCode(),
+                WURST
+        ));
+
+        ALL_KEYS = new KeyBinding[]{toggleFreecam, openFreecamSettings, switchFreecamControlKey};
     }
 
     public static KeyBinding openConfig() {

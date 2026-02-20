@@ -1,0 +1,213 @@
+/*
+ * Copyright (c) 2026-2026 Wurst-Imperium and contributors.
+ *
+ * This source code is subject to the terms of the GNU General Public
+ * License, version 3. If a copy of the GPL was not distributed with this
+ * file, You can obtain one at: https://www.gnu.org/licenses/gpl-3.0.txt
+ */
+package net.wimods.freecam;
+
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec2f;
+import net.minecraft.util.math.Vec3d;
+import net.wimods.freecam.mixinterface.IKeyMapping;
+import net.wimods.freecam.util.EntityUtils;
+import net.wimods.freecam.util.RenderUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import sb.rocket.giovanniclient.client.config.ConfigManager;
+import net.minecraft.util.math.Box;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+public enum WiFreecam {
+	INSTANCE;
+	
+	public static final MinecraftClient MC = MinecraftClient.getInstance();
+	public static final Logger LOGGER = LoggerFactory.getLogger("WI Freecam");
+	
+	public static boolean FREECAM_ENABLED;
+	private Vec3d camPos;
+	private Vec3d prevCamPos;
+	private float camYaw;
+	private float camPitch;
+	private float lastHealth;
+
+    private FreecamConfig settingz = ConfigManager.getConfig().freecamConfig;
+
+	private boolean guiInitialized;
+	
+	public void initialize()
+	{
+		LOGGER.info("Starting WI Freecam...");
+
+		ClientTickEvents.END_CLIENT_TICK.register(mc -> {
+			if(FREECAM_ENABLED)
+				onUpdate();
+		});
+	}
+
+	private void onEnable()
+	{
+		lastHealth = Float.MIN_VALUE;
+        ClientPlayerEntity player = MC.player;
+		float eyeHeight = player.getEyeHeight(player.getPose());
+		Vec3d eyesPos = player.getEntityPos().add(0, eyeHeight, 0);
+		camPos = eyesPos.add(settingz.CAMERA_SPAWN_POSITION.get().getOffset());
+		prevCamPos = camPos;
+		camYaw = player.getYaw();
+		camPitch = player.getPitch();
+	}
+	
+	private void onDisable()
+	{
+		MC.worldRenderer.reload();
+	}
+	
+	private void onUpdate()
+	{
+		ClientPlayerEntity player = MC.player;
+		if(player == null)
+		{
+			setEnabled(false);
+			return;
+		}
+		
+		// Check for damage
+		float currentHealth = player.getHealth();
+		if(settingz.DISABLE_ON_DAMAGE && currentHealth < lastHealth)
+		{
+			setEnabled(false);
+			return;
+		}
+		lastHealth = currentHealth;
+		
+		if(!isMovingCamera() || MC.currentScreen != null)
+		{
+			prevCamPos = camPos;
+			return;
+		}
+		
+		// Get movement vector (x=left, y=forward)
+		Vec2f moveVector = player.input.getMovementInput();
+		
+		// Convert to world coordinates
+		double yawRad = MC.gameRenderer.getCamera().getYaw() * MathHelper.RADIANS_PER_DEGREE;
+		double sinYaw = MathHelper.sin((float) yawRad);
+		double cosYaw = MathHelper.cos((float) yawRad);
+		double offsetX = moveVector.x * cosYaw - moveVector.y * sinYaw;
+		double offsetZ = moveVector.x * sinYaw + moveVector.y * cosYaw;
+		
+		// Calculate vertical offset
+		double offsetY = 0;
+		double vSpeed = settingz.getActualVerticalSpeed();
+		if(IKeyMapping.get(MC.options.jumpKey).isActuallyDown())
+			offsetY += vSpeed;
+		if(IKeyMapping.get(MC.options.sneakKey).isActuallyDown())
+			offsetY -= vSpeed;
+		
+		// Apply to camera
+		Vec3d offsetVec = new Vec3d(offsetX, 0, offsetZ)
+			.multiply(settingz.HORIZONTAL_SPEED).add(0, offsetY, 0);
+		prevCamPos = camPos;
+		camPos = camPos.add(offsetVec);
+	}
+	
+	public void onMouseScroll(double amount)
+	{
+		if(isControllingScrollEvents())
+			return;
+		
+		if(amount > 0)
+			settingz.increaseSpeed();
+		else if(amount < 0)
+			settingz.decreaseSpeed();
+	}
+	
+	public boolean isControllingScrollEvents()
+	{
+		return !isMovingCamera() || !settingz.SCROLL_TO_CHANGE_SPEED
+                || MC.currentScreen != null;
+	}
+	
+	public boolean isMovingCamera()
+	{
+		return FREECAM_ENABLED
+			&& settingz.APPLY_INPUT_TO.get() == FreecamConfig.InputEnum.Camera;
+	}
+	
+	public void onRender(MatrixStack matrixStack, float partialTicks)
+	{
+		if(settingz.FREECAM_TRACER)
+			return;
+		
+		int colorI = settingz.FREECAM_TRACER_COLOR.getEffectiveColour().getRGB();
+		
+		// Box
+		double extraSize = 0.05;
+		Box rawBox = EntityUtils.getLerpedBox(MC.player, partialTicks);
+		Box box = rawBox.offset(0, extraSize, 0).expand(extraSize);
+		RenderUtils.drawOutlinedBox(matrixStack, box, colorI, false);
+		
+		// Line
+		RenderUtils.drawTracer(matrixStack, partialTicks, rawBox.getCenter(),
+			colorI, false);
+	}
+	
+	public boolean shouldHideHand()
+	{
+		return FREECAM_ENABLED && settingz.HIDE_HAND;
+	}
+	
+	public Vec3d getCamPos(float partialTicks)
+	{
+		return MathHelper.lerp(partialTicks, prevCamPos, camPos);
+	}
+	
+	public void turn(double deltaYaw, double deltaPitch)
+	{
+		// This needs to be consistent with Entity.turn()
+		camYaw += (float)(deltaYaw * 0.15);
+		camPitch += (float)(deltaPitch * 0.15);
+		camPitch = MathHelper.clamp(camPitch, -90, 90);
+	}
+	
+	public float getCamYaw()
+	{
+		return camYaw;
+	}
+	
+	public float getCamPitch()
+	{
+		return camPitch;
+	}
+	
+	public boolean isEnabled()
+	{
+		return FREECAM_ENABLED;
+	}
+	
+	public void setEnabled(boolean enabled)
+	{
+		if(this.FREECAM_ENABLED == enabled)
+			return;
+		
+		this.FREECAM_ENABLED = enabled;
+
+		if(enabled)
+			onEnable();
+		else
+			onDisable();
+	}
+
+    public FreecamConfig getSettings() {
+        return settingz;
+    }
+}
