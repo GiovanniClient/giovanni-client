@@ -38,7 +38,6 @@ public final class ClientKeybinds {
                 GIOVANNI
         ));
 
-
         toggleFreecam = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.wi_freecam.toggle",
                 InputUtil.Type.KEYSYM,

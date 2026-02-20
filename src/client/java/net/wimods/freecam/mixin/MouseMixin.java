@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Mouse.class)
-public abstract class MouseHandlerMixin
+public abstract class MouseMixin
 {
 	@Inject(at = @At("RETURN"), method = "onMouseScroll")
 	private void onOnScroll(long window, double horizontal, double vertical,

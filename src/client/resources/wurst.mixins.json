@@ -9,10 +9,10 @@
     "CameraMixin",
     "GameRendererMixin",
     "InGameHudMixin",
-    "ItemInHandRendererMixin",
-    "KeyMappingMixin",
-    "LevelRendererMixin",
-    "LocalPlayerMixin",
-    "MouseHandlerMixin"
+    "HeldItemRendererMixin",
+    "KeyBindingMixin",
+    "WorldRendererMixin",
+    "ClientPlayerEntityMixin",
+    "MouseMixin"
   ]
 }

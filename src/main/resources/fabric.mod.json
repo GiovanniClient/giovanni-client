@@ -22,6 +22,10 @@
     {
       "config": "giovanniclient.client.mixins.json",
       "environment": "client"
+    },
+    {
+      "config": "wurst.mixins.json",
+      "environment": "client"
     }
   ],
   "depends": {

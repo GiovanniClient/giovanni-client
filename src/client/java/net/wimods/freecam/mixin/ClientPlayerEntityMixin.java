@@ -22,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ClientPlayerEntity.class)
-public abstract class LocalPlayerMixin extends AbstractClientPlayerEntity
+public abstract class ClientPlayerEntityMixin extends AbstractClientPlayerEntity
 {
 	@Shadow
 	public Input input;
@@ -30,8 +30,8 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayerEntity
 	@Unique
 	private Input realInput;
 	
-	private LocalPlayerMixin(WiFreecam freecam, ClientWorld world,
-		GameProfile profile)
+	private ClientPlayerEntityMixin(WiFreecam freecam, ClientWorld world,
+                                    GameProfile profile)
 	{
 		super(world, profile);
 	}

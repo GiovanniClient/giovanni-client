@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(ChunkRenderingDataPreparer.class)
-public class SectionOcclusionGraphMixin
+public class ChunkRenderingDataPreparerMixin
 {
 	/**
 	 * Turns off the visibility graph when in Freecam, making things like caves
