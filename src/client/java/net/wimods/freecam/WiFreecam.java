@@ -8,10 +8,10 @@
 package net.wimods.freecam;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
@@ -21,11 +21,6 @@ import net.wimods.freecam.util.RenderUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sb.rocket.giovanniclient.client.config.ConfigManager;
-import net.minecraft.util.math.Box;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 public enum WiFreecam {
 	INSTANCE;
@@ -39,8 +34,6 @@ public enum WiFreecam {
 	private float camYaw;
 	private float camPitch;
 	private float lastHealth;
-
-    private FreecamConfig settingz = ConfigManager.getConfig().freecamConfig;
 
 	private boolean guiInitialized;
 	
@@ -60,7 +53,7 @@ public enum WiFreecam {
         ClientPlayerEntity player = MC.player;
 		float eyeHeight = player.getEyeHeight(player.getPose());
 		Vec3d eyesPos = player.getEntityPos().add(0, eyeHeight, 0);
-		camPos = eyesPos.add(settingz.CAMERA_SPAWN_POSITION.get().getOffset());
+		camPos = eyesPos.add(ConfigManager.getConfig().freecamConfig.CAMERA_SPAWN_POSITION.get().getOffset());
 		prevCamPos = camPos;
 		camYaw = player.getYaw();
 		camPitch = player.getPitch();
@@ -73,6 +66,7 @@ public enum WiFreecam {
 	
 	private void onUpdate()
 	{
+        FreecamConfig settingz = ConfigManager.getConfig().freecamConfig;
 		ClientPlayerEntity player = MC.player;
 		if(player == null)
 		{
@@ -112,11 +106,11 @@ public enum WiFreecam {
 			offsetY += vSpeed;
 		if(IKeyMapping.get(MC.options.sneakKey).isActuallyDown())
 			offsetY -= vSpeed;
-		
-		// Apply to camera
-		Vec3d offsetVec = new Vec3d(offsetX, 0, offsetZ)
-			.multiply(settingz.HORIZONTAL_SPEED).add(0, offsetY, 0);
-		prevCamPos = camPos;
+
+        Vec3d offsetVec = new Vec3d(offsetX, 0, offsetZ)
+                .multiply(settingz.ADJUSTED_HORIZONTAL_SPEED).add(0, offsetY, 0);
+        
+        prevCamPos = camPos;
 		camPos = camPos.add(offsetVec);
 	}
 	
@@ -126,29 +120,28 @@ public enum WiFreecam {
 			return;
 		
 		if(amount > 0)
-			settingz.increaseSpeed();
+            ConfigManager.getConfig().freecamConfig.increaseSpeed();
 		else if(amount < 0)
-			settingz.decreaseSpeed();
+            ConfigManager.getConfig().freecamConfig.decreaseSpeed();
 	}
 	
 	public boolean isControllingScrollEvents()
 	{
-		return !isMovingCamera() || !settingz.SCROLL_TO_CHANGE_SPEED
+		return !isMovingCamera() || !ConfigManager.getConfig().freecamConfig.SCROLL_TO_CHANGE_SPEED
                 || MC.currentScreen != null;
 	}
 	
 	public boolean isMovingCamera()
 	{
-		return FREECAM_ENABLED
-			&& settingz.APPLY_INPUT_TO.get() == FreecamConfig.InputEnum.Camera;
+		return FREECAM_ENABLED && ConfigManager.getConfig().freecamConfig.APPLY_INPUT_TO.get() == FreecamConfig.InputEnum.Camera;
 	}
 	
 	public void onRender(MatrixStack matrixStack, float partialTicks)
 	{
-		if(settingz.FREECAM_TRACER)
+		if(ConfigManager.getConfig().freecamConfig.FREECAM_TRACER)
 			return;
 		
-		int colorI = settingz.FREECAM_TRACER_COLOR.getEffectiveColour().getRGB();
+		int colorI = ConfigManager.getConfig().freecamConfig.FREECAM_TRACER_COLOR.getEffectiveColour().getRGB();
 		
 		// Box
 		double extraSize = 0.05;
@@ -163,7 +156,7 @@ public enum WiFreecam {
 	
 	public boolean shouldHideHand()
 	{
-		return FREECAM_ENABLED && settingz.HIDE_HAND;
+		return FREECAM_ENABLED && ConfigManager.getConfig().freecamConfig.HIDE_HAND;
 	}
 	
 	public Vec3d getCamPos(float partialTicks)
@@ -206,8 +199,4 @@ public enum WiFreecam {
 		else
 			onDisable();
 	}
-
-    public FreecamConfig getSettings() {
-        return settingz;
-    }
 }

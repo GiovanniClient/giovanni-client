@@ -9,6 +9,15 @@
     "ActionBarMixin",
     "ChatMessageMixin",
     "ClientPlayNetworkHandlerMixin",
+    "PlayerListHudAccessor",
+    "invbuttons.HandledScreenAccessor",
+    "invbuttons.HandledScreenButtonsInputMixin",
+    "invbuttons.InventoryScreenButtonsMixin",
+    "invbuttons.InventoryScreenCraftingMaskMixin",
+    "invbuttons.InventoryScreenCraftingSuppressionMixin",
+    "invbuttons.RecipeBookDisableMixin",
+    "invbuttons.ScreenInvoker",
+    "invbuttons.SlotAccessor",
     "render.EntityGlowColorOverrideMixin",
     "render.EntityGlowOverrideMixin",
     "render.NoBlindnessMixin",
@@ -19,15 +28,6 @@
     "render.NoLightningBoltsMixin",
     "render.NoNauseaMixin",
     "render.NoPumpkinMixin",
-    "PlayerListHudAccessor",
-    "render.UndoInvisibilityMixin",
-    "invbuttons.HandledScreenAccessor",
-    "invbuttons.HandledScreenButtonsInputMixin",
-    "invbuttons.InventoryScreenButtonsMixin",
-    "invbuttons.InventoryScreenCraftingMaskMixin",
-    "invbuttons.InventoryScreenCraftingSuppressionMixin",
-    "invbuttons.RecipeBookDisableMixin",
-    "invbuttons.ScreenInvoker",
-    "invbuttons.SlotAccessor"
+    "render.UndoInvisibilityMixin"
   ]
 }

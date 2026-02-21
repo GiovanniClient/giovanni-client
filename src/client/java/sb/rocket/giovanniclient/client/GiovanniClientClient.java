@@ -2,6 +2,7 @@ package sb.rocket.giovanniclient.client;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.MinecraftClient;
+import net.wimods.freecam.WiFreecam;
 import sb.rocket.giovanniclient.client.bootstrap.*;
 import sb.rocket.giovanniclient.client.features.updater.UpdateManager;
 
@@ -23,5 +24,7 @@ public final class GiovanniClientClient implements ClientModInitializer {
         ClientCommands.register();
         ClientResources.register();
         ClientLifecycle.registerClientStarted();
+
+        WiFreecam.INSTANCE.initialize();
     }
 }

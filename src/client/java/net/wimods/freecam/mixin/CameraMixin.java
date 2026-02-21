@@ -34,7 +34,7 @@ public abstract class CameraMixin implements TrackedWaypoint.YawProvider
 		if(!freecam.isEnabled())
 			return;
 
-        thirdPerson = true;
+        this.thirdPerson = true;
 		setPos(freecam.getCamPos(tickProgress));
 		setRotation(freecam.getCamYaw(), freecam.getCamPitch());
 	}

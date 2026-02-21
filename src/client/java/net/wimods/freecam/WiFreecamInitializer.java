@@ -16,11 +16,5 @@ public final class WiFreecamInitializer implements ClientModInitializer
 	@Override
 	public void onInitializeClient()
 	{
-		if(initialized)
-			throw new RuntimeException(
-				"WiFreecamInitializer.onInitializeClient() ran twice!");
-		
-		WiFreecam.INSTANCE.initialize();
-		initialized = true;
 	}
 }

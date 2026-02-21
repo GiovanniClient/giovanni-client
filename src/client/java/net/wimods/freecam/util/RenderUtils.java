@@ -12,8 +12,8 @@ import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.EntityPose;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
@@ -22,7 +22,6 @@ import net.wimods.freecam.WiFreecam;
 import net.wimods.freecam.WurstRenderLayers;
 import org.joml.Matrix3x2f;
 import org.joml.Vector3f;
-import net.minecraft.client.render.VertexConsumerProvider;
 
 public enum RenderUtils
 {
@@ -124,7 +123,7 @@ public enum RenderUtils
 	{
 		Vector3f normal = new Vector3f(x2, y2, z2).sub(x1, y1, z1).normalize();
 		buffer.vertex(entry, x1, y1, z1).color(color)
-			.normal(entry, normal); // .setLineWidth(2)
+			.normal(entry, normal).lineWidth(2);
 		
 		// If the line goes through the screen, add another vertex there. This
 		// works around a bug in Minecraft's line shader.
@@ -134,21 +133,21 @@ public enum RenderUtils
 		{
 			Vector3f closeToCam = new Vector3f(normal).mul(t).add(x1, y1, z1);
 			buffer.vertex(entry, closeToCam).color(color)
-				.normal(entry, normal); // .setLineWidth(2)
+				.normal(entry, normal).lineWidth(2);
 			buffer.vertex(entry, closeToCam).color(color)
-				.normal(entry, normal); // .setLineWidth(2)
+				.normal(entry, normal).lineWidth(2);
 		}
 		
 		buffer.vertex(entry, x2, y2, z2).color(color)
-			.normal(entry, normal); // .setLineWidth(2)
+			.normal(entry, normal).lineWidth(2);
 	}
 	
 	public static void drawLine(VertexConsumer buffer, float x1, float y1,
 		float z1, float x2, float y2, float z2, int color)
 	{
 		Vector3f n = new Vector3f(x2, y2, z2).sub(x1, y1, z1).normalize();
-		buffer.vertex(x1, y1, z1).color(color).normal(n.x, n.y, n.z); // .setLineWidth(2)
-		buffer.vertex(x2, y2, z2).color(color).normal(n.x, n.y, n.z); // .setLineWidth(2)
+		buffer.vertex(x1, y1, z1).color(color).normal(n.x, n.y, n.z).lineWidth(2);
+		buffer.vertex(x2, y2, z2).color(color).normal(n.x, n.y, n.z).lineWidth(2);
 	}
 	
 	public static void drawOutlinedBox(MatrixStack matrices, Box box, int color,
@@ -183,65 +182,64 @@ public enum RenderUtils
 		
 		// bottom lines
 		buffer.vertex(entry, x1, y1, z1).color(color)
-			.normal(entry, 1, 0, 0); // .setLineWidth(2);
+			.normal(entry, 1, 0, 0).lineWidth(2);;
 		buffer.vertex(entry, x2, y1, z1).color(color)
-			.normal(entry, 1, 0, 0); // .setLineWidth(2);
+			.normal(entry, 1, 0, 0).lineWidth(2);;
 		buffer.vertex(entry, x1, y1, z1).color(color)
-			.normal(entry, 0, 0, 1); // .setLineWidth(2);
+			.normal(entry, 0, 0, 1).lineWidth(2);;
 		buffer.vertex(entry, x1, y1, z2).color(color)
-			.normal(entry, 0, 0, 1); // .setLineWidth(2);
+			.normal(entry, 0, 0, 1).lineWidth(2);;
 		buffer.vertex(entry, x2, y1, z1).color(color)
-			.normal(entry, 0, 0, 1); // .setLineWidth(2);
+			.normal(entry, 0, 0, 1).lineWidth(2);;
 		buffer.vertex(entry, x2, y1, z2).color(color)
-			.normal(entry, 0, 0, 1); // .setLineWidth(2);
+			.normal(entry, 0, 0, 1).lineWidth(2);;
 		buffer.vertex(entry, x1, y1, z2).color(color)
-			.normal(entry, 1, 0, 0); // .setLineWidth(2);
+			.normal(entry, 1, 0, 0).lineWidth(2);;
 		buffer.vertex(entry, x2, y1, z2).color(color)
-			.normal(entry, 1, 0, 0); // .setLineWidth(2);
+			.normal(entry, 1, 0, 0).lineWidth(2);;
 		
 		// top lines
 		buffer.vertex(entry, x1, y2, z1).color(color)
-			.normal(entry, 1, 0, 0); // .setLineWidth(2);
+			.normal(entry, 1, 0, 0).lineWidth(2);;
 		buffer.vertex(entry, x2, y2, z1).color(color)
-			.normal(entry, 1, 0, 0); // .setLineWidth(2);
+			.normal(entry, 1, 0, 0).lineWidth(2);;
 		buffer.vertex(entry, x1, y2, z1).color(color)
-			.normal(entry, 0, 0, 1); // .setLineWidth(2);
+			.normal(entry, 0, 0, 1).lineWidth(2);;
 		buffer.vertex(entry, x1, y2, z2).color(color)
-			.normal(entry, 0, 0, 1); // .setLineWidth(2);
+			.normal(entry, 0, 0, 1).lineWidth(2);;
 		buffer.vertex(entry, x2, y2, z1).color(color)
-			.normal(entry, 0, 0, 1); // .setLineWidth(2);
+			.normal(entry, 0, 0, 1).lineWidth(2);;
 		buffer.vertex(entry, x2, y2, z2).color(color)
-			.normal(entry, 0, 0, 1); // .setLineWidth(2);
+			.normal(entry, 0, 0, 1).lineWidth(2);;
 		buffer.vertex(entry, x1, y2, z2).color(color)
-			.normal(entry, 1, 0, 0); // .setLineWidth(2);
+			.normal(entry, 1, 0, 0).lineWidth(2);;
 		buffer.vertex(entry, x2, y2, z2).color(color)
-			.normal(entry, 1, 0, 0); // .setLineWidth(2);
+			.normal(entry, 1, 0, 0).lineWidth(2);;
 		
 		// side lines
 		buffer.vertex(entry, x1, y1, z1).color(color)
-			.normal(entry, 0, 1, 0); // .setLineWidth(2);
+			.normal(entry, 0, 1, 0).lineWidth(2);;
 		buffer.vertex(entry, x1, y2, z1).color(color)
-			.normal(entry, 0, 1, 0); // .setLineWidth(2);
+			.normal(entry, 0, 1, 0).lineWidth(2);;
 		buffer.vertex(entry, x2, y1, z1).color(color)
-			.normal(entry, 0, 1, 0); // .setLineWidth(2);
+			.normal(entry, 0, 1, 0).lineWidth(2);;
 		buffer.vertex(entry, x2, y2, z1).color(color)
-			.normal(entry, 0, 1, 0); // .setLineWidth(2);
+			.normal(entry, 0, 1, 0).lineWidth(2);;
 		buffer.vertex(entry, x1, y1, z2).color(color)
-			.normal(entry, 0, 1, 0); // .setLineWidth(2);
+			.normal(entry, 0, 1, 0).lineWidth(2);;
 		buffer.vertex(entry, x1, y2, z2).color(color)
-			.normal(entry, 0, 1, 0); // .setLineWidth(2);
+			.normal(entry, 0, 1, 0).lineWidth(2);;
 		buffer.vertex(entry, x2, y1, z2).color(color)
-			.normal(entry, 0, 1, 0); // .setLineWidth(2);
+			.normal(entry, 0, 1, 0).lineWidth(2);;
 		buffer.vertex(entry, x2, y2, z2).color(color)
-			.normal(entry, 0, 1, 0); // .setLineWidth(2);
+			.normal(entry, 0, 1, 0).lineWidth(2);;
 	}
 	
 	/**
 	 * Similar to {@link DrawContext#fill(int, int, int, int, int)}, but uses
 	 * floating-point coordinates instead of integers.
 	 */
-	public static void fill2D(DrawContext context, float x1, float y1, float x2,
-                              float y2, int color)
+	public static void fill2D(DrawContext context, float x1, float y1, float x2, float y2, int color)
 	{
 		int scale = WiFreecam.MC.getWindow().getScaleFactor();
 		int xs1 = (int)(x1 * scale);
@@ -253,64 +251,6 @@ public enum RenderUtils
 		context.getMatrices().scale(1F / scale);
 		context.fill(xs1, ys1, xs2, ys2, color);
 		context.getMatrices().popMatrix();
-	}
-	
-	/**
-	 * Renders the given vertices in QUADS draw mode.
-	 */
-	public static void fillQuads2D(DrawContext context, float[][] vertices,
-		int color)
-	{
-		Matrix3x2f pose = new Matrix3x2f(context.getMatrices());
-		ScreenRect scissor = context.scissorStack.pop();
-		
-		for(int i = 0; i < vertices.length - 3; i += 4)
-		{
-			if(i + 3 >= vertices.length)
-				break;
-			
-			float x1 = vertices[i][0];
-			float y1 = vertices[i][1];
-			float x2 = vertices[i + 1][0];
-			float y2 = vertices[i + 1][1];
-			float x3 = vertices[i + 2][0];
-			float y3 = vertices[i + 2][1];
-			float x4 = vertices[i + 3][0];
-			float y4 = vertices[i + 3][1];
-			
-			context.state.addSimpleElement(new CustomQuadRenderState(
-				pose, x1, y1, x2, y2, x3, y3, x4, y4, color, scissor));
-		}
-	}
-	
-	/**
-	 * Pretends to render the given vertices in TRIANGLES draw mode
-	 * by squeezing a bunch of quads into triangle shapes.
-	 *
-	 * <p>
-	 * ...blame Vibrant Visuals.
-	 */
-	public static void fillTriangle2D(DrawContext context, float[][] vertices,
-		int color)
-	{
-		Matrix3x2f pose = new Matrix3x2f(context.getMatrices());
-		ScreenRect scissor = context.scissorStack.pop();
-		
-		for(int i = 0; i < vertices.length - 2; i += 3)
-		{
-			if(i + 2 >= vertices.length)
-				break;
-			
-			float x1 = vertices[i][0];
-			float y1 = vertices[i][1];
-			float x2 = vertices[i + 1][0];
-			float y2 = vertices[i + 1][1];
-			float x3 = vertices[i + 2][0];
-			float y3 = vertices[i + 2][1];
-			
-			context.state.addSimpleElement(new CustomQuadRenderState(
-				pose, x1, y1, x2, y2, x3, y3, x3, y3, color, scissor));
-		}
 	}
 
 	public static void drawLine2D(DrawContext context, float x1, float y1,

@@ -58,7 +58,7 @@ public final class ClientTicks {
 
             // 3. Cycle Control Mode (Camera vs Player)
             while (switchFreecamControlKey.wasPressed()) {
-                WiFreecam.INSTANCE.getSettings().cycleInputMode();
+                ConfigManager.getConfig().freecamConfig.cycleInputMode();
             }
         });
     }

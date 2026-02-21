@@ -25,9 +25,7 @@ public abstract class GameRendererMixin
 		target = "Lnet/minecraft/client/render/GameRenderer;bobView(Lnet/minecraft/client/util/math/MatrixStack;F)V",
 		ordinal = 0),
 		method = "renderWorld")
-	private void onBobView(GameRenderer instance, MatrixStack matrices,
-		float tickDelta, Operation<Void> original)
-	{
+	private void onBobView(GameRenderer instance, MatrixStack matrices, float tickDelta, Operation<Void> original) {
 		if(!WiFreecam.INSTANCE.isEnabled())
 			original.call(instance, matrices, tickDelta);
 	}

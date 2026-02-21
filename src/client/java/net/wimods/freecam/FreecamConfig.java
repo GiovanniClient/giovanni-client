@@ -19,11 +19,13 @@ public class FreecamConfig {
     @ConfigOption(name = "Horizontal Speed", desc = "")
     @ConfigEditorSlider(minValue = 1, maxValue = 100, minStep = 1)
     public int HORIZONTAL_SPEED = 20; // ADDED PUBLIC HERE
+    public float ADJUSTED_HORIZONTAL_SPEED = (float) HORIZONTAL_SPEED / 10;
 
     @Expose
     @ConfigOption(name = "Vertical Speed", desc = "")
     @ConfigEditorSlider(minValue = 1, maxValue = 50, minStep = 1)
     public int VERTICAL_SPEED = 20; // ADDED PUBLIC HERE
+    public float ADJUSTED_VERTICAL_SPEED = (float) VERTICAL_SPEED / 10;
 
     @Expose
     @ConfigOption(name = "Scroll to change speed", desc = "")
@@ -107,7 +109,7 @@ public class FreecamConfig {
     }
 
     public double getActualVerticalSpeed() {
-        return MathHelper.clamp(HORIZONTAL_SPEED * VERTICAL_SPEED, 0.05, 10);
+        return MathHelper.clamp(ADJUSTED_HORIZONTAL_SPEED * ADJUSTED_VERTICAL_SPEED, 0.05, 10);
     }
 
     public void increaseSpeed() {
