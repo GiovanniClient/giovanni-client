@@ -83,31 +83,37 @@ public class AboutConfig extends Config {
     }
 
     public static class UsedSoftware {
-        @ConfigOption(name = "MoulConfig", desc = "MoulConfig is available under the LGPL 3.0 License or later version")
+        @ConfigOption(name = "MoulConfig (LGPL 3.0)", desc = "")
         @ConfigEditorButton(buttonText = "Source")
         public Runnable moulconfig = () -> {
             Util.getOperatingSystem().open("https://github.com/NotEnoughUpdates/MoulConfig");
         };
 
-        @ConfigOption(name = "Fabric", desc = "Fabric is available under the Apache License Version 2.0")
+        @ConfigOption(name = "Fabric (Apache 2.0)", desc = "")
         @ConfigEditorButton(buttonText = "Source")
         public Runnable fabric = () -> {
             Util.getOperatingSystem().open("https://github.com/FabricMC/fabric");
         };
 
-        @ConfigOption(name = "LibAutoUpdate", desc = "LibAutoUpdate is available under the BSD 2 Clause License")
-        @ConfigEditorButton(buttonText = "Source")
-        public Runnable libautoupdate = () -> {
-            Util.getOperatingSystem().open("https://github.com/nea89o/libautoupdate");
-        };
-
-        @ConfigOption(name = "Mixin", desc = "Mixin is available under the MIT License")
+        @ConfigOption(name = "Mixin (MIT)", desc = "")
         @ConfigEditorButton(buttonText = "Source")
         public Runnable mixin = () -> {
             Util.getOperatingSystem().open("https://github.com/SpongePowered/Mixin/");
         };
 
-        @ConfigOption(name = "SkyHanni", desc = "SkyHanni is available under the GNU Lesser General Public License Version 2.1")
+        @ConfigOption(name = "LibAutoUpdate (BSD-2-Clause)", desc = "")
+        @ConfigEditorButton(buttonText = "Source")
+        public Runnable libautoupdate = () -> {
+            Util.getOperatingSystem().open("https://github.com/nea89o/libautoupdate");
+        };
+
+        @ConfigOption(name = "WI-Freecam (GPL 3.0)", desc = "rewritten with yarn mappings")
+        @ConfigEditorButton(buttonText = "Source")
+        public Runnable wi_freecam = () -> {
+            Util.getOperatingSystem().open("https://github.com/Wurst-Imperium/WI-Freecam");
+        };
+
+        @ConfigOption(name = "SkyHanni (LGPL 2.1)", desc = "used as inspiration for moulconfig implementation and update logic")
         @ConfigEditorButton(buttonText = "Source")
         public Runnable skyhanni = () -> {
             Util.getOperatingSystem().open("https://github.com/hannibal002/SkyHanni/");
