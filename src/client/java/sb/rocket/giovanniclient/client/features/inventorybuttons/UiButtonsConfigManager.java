@@ -17,7 +17,7 @@ public final class UiButtonsConfigManager {
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final Path PATH = FabricLoader.getInstance()
-            .getConfigDir().resolve("giovanniclient_buttons.json");
+            .getConfigDir().resolve("giovanniclient").resolve("buttons.json");
 
     private static UiButtonsJsonConfig config;
 
