@@ -13,8 +13,7 @@ import net.minecraft.client.render.OutputTarget;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderSetup;
 
-public enum WurstRenderLayers
-{
+public enum WurstRenderLayers {
     ;
 
     /**
@@ -41,8 +40,7 @@ public enum WurstRenderLayers
      * Returns either {@link #LINES} or {@link #ESP_LINES} depending on the
      * value of {@code depthTest}.
      */
-    public static RenderLayer getLines(boolean depthTest)
-    {
+    public static RenderLayer getLines(boolean depthTest) {
         return depthTest ? LINES : ESP_LINES;
     }
 }

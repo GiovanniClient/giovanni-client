@@ -18,17 +18,14 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(HeldItemRenderer.class)
-public abstract class HeldItemRendererMixin
-{
+public abstract class HeldItemRendererMixin {
 	/**
 	 * Makes the "Hide hand" setting work.
 	 */
 	@Inject(at = @At("HEAD"),
 		method = "renderItem(FLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/command/OrderedRenderCommandQueue;Lnet/minecraft/client/network/ClientPlayerEntity;I)V",
 		cancellable = true)
-	private void onRenderHandsWithItems(float tickProgress, MatrixStack matrices, OrderedRenderCommandQueue orderedRenderCommandQueue, ClientPlayerEntity player, int light, CallbackInfo ci)
-	{
-		if(WiFreecam.INSTANCE.shouldHideHand())
-			ci.cancel();
+	private void onRenderHandsWithItems(float tickProgress, MatrixStack matrices, OrderedRenderCommandQueue orderedRenderCommandQueue, ClientPlayerEntity player, int light, CallbackInfo ci) {
+		if(WiFreecam.INSTANCE.shouldHideHand()) ci.cancel();
 	}
 }

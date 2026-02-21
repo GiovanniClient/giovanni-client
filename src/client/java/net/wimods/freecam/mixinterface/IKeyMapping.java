@@ -15,18 +15,15 @@ public interface IKeyMapping
 	 * Returns whether the user is actually pressing this key on their keyboard
 	 * or mouse.
 	 */
-	default boolean isActuallyDown()
-	{
+	default boolean isActuallyDown() {
 		return freecam_isActuallyDown();
 	}
 	
-	default void setDown(boolean down)
-	{
+	default void setDown(boolean down) {
 		asVanilla().setPressed(down);
 	}
 	
-	default KeyBinding asVanilla()
-	{
+	default KeyBinding asVanilla() {
 		return (KeyBinding)this;
 	}
 	
@@ -34,8 +31,7 @@ public interface IKeyMapping
 	 * Returns the given KeyMapping object as an IKeyMapping, allowing you to
 	 * access the isActuallyDown() method.
 	 */
-	static IKeyMapping get(KeyBinding km)
-	{
+	static IKeyMapping get(KeyBinding km) {
 		return (IKeyMapping)km;
 	}
 

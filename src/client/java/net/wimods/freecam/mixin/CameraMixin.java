@@ -20,16 +20,14 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Camera.class)
-public abstract class CameraMixin implements TrackedWaypoint.YawProvider
-{
+public abstract class CameraMixin implements TrackedWaypoint.YawProvider {
 	@Shadow
 	private boolean thirdPerson;
 	
 	@Inject(at = @At("RETURN"),
 		method = "update",
 		cancellable = false)
-	public void onSetup(World area, Entity focusedEntity, boolean thirdPerson, boolean inverseView, float tickProgress, CallbackInfo ci)
-	{
+	public void onSetup(World area, Entity focusedEntity, boolean thirdPerson, boolean inverseView, float tickProgress, CallbackInfo ci) {
 		WiFreecam freecam = WiFreecam.INSTANCE;
 		if(!freecam.isEnabled())
 			return;

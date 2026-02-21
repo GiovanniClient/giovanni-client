@@ -22,30 +22,25 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ClientPlayerEntity.class)
-public abstract class ClientPlayerEntityMixin extends AbstractClientPlayerEntity
-{
+public abstract class ClientPlayerEntityMixin extends AbstractClientPlayerEntity {
 	@Shadow
 	public Input input;
 	
 	@Unique
 	private Input realInput;
 	
-	private ClientPlayerEntityMixin(WiFreecam freecam, ClientWorld world,
-                                    GameProfile profile)
-	{
+	private ClientPlayerEntityMixin(WiFreecam freecam, ClientWorld world, GameProfile profile) {
 		super(world, profile);
 	}
 	
 	@Inject(at = @At("HEAD"), method = "isSneaking", cancellable = true)
-	private void onIsShiftKeyDown(CallbackInfoReturnable<Boolean> cir)
-	{
+	private void onIsShiftKeyDown(CallbackInfoReturnable<Boolean> cir) {
 		if(WiFreecam.INSTANCE.isMovingCamera())
 			cir.setReturnValue(false);
 	}
 	
 	@Inject(at = @At("HEAD"), method = "tickMovement")
-	private void onAiStepHead(CallbackInfo ci)
-	{
+	private void onAiStepHead(CallbackInfo ci) {
 		if(!WiFreecam.INSTANCE.isMovingCamera())
 			return;
 		
@@ -55,8 +50,7 @@ public abstract class ClientPlayerEntityMixin extends AbstractClientPlayerEntity
 	}
 	
 	@Inject(at = @At("RETURN"), method = "tickMovement")
-	private void onAiStepReturn(CallbackInfo ci)
-	{
+	private void onAiStepReturn(CallbackInfo ci) {
 		if(realInput == null)
 			return;
 		
@@ -65,11 +59,9 @@ public abstract class ClientPlayerEntityMixin extends AbstractClientPlayerEntity
 	}
 	
 	@Override
-	public void changeLookDirection(double deltaYaw, double deltaPitch)
-	{
+	public void changeLookDirection(double deltaYaw, double deltaPitch)	{
 		WiFreecam freecam = WiFreecam.INSTANCE;
-		if(freecam.isMovingCamera())
-		{
+		if(freecam.isMovingCamera()) {
 			freecam.turn(deltaYaw, deltaPitch);
 			return;
 		}

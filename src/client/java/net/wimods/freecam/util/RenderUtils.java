@@ -7,13 +7,11 @@
  */
 package net.wimods.freecam.util;
 
-import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -21,12 +19,10 @@ import net.wimods.freecam.WiFreecam;
 import net.wimods.freecam.WurstRenderLayers;
 import org.joml.Vector3f;
 
-public enum RenderUtils
-{
+public enum RenderUtils {
     ;
 
-    public static Vec3d getCameraPos()
-    {
+    public static Vec3d getCameraPos() {
         Camera camera = WiFreecam.MC.gameRenderer.getCamera();
         if(camera == null)
             return Vec3d.ZERO;
@@ -34,8 +30,7 @@ public enum RenderUtils
         return camera.getCameraPos();
     }
 
-    public static Rotation getCameraRotation()
-    {
+    public static Rotation getCameraRotation() {
         Camera camera = WiFreecam.MC.gameRenderer.getCamera();
         if(camera == null)
             return new Rotation(0, 0);
@@ -43,27 +38,22 @@ public enum RenderUtils
         return new Rotation(camera.getYaw(), camera.getPitch());
     }
 
-    public static VertexConsumerProvider.Immediate getVCP()
-    {
+    public static VertexConsumerProvider.Immediate getVCP() {
         return WiFreecam.MC.getBufferBuilders().getEntityVertexConsumers();
     }
 
-    public static int toIntColor(float[] rgb, float opacity)
-    {
+    public static int toIntColor(float[] rgb, float opacity) {
         return (int)(MathHelper.clamp(opacity, 0, 1) * 255) << 24
                 | (int)(MathHelper.clamp(rgb[0], 0, 1) * 255) << 16
                 | (int)(MathHelper.clamp(rgb[1], 0, 1) * 255) << 8
                 | (int)(MathHelper.clamp(rgb[2], 0, 1) * 255);
     }
 
-    private static Vec3d getTracerOrigin(float partialTicks)
-    {
+    private static Vec3d getTracerOrigin(float partialTicks) {
         return getCameraRotation().toLookVec().multiply(10);
     }
 
-    public static void drawTracer(MatrixStack matrices, float partialTicks,
-                                  Vec3d end, int color, boolean depthTest)
-    {
+    public static void drawTracer(MatrixStack matrices, float partialTicks, Vec3d end, int color, boolean depthTest) {
         VertexConsumerProvider.Immediate vcp = getVCP();
         RenderLayer layer = WurstRenderLayers.getLines(depthTest);
         VertexConsumer buffer = vcp.getBuffer(layer);
@@ -75,9 +65,7 @@ public enum RenderUtils
         vcp.draw(layer);
     }
 
-    public static void drawLine(MatrixStack matrices, VertexConsumer buffer,
-                                Vec3d start, Vec3d end, int color)
-    {
+    public static void drawLine(MatrixStack matrices, VertexConsumer buffer, Vec3d start, Vec3d end, int color) {
         MatrixStack.Entry entry = matrices.peek();
         float x1 = (float)start.x;
         float y1 = (float)start.y;
@@ -88,9 +76,7 @@ public enum RenderUtils
         drawLine(entry, buffer, x1, y1, z1, x2, y2, z2, color);
     }
 
-    public static void drawLine(MatrixStack.Entry entry, VertexConsumer buffer,
-                                float x1, float y1, float z1, float x2, float y2, float z2, int color)
-    {
+    public static void drawLine(MatrixStack.Entry entry, VertexConsumer buffer, float x1, float y1, float z1, float x2, float y2, float z2, int color) {
         Vector3f normal = new Vector3f(x2, y2, z2).sub(x1, y1, z1).normalize();
         buffer.vertex(entry, x1, y1, z1).color(color)
                 .normal(entry, normal).lineWidth(2);
@@ -112,9 +98,7 @@ public enum RenderUtils
                 .normal(entry, normal).lineWidth(2);
     }
 
-    public static void drawOutlinedBox(MatrixStack matrices, Box box, int color,
-                                       boolean depthTest)
-    {
+    public static void drawOutlinedBox(MatrixStack matrices, Box box, int color, boolean depthTest) {
         VertexConsumerProvider.Immediate vcp = getVCP();
         RenderLayer layer = WurstRenderLayers.getLines(depthTest);
         VertexConsumer buffer = vcp.getBuffer(layer);
@@ -125,9 +109,7 @@ public enum RenderUtils
         vcp.draw(layer);
     }
 
-    public static void drawOutlinedBox(MatrixStack matrices,
-                                       VertexConsumer buffer, Box box, int color)
-    {
+    public static void drawOutlinedBox(MatrixStack matrices, VertexConsumer buffer, Box box, int color) {
         MatrixStack.Entry entry = matrices.peek();
         float x1 = (float)box.minX;
         float y1 = (float)box.minY;

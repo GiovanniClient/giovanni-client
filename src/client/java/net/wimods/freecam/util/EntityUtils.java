@@ -14,8 +14,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 
-public enum EntityUtils
-{
+public enum EntityUtils {
 	;
 	
 	/**
@@ -28,8 +27,7 @@ public enum EntityUtils
 	 * current tick position directly would cause animations to look choppy
 	 * because that position is only updated 20 times per second.
 	 */
-	public static Vec3d getLerpedPos(Entity e, float partialTicks)
-	{
+	public static Vec3d getLerpedPos(Entity e, float partialTicks) {
 		// When an entity is removed, it stops moving and its lastRenderX/Y/Z
 		// values are no longer updated.
 		if(e.isRemoved())
@@ -52,8 +50,7 @@ public enum EntityUtils
 	 * because that box, just like the position, is only updated 20 times per
 	 * second.
 	 */
-	public static Box getLerpedBox(Entity e, float partialTicks)
-	{
+	public static Box getLerpedBox(Entity e, float partialTicks) {
 		// When an entity is removed, it stops moving and its lastRenderX/Y/Z
 		// values are no longer updated.
 		if(e.isRemoved())

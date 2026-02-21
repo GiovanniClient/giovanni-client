@@ -16,8 +16,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(GameRenderer.class)
-public abstract class GameRendererMixin
-{
+public abstract class GameRendererMixin {
 	/**
 	 * Prevents view bobbing when in Freecam.
 	 */

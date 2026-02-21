@@ -23,10 +23,8 @@ public abstract class InGameHudMixin
 	 * This mixin needs to run after renderScoreboardSidebar()
 	 * and before tabList.setVisible()
 	 */
-	@Inject(at = @At("HEAD"),
-		method = "renderPlayerList")
-	private void onRenderTabList(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci)
-	{
+	@Inject(at = @At("HEAD"), method = "renderPlayerList")
+	private void onRenderTabList(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
 		if(WiFreecam.MC.getDebugHud().shouldShowDebugHud())
 			return;
 		

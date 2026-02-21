@@ -17,20 +17,16 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Mouse.class)
-public abstract class MouseMixin
-{
+public abstract class MouseMixin {
 	@Inject(at = @At("RETURN"), method = "onMouseScroll")
-	private void onOnScroll(long window, double horizontal, double vertical,
-		CallbackInfo ci)
-	{
+	private void onOnScroll(long window, double horizontal, double vertical, CallbackInfo ci) {
 		WiFreecam.INSTANCE.onMouseScroll(vertical);
 	}
 	
 	@WrapWithCondition(at = @At(value = "INVOKE",
 		target = "Lnet/minecraft/entity/player/PlayerInventory;setSelectedSlot(I)V"),
 		method = "onMouseScroll")
-	private boolean wrapOnScroll(PlayerInventory inventory, int slot)
-	{
+	private boolean wrapOnScroll(PlayerInventory inventory, int slot) {
 		return WiFreecam.INSTANCE.isControllingScrollEvents();
 	}
 }

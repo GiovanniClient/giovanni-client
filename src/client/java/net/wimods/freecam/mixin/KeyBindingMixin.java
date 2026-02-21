@@ -26,16 +26,14 @@ import java.util.Map;
 import static sb.rocket.giovanniclient.client.bootstrap.ClientKeybinds.ALL_KEYS;
 
 @Mixin(KeyBinding.class)
-public abstract class KeyBindingMixin implements IKeyMapping
-{
+public abstract class KeyBindingMixin implements IKeyMapping {
 	@Shadow
     private InputUtil.Key boundKey;
 	
 	@Override
 	@Unique
 	@Deprecated // use IKeyMapping.isActuallyDown() instead
-	public boolean freecam_isActuallyDown()
-	{
+	public boolean freecam_isActuallyDown()	{
 		Window window = WiFreecam.MC.getWindow();
 		int code = boundKey.getCode();
 		

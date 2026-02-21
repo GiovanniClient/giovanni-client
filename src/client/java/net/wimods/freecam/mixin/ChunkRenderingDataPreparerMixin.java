@@ -16,8 +16,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(ChunkRenderingDataPreparer.class)
-public class ChunkRenderingDataPreparerMixin
-{
+public class ChunkRenderingDataPreparerMixin {
 	/**
 	 * Turns off the visibility graph when in Freecam, making things like caves
 	 * become visible that would normally be hidden behind other blocks and thus
@@ -27,8 +26,7 @@ public class ChunkRenderingDataPreparerMixin
 		target = "Lnet/minecraft/client/render/chunk/AbstractChunkRenderData;" +
                 "isVisibleThrough(Lnet/minecraft/util/math/Direction;Lnet/minecraft/util/math/Direction;)Z"),
 		method = "update")
-	private boolean onFacesCanSeeEachother(AbstractChunkRenderData mesh, Direction from, Direction to)
-	{
+	private boolean onFacesCanSeeEachother(AbstractChunkRenderData mesh, Direction from, Direction to) {
 		if(WiFreecam.INSTANCE.isEnabled())
 			return true;
 		

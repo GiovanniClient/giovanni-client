@@ -17,8 +17,7 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.util.Identifier;
 
 
-public enum WurstShaderPipelines
-{
+public enum WurstShaderPipelines {
     ;
 
     /**
