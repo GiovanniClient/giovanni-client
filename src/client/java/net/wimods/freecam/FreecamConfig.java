@@ -6,8 +6,7 @@ import io.github.notenoughupdates.moulconfig.annotations.*;
 import io.github.notenoughupdates.moulconfig.observer.Property;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-
-import static net.wimods.freecam.WiFreecam.MC;
+import sb.rocket.giovanniclient.client.GiovanniClientClient;
 
 public class FreecamConfig {
     @Expose
@@ -17,15 +16,13 @@ public class FreecamConfig {
 
     @Expose
     @ConfigOption(name = "Horizontal Speed", desc = "")
-    @ConfigEditorSlider(minValue = 1, maxValue = 100, minStep = 1)
-    public int HORIZONTAL_SPEED = 20; // ADDED PUBLIC HERE
-    public float ADJUSTED_HORIZONTAL_SPEED = (float) HORIZONTAL_SPEED / 10;
+    @ConfigEditorSlider(minValue = 1, maxValue = 200, minStep = 1)
+    public int HORIZONTAL_SPEED = 20;
 
     @Expose
     @ConfigOption(name = "Vertical Speed", desc = "")
-    @ConfigEditorSlider(minValue = 1, maxValue = 50, minStep = 1)
-    public int VERTICAL_SPEED = 20; // ADDED PUBLIC HERE
-    public float ADJUSTED_VERTICAL_SPEED = (float) VERTICAL_SPEED / 10;
+    @ConfigEditorSlider(minValue = 1, maxValue = 100, minStep = 1)
+    public int VERTICAL_SPEED = 20;
 
     @Expose
     @ConfigOption(name = "Scroll to change speed", desc = "")
@@ -78,8 +75,8 @@ public class FreecamConfig {
         IN_FRONT("In Front") {
             @Override
             public Vec3d getOffset() {
-                double distance = 0.55 * MC.player.getScale();
-                float yawRad = MC.player.getYaw() * MathHelper.RADIANS_PER_DEGREE;
+                double distance = 0.55 * GiovanniClientClient.mc.player.getScale();
+                float yawRad = GiovanniClientClient.mc.player.getYaw() * MathHelper.RADIANS_PER_DEGREE;
                 double offsetX = -MathHelper.sin(yawRad) * distance;
                 double offsetZ = MathHelper.cos(yawRad) * distance;
                 return new Vec3d(offsetX, 0, offsetZ);
@@ -89,7 +86,7 @@ public class FreecamConfig {
         ABOVE("Above") {
             @Override
             public Vec3d getOffset() {
-                double distance = 0.55 * MC.player.getScale();
+                double distance = 0.55 * GiovanniClientClient.mc.player.getScale();
                 return new Vec3d(0, distance, 0);
             }
         };
@@ -108,22 +105,24 @@ public class FreecamConfig {
         }
     }
 
-    public double getActualVerticalSpeed() {
-        return MathHelper.clamp(ADJUSTED_HORIZONTAL_SPEED * ADJUSTED_VERTICAL_SPEED, 0.05, 10);
-    }
-
     public void increaseSpeed() {
-        if (HORIZONTAL_SPEED + 10 <= 100)
+        if (HORIZONTAL_SPEED + 10 <= 200)  // Fixed: was 100
             HORIZONTAL_SPEED += 10;
-        if (VERTICAL_SPEED + 5 <= 50)
+        if (VERTICAL_SPEED + 5 <= 100)   // Fixed: was 50
             VERTICAL_SPEED += 5;
     }
 
     public void decreaseSpeed() {
-        if (HORIZONTAL_SPEED - 10 >= 0)
+        if (HORIZONTAL_SPEED - 10 >= 1)
             HORIZONTAL_SPEED -= 10;
-        if (VERTICAL_SPEED - 5 >= 0)
+        if (VERTICAL_SPEED - 5 >= 1)
             VERTICAL_SPEED -= 5;
+    }
+
+    public double getActualVerticalSpeed() {
+        return MathHelper.clamp(
+                (HORIZONTAL_SPEED / 20.0) * (VERTICAL_SPEED / 20.0),0.05, 10.0
+        );
     }
 
     public void cycleInputMode() {

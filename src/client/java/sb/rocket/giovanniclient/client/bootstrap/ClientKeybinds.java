@@ -13,7 +13,6 @@ public final class ClientKeybinds {
     private static KeyBinding openConfig;
     private static KeyBinding openInvButtonEditor;
     public static KeyBinding toggleFreecam;
-    public static KeyBinding openFreecamSettings;
     public static KeyBinding switchFreecamControlKey;
     public static KeyBinding[] ALL_KEYS = {null, null, null};
 
@@ -45,13 +44,6 @@ public final class ClientKeybinds {
                 WURST
         ));
 
-        openFreecamSettings = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key.wi_freecam.open_settings",
-                InputUtil.Type.KEYSYM,
-                GLFW.GLFW_KEY_RIGHT_CONTROL,
-                WURST
-        ));
-
         switchFreecamControlKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.wi_freecam.switch_control",
                 InputUtil.Type.KEYSYM,
@@ -59,7 +51,7 @@ public final class ClientKeybinds {
                 WURST
         ));
 
-        ALL_KEYS = new KeyBinding[]{toggleFreecam, openFreecamSettings, switchFreecamControlKey};
+        ALL_KEYS = new KeyBinding[]{toggleFreecam, switchFreecamControlKey};
     }
 
     public static KeyBinding openConfig() {

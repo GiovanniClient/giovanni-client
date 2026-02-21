@@ -49,13 +49,6 @@ public final class ClientTicks {
                 WiFreecam.INSTANCE.setEnabled(!WiFreecam.INSTANCE.isEnabled());
             }
 
-            // 2. Open Settings
-            while (openFreecamSettings.wasPressed()) {
-                // You'll need to implement a way to open the config screen
-                // Usually, you can call ConfigManager or a specific GUI class
-                client.execute(ConfigManager::openConfigScreen);
-            }
-
             // 3. Cycle Control Mode (Camera vs Player)
             while (switchFreecamControlKey.wasPressed()) {
                 ConfigManager.getConfig().freecamConfig.cycleInputMode();

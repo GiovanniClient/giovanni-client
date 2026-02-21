@@ -18,7 +18,7 @@
     ]
   },
   "mixins": [
-    "giovanniclient.mixins.json",
+    "giovanniclient.main.mixins.json",
     {
       "config": "giovanniclient.client.mixins.json",
       "environment": "client"

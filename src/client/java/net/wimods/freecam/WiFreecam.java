@@ -21,6 +21,7 @@ import net.wimods.freecam.util.RenderUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sb.rocket.giovanniclient.client.config.ConfigManager;
+import sb.rocket.giovanniclient.client.util.Utils;
 
 public enum WiFreecam {
 	INSTANCE;
@@ -108,22 +109,35 @@ public enum WiFreecam {
 			offsetY -= vSpeed;
 
         Vec3d offsetVec = new Vec3d(offsetX, 0, offsetZ)
-                .multiply(settingz.ADJUSTED_HORIZONTAL_SPEED).add(0, offsetY, 0);
-        
+                .multiply((float) settingz.HORIZONTAL_SPEED / 20.0f).add(0, offsetY, 0);
+
         prevCamPos = camPos;
 		camPos = camPos.add(offsetVec);
 	}
-	
-	public void onMouseScroll(double amount)
-	{
-		if(isControllingScrollEvents())
-			return;
-		
-		if(amount > 0)
-            ConfigManager.getConfig().freecamConfig.increaseSpeed();
-		else if(amount < 0)
-            ConfigManager.getConfig().freecamConfig.decreaseSpeed();
-	}
+
+    public void onMouseScroll(double amount) {
+        FreecamConfig settingz = ConfigManager.getConfig().freecamConfig;
+
+        if(isControllingScrollEvents())
+            return;
+
+        int oldHorizontal = settingz.HORIZONTAL_SPEED;
+        int oldVertical = settingz.VERTICAL_SPEED;
+
+        if(amount > 0)
+            settingz.increaseSpeed();
+        else if(amount < 0)
+            settingz.decreaseSpeed();
+
+        if (settingz.PRINT_SPEED_TO_CHAT && (settingz.HORIZONTAL_SPEED != oldHorizontal || settingz.VERTICAL_SPEED != oldVertical))
+        {
+            String message = String.format("§bSpeed: §fH:%.2f §fV:%.2f",
+                    settingz.HORIZONTAL_SPEED / 20.0,
+                    settingz.VERTICAL_SPEED / 20.0);
+
+            Utils.chat(message);
+        }
+    }
 	
 	public boolean isControllingScrollEvents()
 	{
