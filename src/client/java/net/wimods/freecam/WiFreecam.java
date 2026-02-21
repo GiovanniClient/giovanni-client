@@ -35,11 +35,8 @@ public enum WiFreecam {
 	private float camYaw;
 	private float camPitch;
 	private float lastHealth;
-
-	private boolean guiInitialized;
 	
-	public void initialize()
-	{
+	public void initialize() {
 		LOGGER.info("Starting WI Freecam...");
 
 		ClientTickEvents.END_CLIENT_TICK.register(mc -> {
@@ -48,8 +45,7 @@ public enum WiFreecam {
 		});
 	}
 
-	private void onEnable()
-	{
+	private void onEnable() {
 		lastHealth = Float.MIN_VALUE;
         ClientPlayerEntity player = MC.player;
 		float eyeHeight = player.getEyeHeight(player.getPose());
@@ -60,32 +56,27 @@ public enum WiFreecam {
 		camPitch = player.getPitch();
 	}
 	
-	private void onDisable()
-	{
+	private void onDisable() {
 		MC.worldRenderer.reload();
 	}
 	
-	private void onUpdate()
-	{
+	private void onUpdate() {
         FreecamConfig settingz = ConfigManager.getConfig().freecamConfig;
 		ClientPlayerEntity player = MC.player;
-		if(player == null)
-		{
+		if(player == null) {
 			setEnabled(false);
 			return;
 		}
 		
 		// Check for damage
 		float currentHealth = player.getHealth();
-		if(settingz.DISABLE_ON_DAMAGE && currentHealth < lastHealth)
-		{
+		if(settingz.DISABLE_ON_DAMAGE && currentHealth < lastHealth) {
 			setEnabled(false);
 			return;
 		}
 		lastHealth = currentHealth;
 		
-		if(!isMovingCamera() || MC.currentScreen != null)
-		{
+		if(!isMovingCamera() || MC.currentScreen != null) {
 			prevCamPos = camPos;
 			return;
 		}
@@ -139,70 +130,58 @@ public enum WiFreecam {
         }
     }
 	
-	public boolean isControllingScrollEvents()
-	{
-		return !isMovingCamera() || !ConfigManager.getConfig().freecamConfig.SCROLL_TO_CHANGE_SPEED
-                || MC.currentScreen != null;
+	public boolean isControllingScrollEvents() {
+		return !isMovingCamera() || !ConfigManager.getConfig().freecamConfig.SCROLL_TO_CHANGE_SPEED || MC.currentScreen != null;
 	}
 	
-	public boolean isMovingCamera()
-	{
+	public boolean isMovingCamera()	{
 		return FREECAM_ENABLED && ConfigManager.getConfig().freecamConfig.APPLY_INPUT_TO.get() == FreecamConfig.InputEnum.Camera;
 	}
-	
-	public void onRender(MatrixStack matrixStack, float partialTicks)
-	{
-		if(ConfigManager.getConfig().freecamConfig.FREECAM_TRACER)
-			return;
-		
+
+	public void onRender(MatrixStack matrixStack, float partialTicks) {
+		if(!ConfigManager.getConfig().freecamConfig.FREECAM_TRACER) return;
+
 		int colorI = ConfigManager.getConfig().freecamConfig.FREECAM_TRACER_COLOR.getEffectiveColour().getRGB();
-		
+
 		// Box
 		double extraSize = 0.05;
 		Box rawBox = EntityUtils.getLerpedBox(MC.player, partialTicks);
 		Box box = rawBox.offset(0, extraSize, 0).expand(extraSize);
 		RenderUtils.drawOutlinedBox(matrixStack, box, colorI, false);
-		
+
 		// Line
 		RenderUtils.drawTracer(matrixStack, partialTicks, rawBox.getCenter(),
 			colorI, false);
 	}
 	
-	public boolean shouldHideHand()
-	{
+	public boolean shouldHideHand()	{
 		return FREECAM_ENABLED && ConfigManager.getConfig().freecamConfig.HIDE_HAND;
 	}
 	
-	public Vec3d getCamPos(float partialTicks)
-	{
+	public Vec3d getCamPos(float partialTicks) {
 		return MathHelper.lerp(partialTicks, prevCamPos, camPos);
 	}
 	
-	public void turn(double deltaYaw, double deltaPitch)
-	{
+	public void turn(double deltaYaw, double deltaPitch) {
 		// This needs to be consistent with Entity.turn()
 		camYaw += (float)(deltaYaw * 0.15);
 		camPitch += (float)(deltaPitch * 0.15);
 		camPitch = MathHelper.clamp(camPitch, -90, 90);
 	}
 	
-	public float getCamYaw()
-	{
+	public float getCamYaw() {
 		return camYaw;
 	}
 	
-	public float getCamPitch()
-	{
+	public float getCamPitch() {
 		return camPitch;
 	}
 	
-	public boolean isEnabled()
-	{
+	public boolean isEnabled() {
 		return FREECAM_ENABLED;
 	}
 	
-	public void setEnabled(boolean enabled)
-	{
+	public void setEnabled(boolean enabled) {
 		if(this.FREECAM_ENABLED == enabled)
 			return;
 		
