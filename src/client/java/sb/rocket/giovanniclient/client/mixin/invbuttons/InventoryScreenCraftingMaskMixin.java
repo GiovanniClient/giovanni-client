@@ -18,11 +18,14 @@ public abstract class InventoryScreenCraftingMaskMixin {
         int x = ((HandledScreenAccessor) this).giovanni$getX();
         int y = ((HandledScreenAccessor) this).giovanni$getY();
 
-        int left   = x + 97;
+        int left   = x + 76;
         int top    = y + 17;
-        int right  = x + 172;
-        int bottom = y + 53;
+        int right  = x + 173;
+        int bottom = y + 79;
 
-        ctx.fill(left, top, right, bottom, InventoryBackgroundColor.get());
+        boolean isDebugActive = ConfigManager.getConfig().dc.DEBUG;
+        ctx.fill(left, top, right, bottom, isDebugActive ? 0x4411ffcc : InventoryBackgroundColor.get());
     }
+
+
 }

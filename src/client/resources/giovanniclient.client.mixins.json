@@ -18,6 +18,7 @@
     "invbuttons.RecipeBookDisableMixin",
     "invbuttons.ScreenInvoker",
     "invbuttons.SlotAccessor",
+    "invbuttons.NoOffHandMixin",
     "render.EntityGlowColorOverrideMixin",
     "render.EntityGlowOverrideMixin",
     "render.NoBlindnessMixin",

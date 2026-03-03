@@ -26,14 +26,21 @@ public class AutoSolversConfig {
         public boolean AUTOEXPERIMENTS_TOGGLE = false;
 
         @Expose
-        @ConfigOption(name = "Min Click Delay", desc = "Please don't be dumb")
-        @ConfigEditorSlider(minValue = 234, maxValue = 1000, minStep = 25)
-        public int AUTOEXPERIMENTS_CLICK_DELAY_MIN = 500;
+        @Accordion
+        @ConfigOption(name = "Click Delays", desc = "")
+        public ExperimentsClickDelayAccordion delays = new ExperimentsClickDelayAccordion();
+        public static class ExperimentsClickDelayAccordion {
 
-        @Expose
-        @ConfigOption(name = "Max Click Delay", desc = "")
-        @ConfigEditorSlider(minValue = 678, maxValue = 1000, minStep = 25)
-        public int AUTOEXPERIMENTS_CLICK_DELAY_MAX = 700;
+            @Expose
+            @ConfigOption(name = "Min Click Delay", desc = "Please don't be dumb")
+            @ConfigEditorSlider(minValue = 200, maxValue = 700, minStep = 100)
+            public int MIN = 500;
+
+            @Expose
+            @ConfigOption(name = "Max Click Delay", desc = "")
+            @ConfigEditorSlider(minValue = 600, maxValue = 1000, minStep = 100)
+            public int MAX = 700;
+        }
 
         public enum MetaphysicalSerum {
             Zero,

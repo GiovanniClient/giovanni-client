@@ -33,4 +33,9 @@ public class SlayersConfig {
             public int MINIMAL_MANA = 400;
         }
     }
+
+    @Expose
+    @ConfigOption(name = "No Thunderlord/Thunderbolt sounds", desc = "")
+    @ConfigEditorBoolean
+    public boolean NO_THUNDER_SOUNDS = false;
 }

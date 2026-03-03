@@ -49,6 +49,8 @@ public class AutoExperiments extends AbstractFeature {
     private long startDelay = -1, endDelay = -1, clickDelay = -1;
     private boolean sequenceAdded = false;
 
+    private int tick_counter = 0;
+
     @Override
     public void onScreenOpen(Screen screen) {
         if (!cfg.autoExperimentsAccordion.AUTOEXPERIMENTS_TOGGLE) {
@@ -122,6 +124,8 @@ public class AutoExperiments extends AbstractFeature {
 
     private void tickChrono(MinecraftClient client, ScreenHandler handler, long now) {
         ItemStack flag = handler.slots.get(49).getStack();
+        tick_counter++;
+        if (tick_counter % 9 == 0) Utils.debug("Flag Slot: " + flag.toString());
         DefaultedList<Slot> container = handler.slots;
 
         if (flag.isOf(Items.GLOWSTONE) &&
@@ -135,9 +139,9 @@ public class AutoExperiments extends AbstractFeature {
         if (!sequenceAdded && flag.isOf(Items.CLOCK)) {
             for (int i = 10; i <= 43; i++) {
                 ItemStack stack = container.get(i).getStack();
-                if (!stack.isEmpty() && stack.hasGlint()) {
+                if (!stack.isEmpty() && stack.toString().contains("terracotta")) {
                     chronomatronOrder.add(i);
-                    Utils.debug("Added glowing slot: " + i);
+                    Utils.debug("Added terracotta slot: " + i);
                     lastAdded = i;
                     sequenceAdded = true;
                     clicks = 0;
@@ -146,7 +150,7 @@ public class AutoExperiments extends AbstractFeature {
             }
 
             if (!sequenceAdded) {
-                Utils.debug("No glowing items found.");
+                Utils.debug("No terracotta items found.");
                 sequenceAdded = true;
             }
         }
@@ -155,8 +159,14 @@ public class AutoExperiments extends AbstractFeature {
                 chronomatronOrder.size() > clicks) {
 
             if (clickDelay == -1) {
-                clickDelay = now + rng.nextInt(cfg.autoExperimentsAccordion.AUTOEXPERIMENTS_CLICK_DELAY_MAX - cfg.autoExperimentsAccordion.AUTOEXPERIMENTS_CLICK_DELAY_MIN) + cfg.autoExperimentsAccordion.AUTOEXPERIMENTS_CLICK_DELAY_MIN;
-                Utils.debug("Chrono Click " + (clicks + 1) + " in " + (clickDelay - now) + "ms");
+
+                clickDelay = now + rng.nextInt(cfg.autoExperimentsAccordion.delays.MAX - cfg.autoExperimentsAccordion.delays.MIN) + cfg.autoExperimentsAccordion.delays.MIN;
+
+                int min = cfg.autoExperimentsAccordion.delays.MIN;
+                int max = cfg.autoExperimentsAccordion.delays.MAX;
+                int bound = Math.max(1, max - min);
+
+                clickDelay = now + rng.nextInt(bound) + min;                Utils.debug("Chrono Click " + (clicks + 1) + " in " + (clickDelay - now) + "ms");
             }
 
             if (now > clickDelay) {
@@ -195,7 +205,7 @@ public class AutoExperiments extends AbstractFeature {
 
         if (flag.isOf(Items.CLOCK) && ultrasequencerOrder.containsKey(clicks)) {
             if (clickDelay == -1) {
-                clickDelay = now + rng.nextInt(cfg.autoExperimentsAccordion.AUTOEXPERIMENTS_CLICK_DELAY_MAX - cfg.autoExperimentsAccordion.AUTOEXPERIMENTS_CLICK_DELAY_MIN) + cfg.autoExperimentsAccordion.AUTOEXPERIMENTS_CLICK_DELAY_MIN;
+                clickDelay = now + rng.nextInt(cfg.autoExperimentsAccordion.delays.MAX - cfg.autoExperimentsAccordion.delays.MIN) + cfg.autoExperimentsAccordion.delays.MIN;
                 Utils.debug("Ultra Click " + (clicks + 1) + " in " + (clickDelay - now) + "ms");
             }
 

@@ -32,7 +32,5 @@ public class WorldRendererMixin {
 		float tickProgress = tickCounter.getTickProgress(false);
 		
 		WiFreecam freecam = WiFreecam.INSTANCE;
-		if(freecam.isEnabled())
-			freecam.onRender(matrixStack, tickProgress);
 	}
 }

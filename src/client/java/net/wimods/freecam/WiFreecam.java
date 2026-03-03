@@ -17,7 +17,6 @@ import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import net.wimods.freecam.mixinterface.IKeyMapping;
 import net.wimods.freecam.util.EntityUtils;
-import net.wimods.freecam.util.RenderUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sb.rocket.giovanniclient.client.config.ConfigManager;
@@ -136,22 +135,6 @@ public enum WiFreecam {
 	
 	public boolean isMovingCamera()	{
 		return FREECAM_ENABLED && ConfigManager.getConfig().freecamConfig.APPLY_INPUT_TO.get() == FreecamConfig.InputEnum.Camera;
-	}
-
-	public void onRender(MatrixStack matrixStack, float partialTicks) {
-		if(!ConfigManager.getConfig().freecamConfig.FREECAM_TRACER) return;
-
-		int colorI = ConfigManager.getConfig().freecamConfig.FREECAM_TRACER_COLOR.getEffectiveColour().getRGB();
-
-		// Box
-		double extraSize = 0.05;
-		Box rawBox = EntityUtils.getLerpedBox(MC.player, partialTicks);
-		Box box = rawBox.offset(0, extraSize, 0).expand(extraSize);
-		RenderUtils.drawOutlinedBox(matrixStack, box, colorI, false);
-
-		// Line
-		RenderUtils.drawTracer(matrixStack, partialTicks, rawBox.getCenter(),
-			colorI, false);
 	}
 	
 	public boolean shouldHideHand()	{

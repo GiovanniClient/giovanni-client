@@ -1,5 +1,7 @@
 package sb.rocket.giovanniclient.client.features.inventorybuttons;
 
+import sb.rocket.giovanniclient.client.config.ConfigManager;
+
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -47,16 +49,19 @@ public record InventoryButtonLayout(String id, int relX, int relY) {
         var s = new java.util.ArrayList<InventoryButtonLayout>();
 
         // Below crafting
-        //s.add(new InventoryButtonLayout("below0", 87, 63));
         s.add(new InventoryButtonLayout("below1", 87 + 21, 63));
         s.add(new InventoryButtonLayout("below2", 87 + 21 * 2, 63));
         s.add(new InventoryButtonLayout("below3", 87 + 21 * 3, 63));
 
         // Above crafting
-        //s.add(new InventoryButtonLayout("above0", 87, 5));
         s.add(new InventoryButtonLayout("above1", 87 + 21, 5));
         s.add(new InventoryButtonLayout("above2", 87 + 21 * 2, 5));
         s.add(new InventoryButtonLayout("above3", 87 + 21 * 3, 5));
+
+        if (!(ConfigManager.getConfig().ibc.EQUIPMENT.get() == InventoryButtonsConfig.EquipmentSide.Right)) {
+            s.add(new InventoryButtonLayout("below0", 87, 63));
+            s.add(new InventoryButtonLayout("above0", 87, 5));
+        }
 
         // Crafting square
         s.add(new InventoryButtonLayout("craft00", 97, 25));
@@ -79,8 +84,18 @@ public record InventoryButtonLayout(String id, int relX, int relY) {
         }
 
         // Left side
-        for (int i = 0; i < 8; i++) {
-            s.add(new InventoryButtonLayout("left" + i, -19, 4 + 21 * i));
+        if (ConfigManager.getConfig().ibc.EQUIPMENT.get() == InventoryButtonsConfig.EquipmentSide.None) {
+            for (int i = 0; i < 8; i++) {
+                s.add(new InventoryButtonLayout("left" + i, -19, 4 + 21 * i));
+            }
+        } else if (ConfigManager.getConfig().ibc.EQUIPMENT.get() == InventoryButtonsConfig.EquipmentSide.Left) {
+            int i = 0;
+            for (; i < 4; i++) {
+                s.add(new InventoryButtonLayout("left" + i, -19-21-2, 4 + 21 * i));
+            }
+            for (; i < 8; i++) {
+                s.add(new InventoryButtonLayout("left" + i, -19, 4 + 21 * i));
+            }
         }
 
         // Top side

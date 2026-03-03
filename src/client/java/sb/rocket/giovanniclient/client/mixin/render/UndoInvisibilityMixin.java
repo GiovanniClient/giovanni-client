@@ -1,6 +1,7 @@
 package sb.rocket.giovanniclient.client.mixin.render;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -20,8 +21,12 @@ public abstract class UndoInvisibilityMixin {
 
         Entity entity = (Entity) (Object) this;
         var rc = ConfigManager.getConfig().rc.renderEntitiesAccordion;
+        var dc = ConfigManager.getConfig().dc;
 
-        if (rc.EVERYTHING_VISIBLE_TOGGLE) {
+        if (dc.EVERYTHING_VISIBLE_TOGGLE && !(entity instanceof ArmorStandEntity)) {
+            cir.setReturnValue(false);
+            return;
+        } else if (dc.SEE_INVISIBLE_ARMOR_STANDS && entity instanceof ArmorStandEntity) {
             cir.setReturnValue(false);
             return;
         }

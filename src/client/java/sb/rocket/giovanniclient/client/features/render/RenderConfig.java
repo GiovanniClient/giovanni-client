@@ -13,11 +13,6 @@ public class RenderConfig {
     public RenderEntitiesAccordion renderEntitiesAccordion = new RenderEntitiesAccordion();
     public static class RenderEntitiesAccordion {
         @Expose
-        @ConfigOption(name = "See every invisible entity", desc = "")
-        @ConfigEditorBoolean
-        public boolean EVERYTHING_VISIBLE_TOGGLE = false;
-
-        @Expose
         @ConfigOption(name = "Make Fel Visible", desc = "")
         @ConfigEditorBoolean
         public boolean FEL_VISIBLE_TOGGLE = false;

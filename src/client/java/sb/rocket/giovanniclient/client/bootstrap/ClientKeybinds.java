@@ -51,7 +51,7 @@ public final class ClientKeybinds {
                 WURST
         ));
 
-        ALL_KEYS = new KeyBinding[]{toggleFreecam, switchFreecamControlKey};
+        ALL_KEYS = new KeyBinding[]{toggleFreecam, switchFreecamControlKey, openInvButtonEditor, openConfig};
     }
 
     public static KeyBinding openConfig() {
