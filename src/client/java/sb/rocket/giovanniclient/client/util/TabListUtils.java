@@ -6,9 +6,11 @@ import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import sb.rocket.giovanniclient.client.GiovanniClientClient;
 import sb.rocket.giovanniclient.client.mixin.PlayerListHudAccessor;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -21,6 +23,11 @@ public final class TabListUtils {
     // =========================
 
     public static List<Text> getTabLines(boolean includeHeaderFooter, boolean includePlayers) {
+        // Gatekeeper pattern, this class is shit
+        if (!GiovanniClientClient.isCurrentVersionSupported()) {
+            return Collections.emptyList();
+        }
+
         MinecraftClient client = MinecraftClient.getInstance();
         if (client == null || client.player == null || client.getNetworkHandler() == null) return List.of();
 

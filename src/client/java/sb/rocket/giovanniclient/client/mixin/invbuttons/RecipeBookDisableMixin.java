@@ -1,8 +1,6 @@
 package sb.rocket.giovanniclient.client.mixin.invbuttons;
 
 import net.minecraft.client.gui.screen.ingame.RecipeBookScreen;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -10,8 +8,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import sb.rocket.giovanniclient.client.config.ConfigManager;
 import sb.rocket.giovanniclient.client.features.inventorybuttons.rei.ReiAccessibilityManager;
 import sb.rocket.giovanniclient.client.util.Utils;
-
-import static sb.rocket.giovanniclient.client.GiovanniClientClient.mc;
 
 @Mixin(RecipeBookScreen.class)
 public abstract class RecipeBookDisableMixin {

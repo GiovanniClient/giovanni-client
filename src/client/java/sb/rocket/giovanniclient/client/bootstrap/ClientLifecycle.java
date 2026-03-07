@@ -21,7 +21,7 @@ public final class ClientLifecycle {
 
             FeatureManager.registerAll();
 
-            AutoUpdateBootstrap.tryAutoUpdate();
+            AutoUpdateBootstrap.updateCheckOnStartup();
 
             Utils.debug("GiovanniClient initialized successfully! Version: " + GiovanniClientClient.MOD_VERSION_NAME);
         });

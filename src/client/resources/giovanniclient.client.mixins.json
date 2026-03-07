@@ -1,6 +1,7 @@
 {
   "required": true,
   "package": "sb.rocket.giovanniclient.client.mixin",
+  "plugin": "sb.rocket.giovanniclient.client.mixin.GiovanniMixinPlugin",
   "compatibilityLevel": "JAVA_21",
   "injectors": {
     "defaultRequire": 1
