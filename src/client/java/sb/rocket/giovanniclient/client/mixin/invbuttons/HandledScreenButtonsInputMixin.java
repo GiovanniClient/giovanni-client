@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import sb.rocket.giovanniclient.client.features.inventorybuttons.EditModeState;
 import sb.rocket.giovanniclient.client.features.inventorybuttons.overlay.EditModeOverlay;
-import sb.rocket.giovanniclient.client.features.inventorybuttons.overlay.TooltipThing;
+import sb.rocket.giovanniclient.client.features.inventorybuttons.overlay.OverlayManager;
 
 @Mixin(HandledScreen.class)
 public class HandledScreenButtonsInputMixin {
@@ -24,8 +24,8 @@ public class HandledScreenButtonsInputMixin {
             CallbackInfoReturnable<Boolean> cir
     ) {
         if ((Object) this instanceof InventoryScreen) {
-            if (TooltipThing.activeOverlay != null
-                    && TooltipThing.activeOverlay.mouseClicked(click, doubled)) {
+            if (OverlayManager.activeOverlay != null
+                    && OverlayManager.activeOverlay.mouseClicked(click, doubled)) {
                 cir.setReturnValue(true);
             }
         }
@@ -34,7 +34,7 @@ public class HandledScreenButtonsInputMixin {
     @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
     private void onKeyPressed(KeyInput input, CallbackInfoReturnable<Boolean> cir) {
         if ((Object) this instanceof InventoryScreen) {
-            if (TooltipThing.activeOverlay instanceof EditModeOverlay edit) {
+            if (OverlayManager.activeOverlay instanceof EditModeOverlay edit) {
                 // If the user is typing in the text box, don't let the 'E' key close the inventory!
                 MinecraftClient mc = MinecraftClient.getInstance();
                 if (mc.options.inventoryKey.matchesKey(input)) {
@@ -52,7 +52,7 @@ public class HandledScreenButtonsInputMixin {
         // Ensure we are only doing this when the InventoryScreen closes
         if ((Object) this instanceof InventoryScreen) {
             EditModeState.setEditMode(false);
-            TooltipThing.activeOverlay = null;
+            OverlayManager.activeOverlay = null;
         }
     }
 
@@ -60,7 +60,7 @@ public class HandledScreenButtonsInputMixin {
     private void blockHoverThroughPanel(int x, int y, int width, int height, double pointX, double pointY, CallbackInfoReturnable<Boolean> cir) {
         if ((Object) this instanceof InventoryScreen) {
             // If the mouse is over our custom grey panel, tell Minecraft it's NOT over the slot
-            if (TooltipThing.isHoveringPanel(pointX, pointY)) {
+            if (OverlayManager.isHoveringPanel(pointX, pointY)) {
                 cir.setReturnValue(false);
             }
         }

@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import sb.rocket.giovanniclient.client.features.inventorybuttons.EditModeState;
 import sb.rocket.giovanniclient.client.features.inventorybuttons.overlay.EditModeOverlay;
 import sb.rocket.giovanniclient.client.features.inventorybuttons.overlay.NormalModeOverlay;
-import sb.rocket.giovanniclient.client.features.inventorybuttons.overlay.TooltipThing;
+import sb.rocket.giovanniclient.client.features.inventorybuttons.overlay.OverlayManager;
 
 @Mixin(InventoryScreen.class)
 public class InventoryScreenButtonsMixin {
@@ -20,16 +20,16 @@ public class InventoryScreenButtonsMixin {
 
         InventoryScreen self = (InventoryScreen) (Object) this;
         if (EditModeState.isEditMode()) {
-            TooltipThing.activeOverlay = new EditModeOverlay(self);
+            OverlayManager.activeOverlay = new EditModeOverlay(self);
         } else {
-            TooltipThing.activeOverlay = new NormalModeOverlay(self);
+            OverlayManager.activeOverlay = new NormalModeOverlay(self);
         }
     }
 
     @Inject(method = "render", at = @At("TAIL"))
     private void onRender(DrawContext ctx, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        if (TooltipThing.activeOverlay != null) {
-            TooltipThing.activeOverlay.render(ctx, mouseX, mouseY);
+        if (OverlayManager.activeOverlay != null) {
+            OverlayManager.activeOverlay.render(ctx, mouseX, mouseY);
         }
     }
 }
