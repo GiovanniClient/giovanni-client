@@ -3,9 +3,9 @@ package sb.rocket.giovanniclient.client.bootstrap;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.wimods.freecam.WiFreecam;
 import sb.rocket.giovanniclient.client.config.ConfigManager;
-import sb.rocket.giovanniclient.client.features.inventorybuttons.UiButtonsEditorController;
 
-import static sb.rocket.giovanniclient.client.bootstrap.ClientKeybinds.*;
+import static sb.rocket.giovanniclient.client.bootstrap.ClientKeybinds.switchFreecamControlKey;
+import static sb.rocket.giovanniclient.client.bootstrap.ClientKeybinds.toggleFreecam;
 
 public final class ClientTicks {
 
@@ -26,21 +26,6 @@ public final class ClientTicks {
             }
         });
 
-        ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            // Keybind: open inventory button editor
-            var kb = ClientKeybinds.openInvButtonEditor();
-            if (kb != null) {
-                while (kb.wasPressed()) UiButtonsEditorController.requestOpenFromKeybind(client);
-            }
-        });
-
-        // Edit-mode auto close policy
-        ClientTickEvents.END_CLIENT_TICK.register(UiButtonsEditorController::tickAutoDisableIfNotInInventory);
-
-        // Pending flow that safely forces InventoryScreen init/reopen while editMode=true
-        ClientTickEvents.END_CLIENT_TICK.register(UiButtonsEditorController::tickPendingOpenFlow);
-
-        // Inside ClientTicks.java -> register() method
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             // 1. Toggle Freecam

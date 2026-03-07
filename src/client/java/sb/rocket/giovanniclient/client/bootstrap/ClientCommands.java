@@ -2,9 +2,11 @@ package sb.rocket.giovanniclient.client.bootstrap;
 
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.text.Text;
 import sb.rocket.giovanniclient.client.config.ConfigManager;
-import sb.rocket.giovanniclient.client.features.inventorybuttons.UiButtonsEditorController;
+import sb.rocket.giovanniclient.client.features.inventorybuttons.EditModeState;
 import sb.rocket.giovanniclient.client.util.ScoreboardUtils;
 import sb.rocket.giovanniclient.client.util.TabListUtils;
 
@@ -19,7 +21,6 @@ public final class ClientCommands {
         registerSidebar();
         registerInventoryButtonsEditor();
         registerTabDump();
-        registerClearButtons();
     }
 
     private static void registerConfigAliases() {
@@ -56,11 +57,15 @@ public final class ClientCommands {
 
     private static void registerInventoryButtonsEditor() {
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) ->
-                dispatcher.register(ClientCommandManager.literal("gioeditbuttons").executes(ctx -> {
-                    UiButtonsEditorController.requestOpenFromCommand(ctx.getSource());
-                    return 1;
-                }))
-        );
+                dispatcher.register(ClientCommandManager.literal("gioeditbuttons")
+                        .executes(context -> {
+                            EditModeState.setEditMode(true);
+                            MinecraftClient.getInstance().send(() -> {
+                                MinecraftClient.getInstance().setScreen(new InventoryScreen(MinecraftClient.getInstance().player));
+                            });
+                            return 1;
+                        })
+                ));
     }
 
     private static void registerTabDump() {
@@ -76,30 +81,6 @@ public final class ClientCommands {
                     ctx.getSource().sendFeedback(Text.literal("--- TAB (Player List) ---"));
                     for (String line : lines) ctx.getSource().sendFeedback(Text.literal(line));
                     ctx.getSource().sendFeedback(Text.literal("-------------------------"));
-
-                    return 1;
-                }))
-        );
-    }
-
-    private static void registerClearButtons() {
-        ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) ->
-                dispatcher.register(ClientCommandManager.literal("clearbuttons").executes(ctx -> {
-
-                    var cfg = sb.rocket.giovanniclient.client.features.inventorybuttons.UiButtonsConfigManager.get();
-
-                    if (cfg.buttons.isEmpty()) {
-                        ctx.getSource().sendFeedback(Text.literal("No inventory buttons to clear."));
-                        return 0;
-                    }
-
-                    int count = cfg.buttons.size();
-                    cfg.buttons.clear();
-                    sb.rocket.giovanniclient.client.features.inventorybuttons.UiButtonsConfigManager.save();
-
-                    ctx.getSource().sendFeedback(
-                            Text.literal("Cleared " + count + " inventory button(s).")
-                    );
 
                     return 1;
                 }))

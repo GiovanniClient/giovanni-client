@@ -10,4 +10,9 @@ public class RiftConfig {
     @ConfigOption(name = "Auto Agaricus Cap", desc = "The annoying mushrooms")
     @ConfigEditorBoolean
     public boolean AUTOAGARICUS_CAP_TOGGLE = false;
+
+    @Expose
+    @ConfigOption(name = "Invis players in tiny dancer", desc = "")
+    @ConfigEditorBoolean
+    public boolean INVIS_PLAYERS_IN_TINY_DANCER = false;
 }

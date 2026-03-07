@@ -1,16 +1,17 @@
 package sb.rocket.giovanniclient.client.config;
 
 import com.google.gson.*;
-import com.google.gson.reflect.TypeToken;
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
+import io.github.notenoughupdates.moulconfig.gui.MoulConfigEditor;
+import io.github.notenoughupdates.moulconfig.observer.Property;
 import io.github.notenoughupdates.moulconfig.processor.BuiltinMoulConfigGuis;
 import io.github.notenoughupdates.moulconfig.processor.ConfigProcessorDriver;
 import io.github.notenoughupdates.moulconfig.processor.MoulConfigProcessor;
-import io.github.notenoughupdates.moulconfig.gui.MoulConfigEditor;
-import io.github.notenoughupdates.moulconfig.observer.Property;
-import net.minecraft.client.MinecraftClient;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.nio.file.Files;

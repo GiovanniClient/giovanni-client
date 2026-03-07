@@ -14,7 +14,7 @@ public abstract class InventoryScreenCraftingMaskMixin {
 
     @Inject(method = "drawBackground", at = @At("TAIL"))
     private void maskCraftingArea(DrawContext ctx, float delta, int mouseX, int mouseY, CallbackInfo ci) {
-        if (!ConfigManager.getConfig().ibc.NO_CRAFTING_GRID_TOGGLE) return;
+        if (!ConfigManager.getConfig().ibc.INV_BUTTONS_IN_CRAFTING_GRID) return;
         int x = ((HandledScreenAccessor) this).giovanni$getX();
         int y = ((HandledScreenAccessor) this).giovanni$getY();
 

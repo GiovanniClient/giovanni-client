@@ -17,7 +17,7 @@ public abstract class RecipeBookDisableMixin {
 
     @Inject(method = "addRecipeBook", at = @At("HEAD"), cancellable = true)
     private void disableRecipeBook(CallbackInfo ci) {
-        if (ConfigManager.getConfig().ibc.NO_RECIPE_BOOK_TOGGLE) {
+        if (ConfigManager.getConfig().ibc.INV_BUTTONS_IN_CRAFTING_GRID) {
             if (me.shedaniel.rei.api.client.config.ConfigManager.getInstance().getConfig().areClickableRecipeArrowsEnabled())
                 Utils.chat("open Roughly Enough Items (REI) Settings\nAccessibility > \"Clickable Recipe Arrows\" = OFF!");
 

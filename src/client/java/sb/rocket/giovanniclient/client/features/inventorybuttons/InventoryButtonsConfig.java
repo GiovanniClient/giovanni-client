@@ -9,20 +9,9 @@ import io.github.notenoughupdates.moulconfig.observer.Property;
 public class InventoryButtonsConfig {
 
     @Expose
-    @ConfigOption(name = "No Crafting Text", desc = "Remove the \"Crafting\" text in the inventory")
+    @ConfigOption(name = "Buttons in Craft Grid", desc = "§cif you turn this OFF, restart the game. Sorry I'm lazy :)")
     @ConfigEditorBoolean
-    public boolean NO_CRAFTING_STRING_TOGGLE = false;
-
-    @Expose
-    @ConfigOption(name = "No Vanilla Crafting Grid", desc = "Remove the crafting grid in the inventory.\n" +
-            "If you toggle ON->OFF its bugged, restart the game to fix (i can't be bothered right now lol)")
-    @ConfigEditorBoolean
-    public boolean NO_CRAFTING_GRID_TOGGLE = false;
-
-    @Expose
-    @ConfigOption(name = "No Recipe Book", desc = "Remove the Recipe Book in the inventory")
-    @ConfigEditorBoolean
-    public boolean NO_RECIPE_BOOK_TOGGLE = false;
+    public boolean INV_BUTTONS_IN_CRAFTING_GRID = false;
 
     @Expose
     @ConfigOption(name = "Equipment mod", desc = "If you have a mod that renders equipment inside your inventory, you might want to mess with this")

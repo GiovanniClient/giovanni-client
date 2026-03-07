@@ -11,7 +11,6 @@ import net.minecraft.client.render.Camera;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
 import net.minecraft.world.waypoint.TrackedWaypoint;
 import net.wimods.freecam.WiFreecam;
 import org.spongepowered.asm.mixin.Mixin;

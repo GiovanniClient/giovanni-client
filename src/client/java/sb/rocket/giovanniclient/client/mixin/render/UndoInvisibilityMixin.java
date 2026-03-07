@@ -22,6 +22,7 @@ public abstract class UndoInvisibilityMixin {
         Entity entity = (Entity) (Object) this;
         var rc = ConfigManager.getConfig().rc.renderEntitiesAccordion;
         var dc = ConfigManager.getConfig().dc;
+        var riftconfig = ConfigManager.getConfig().riftconfig;
 
         if (dc.EVERYTHING_VISIBLE_TOGGLE && !(entity instanceof ArmorStandEntity)) {
             cir.setReturnValue(false);
@@ -43,6 +44,11 @@ public abstract class UndoInvisibilityMixin {
             if (!currentLocation.contains("Catacombs")) return;
             cir.setReturnValue(false);
             return;
+        }
+
+        if (riftconfig.INVIS_PLAYERS_IN_TINY_DANCER && entity instanceof PlayerEntity
+                && currentLocation.contains("Mirrorverse")) {
+            cir.setReturnValue(true);
         }
     }
 }
