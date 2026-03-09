@@ -16,8 +16,8 @@ import net.minecraft.util.math.Vec3d;
 import net.wimods.freecam.mixinterface.IKeyMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sb.rocket.giovanniclient.client.config.ConfigManager;
-import sb.rocket.giovanniclient.client.util.Utils;
+import rocket.giovanniclient.client.config.ConfigManager;
+import rocket.giovanniclient.client.util.Utils;
 
 public enum WiFreecam {
 	INSTANCE;

@@ -6,7 +6,7 @@ import io.github.notenoughupdates.moulconfig.annotations.*;
 import io.github.notenoughupdates.moulconfig.observer.Property;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import sb.rocket.giovanniclient.client.GiovanniClientClient;
+import rocket.giovanniclient.client.GiovanniClientClient;
 
 public class FreecamConfig {
     @Expose

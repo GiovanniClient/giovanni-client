@@ -11,10 +11,10 @@
   "environment": "client",
   "entrypoints": {
     "fabric-datagen": [
-      "sb.rocket.giovanniclient.client.GiovanniClientDataGenerator"
+      "rocket.giovanniclient.client.GiovanniClientDataGenerator"
     ],
     "client": [
-      "sb.rocket.giovanniclient.client.GiovanniClientClient"
+      "rocket.giovanniclient.client.GiovanniClientClient"
     ]
   },
   "mixins": [

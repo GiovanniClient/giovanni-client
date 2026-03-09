@@ -23,7 +23,7 @@ import org.spongepowered.asm.mixin.injection.At;
 
 import java.util.Map;
 
-import static sb.rocket.giovanniclient.client.bootstrap.ClientKeybinds.ALL_KEYS;
+import static rocket.giovanniclient.client.bootstrap.ClientKeybinds.ALL_KEYS;
 
 @Mixin(KeyBinding.class)
 public abstract class KeyBindingMixin implements IKeyMapping {

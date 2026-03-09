@@ -1,12 +1,13 @@
 {
   "required": true,
-  "package": "sb.rocket.giovanniclient.client.mixin",
-  "plugin": "sb.rocket.giovanniclient.client.mixin.GiovanniMixinPlugin",
+  "package": "rocket.giovanniclient.client.mixin",
+  "plugin": "rocket.giovanniclient.client.mixin.GiovanniMixinPlugin",
   "compatibilityLevel": "JAVA_21",
   "injectors": {
     "defaultRequire": 1
   },
   "client": [
+    "ActionBarMixin",
     "ActionBarMixin",
     "ChatMessageMixin",
     "ClientPlayNetworkHandlerMixin",
