@@ -12,13 +12,6 @@ base {
 
 loom {
     splitEnvironmentSourceSets()
-
-    mods {
-        "giovanniclient" {
-            sourceSet sourceSets.main
-            sourceSet sourceSets.client
-        }
-    }
 }
 
 fabricApi {
@@ -28,15 +21,12 @@ fabricApi {
 }
 
 repositories {
-    flatDir {
-        dirs 'libs'
-    }
     mavenCentral()
-    maven { url "https://maven.fabricmc.net/" }
-    maven { url = 'https://maven.notenoughupdates.org/releases/' }
-    maven { url = 'https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1' }
-    maven { url "https://repo.nea.moe/releases" }
-    maven { url "https://maven.shedaniel.me" }
+    maven { url = "https://maven.fabricmc.net/" }
+    maven { url = "https://maven.notenoughupdates.org/releases/" }
+    maven { url = "https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1" }
+    maven { url = "https://repo.nea.moe/releases" }
+    maven { url = "https://maven.shedaniel.me" }
 }
 
 dependencies {
@@ -47,9 +37,6 @@ dependencies {
 
     modImplementation "org.notenoughupdates.moulconfig:${project.moulconfig_artifact}:${project.moulconfig_version}"
     include "org.notenoughupdates.moulconfig:${project.moulconfig_artifact}:${project.moulconfig_version}"
-
-    //modImplementation "moe.nea:libautoupdate:0.1.0"
-    //include "moe.nea:libautoupdate:0.1.0"
 
     implementation "moe.nea:libautoupdate:1.4.1"
     include "moe.nea:libautoupdate:1.4.1"
@@ -64,7 +51,7 @@ processResources {
     inputs.property "version", project.version
     inputs.property "minecraft_version", project.minecraft_version
     inputs.property "loader_version", project.loader_version
-    filteringCharset "UTF-8"
+    filteringCharset = "UTF-8"
 
     filesMatching("fabric.mod.json") {
         expand "version": project.version,
