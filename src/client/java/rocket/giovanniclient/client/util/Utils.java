@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import rocket.giovanniclient.client.config.DebugConfig;
 
 public class Utils {
+    public static final String rocketEmoji = "\uD83D\uDE80";
     public static final Logger LOGGER = LoggerFactory.getLogger("GiovanniClient");
     private static DebugConfig debugConfig;
 

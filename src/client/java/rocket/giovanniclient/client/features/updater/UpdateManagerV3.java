@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 
 public class UpdateManagerV3 {
 
-    public enum State {
+    private enum State {
         IDLE,
         CHECKING,
         SAFETY_CHECKING,
@@ -53,34 +53,29 @@ public class UpdateManagerV3 {
     // Pipeline
     // -------------------------
 
-    public CompletableFuture<Void> runUpdateFlow() {
-        if (!config.get().AUTO_CHECK_FOR_UPDATES) {
-            Utils.log(
-                    "Update check skipped: Auto-check disabled in config."
-            );
-            return CompletableFuture.completedFuture(null);
-        }
-        return runCheck();
-    }
+    public void runUpdateFlow() {
+        // Get current state
+        State currentState = state.get();
 
-    public CompletableFuture<Void> forceCheck() {
-        return runCheck();
-    }
-
-    private CompletableFuture<Void> runCheck() {
-        if (!state.compareAndSet(State.IDLE, State.CHECKING)
-                && !state.compareAndSet(State.UP_TO_DATE, State.CHECKING)
-                && !state.compareAndSet(
-                State.UPDATE_AVAILABLE, State.CHECKING
-        )) {
-            Utils.log(
-                    "Update check already in progress or completed."
-            );
-            return CompletableFuture.completedFuture(null);
+        // Prevent concurrent checks if already in progress
+        if (currentState == State.CHECKING || currentState == State.SAFETY_CHECKING) {
+            Utils.log("Update check already in progress. Current state: " + currentState);
+            return;
         }
 
-        Utils.log("Starting update flow pipeline...");
-        return checker.check()
+        // Allow re-checking from any completed state (IDLE, UP_TO_DATE, UPDATE_AVAILABLE, INSTALLED)
+        if (!state.compareAndSet(currentState, State.CHECKING)) {
+            Utils.log("Failed to start update check: state changed concurrently. Current state: " + state.get());
+            return;
+        }
+
+        // Reset previous results for a fresh check
+        Utils.log("Starting update flow pipeline from state: " + currentState);
+        pendingUpdate = null;
+        pendingUpdateData = null;
+        safetyStatus = RatterScannerChecker.SafetyStatus.UNCHECKED;
+
+        checker.check()
                 .thenCompose(this::handleCheckResult)
                 .thenCompose(this::handleSafetyResult)
                 .thenCompose(this::handleNotifyAndInstall)
@@ -101,80 +96,105 @@ public class UpdateManagerV3 {
                 var update = u.update();
                 pendingUpdate = update;
                 pendingUpdateData = update.getUpdate();
-
                 state.set(State.UPDATE_AVAILABLE);
-
                 yield result;
             }
 
             case UpdateCheckResult.DifferentMcVersionOnly d -> {
-                Utils.log("Update available for different MC version: " + d.latestAvailable().getUpdate().getVersionName());
-                state.set(State.UP_TO_DATE);
-
+                var update = d.latestAvailable(); // Store the update
+                pendingUpdate = update;
+                pendingUpdateData = update.getUpdate();
+                Utils.log("Update available for different MC version: " + update.getUpdate().getVersionName());
+                // Don't set UP_TO_DATE here - let safety check run
                 yield result;
             }
 
             case UpdateCheckResult.UpToDate() -> {
                 Utils.log("No updates found.");
                 state.set(State.UP_TO_DATE);
-
                 yield result;
             }
         });
     }
 
-    private CompletableFuture<UpdateCheckResult> handleSafetyResult(
-            UpdateCheckResult result
-    ) {
-        // Only perform safety check if we have an actual update
-        if (!(result instanceof UpdateCheckResult.UpdateAvailable u)) {
+    private CompletableFuture<UpdateCheckResult> handleSafetyResult(UpdateCheckResult result) {
+        // Extract update from either type
+        PotentialUpdate update = null;
+        if (result instanceof UpdateCheckResult.UpdateAvailable(PotentialUpdate u)) {
+            update = u;
+        } else if (result instanceof UpdateCheckResult.DifferentMcVersionOnly(PotentialUpdate latestAvailable)) {
+            update = latestAvailable;
+        }
+
+        if (update == null) {
+            Utils.log("Safety check skipped: No update available");
             return CompletableFuture.completedFuture(result);
         }
 
         if (!config.get().RATTER_SCANNER_CHECK) {
-            Utils.log(
-                    "Safety check skipped: "
-                            + "RatterScanner check disabled in config."
-            );
+            Utils.log("Safety check skipped: RatterScanner check disabled in config.");
             safetyStatus = RatterScannerChecker.SafetyStatus.OFF;
             return CompletableFuture.completedFuture(result);
         }
 
         state.set(State.SAFETY_CHECKING);
-        Utils.log("Verifying update hash with RatterScanner...");
+        Utils.log("Verifying update hash with RatterScanner for: " + update.getUpdate().getVersionName());
+        Utils.log("Hash: " + update.getUpdate().getSha256());
 
-        return RatterScannerChecker.checkHash(u.update().getUpdate().getSha256())
+        return RatterScannerChecker.checkHash(update.getUpdate().getSha256())
                 .thenApply(status -> {
-                    Utils.log("Safety check result: " + status.name());
+                    Utils.log("Safety check final result: " + status.name());
                     safetyStatus = status;
+                    // Always set to UPDATE_AVAILABLE so notification shows status
                     state.set(State.UPDATE_AVAILABLE);
                     return result;
                 })
                 .exceptionally(ex -> {
-                    Utils.log("Safety check failed: " + ex.getMessage());
-                    safetyStatus = RatterScannerChecker.SafetyStatus.OFF;
+                    Utils.log("Safety check failed with exception: " + ex.getMessage());
+                    safetyStatus = RatterScannerChecker.SafetyStatus.ERROR;
                     state.set(State.UPDATE_AVAILABLE);
                     return result;
                 });
     }
 
     private CompletableFuture<Void> handleNotifyAndInstall(UpdateCheckResult result) {
-        PotentialUpdate update = switch (result) {
-            case UpdateCheckResult.UpdateAvailable(PotentialUpdate u) -> u;
-            case UpdateCheckResult.DifferentMcVersionOnly(PotentialUpdate u) -> u;
-            default -> null;
-        };
-
-        if (update == null) {
-            if (result instanceof UpdateCheckResult.UpToDate) {
-                MinecraftClient.getInstance().execute(notifier::sendNoUpdates);
-            }
+        if (result instanceof UpdateCheckResult.UpToDate) {
+            MinecraftClient.getInstance().execute(notifier::sendNoUpdates);
             return CompletableFuture.completedFuture(null);
         }
 
-        MinecraftClient.getInstance().execute(() -> notifier.sendUpdateAvailable(update.getUpdate(), safetyStatus));
-        Utils.log("Notification sent");
+        PotentialUpdate update;
+        boolean forDifferentMcVersion = false;
 
+        if (result instanceof UpdateCheckResult.UpdateAvailable(PotentialUpdate u)) {
+            update = u;
+        } else if (result instanceof UpdateCheckResult.DifferentMcVersionOnly(PotentialUpdate u)) {
+            update = u;
+            forDifferentMcVersion = true;
+        } else {
+            update = null;
+        }
+
+        if (update == null) {
+            return CompletableFuture.completedFuture(null);
+        }
+
+        // Send different notifications based on update type
+        if (forDifferentMcVersion) {
+            MinecraftClient.getInstance().execute(() ->
+                    notifier.sendUpdateForDifferentMcVersion(update.getUpdate())
+            );
+            Utils.log("Notification sent (different MC version)");
+            Utils.log("Automatic installation blocked: Update requires different Minecraft version.");
+            return CompletableFuture.completedFuture(null);
+        } else {
+            MinecraftClient.getInstance().execute(() ->
+                    notifier.sendUpdateAvailable(update.getUpdate(), safetyStatus)
+            );
+            Utils.log("Notification sent");
+        }
+
+        // Continue with normal update logic
         if (isMalicious()) {
             Utils.log("Automatic installation blocked: Update flagged as malicious.");
             return CompletableFuture.completedFuture(null);
@@ -201,7 +221,7 @@ public class UpdateManagerV3 {
     // Manual install (for command)
     // -------------------------
 
-    public CompletableFuture<Void> installPending() {
+    public CompletableFuture<Void> manualInstall() {
         if (pendingUpdate == null || pendingUpdateData == null) {
             Utils.log("Manual install failed: " + "No pending update found.");
             return CompletableFuture.completedFuture(null);
@@ -217,13 +237,20 @@ public class UpdateManagerV3 {
 
     private CompletableFuture<Void> install(PotentialUpdate update) {
         state.set(State.INSTALLING);
-        Utils.log("Downloading and installing update: " + update.getUpdate().getVersionName());
+        Utils.log("Installing: " + update.getUpdate().getVersionName());
 
-        return installer.install(update).thenRun(() -> {
-            Utils.log("Update successfully installed. Restart required.");
-            state.set(State.INSTALLED);
-            MinecraftClient.getInstance().execute(notifier::sendInstalled);
-        });
+        return installer.install(update)
+                .thenRun(() -> {
+                    Utils.log("Update installed successfully");
+                    state.set(State.INSTALLED);
+                    MinecraftClient.getInstance().execute(notifier::sendInstalled);
+                })
+                .exceptionally(ex -> {
+                    Utils.log("Installation failed: " + ex.getMessage());
+                    ex.printStackTrace();
+                    state.set(State.IDLE); // CRITICAL: Reset on failure
+                    return null;
+                });
     }
 
     public void sendUpdateFoundMessage() {

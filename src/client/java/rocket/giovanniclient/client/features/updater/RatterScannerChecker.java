@@ -3,6 +3,7 @@ package rocket.giovanniclient.client.features.updater;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import rocket.giovanniclient.client.util.Utils;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -35,29 +36,87 @@ public class RatterScannerChecker {
 
     public static CompletableFuture<SafetyStatus> checkHash(String sha256) {
         if (sha256 == null || sha256.isEmpty()) {
+            Utils.log("RatterScanner: Hash is null or empty");
             return CompletableFuture.completedFuture(SafetyStatus.ERROR);
         }
 
-        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API_BASE + sha256)).header("User-Agent", "GiovanniClient-Updater").GET().build();
+        Utils.log("RatterScanner: Checking hash: " + sha256.substring(0, 8) + "...");
 
-        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenApply(response -> {
-            if (response.statusCode() != 200) return SafetyStatus.ERROR;
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(API_BASE + sha256))
+                .header("User-Agent", "GiovanniClient/1.0")
+                .GET()
+                .build();
 
-            JsonObject json = gson.fromJson(response.body(), JsonObject.class);
-            if (json.has("error")) return SafetyStatus.ERROR;
+        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(response -> {
+                    Utils.log("RatterScanner: API response code: " + response.statusCode());
 
-            JsonArray results = json.getAsJsonArray("results");
-            if (results == null || results.isEmpty()) return SafetyStatus.UNCHECKED;
+                    if (response.statusCode() != 200) {
+                        Utils.log("RatterScanner: Non-200 response: " + response.body());
+                        return SafetyStatus.ERROR;
+                    }
 
-            JsonObject result = results.get(0).getAsJsonObject();
-            boolean safe = result.get("safe").getAsBoolean();
-            boolean automatedSafe = result.get("automated_safe").getAsBoolean();
-            boolean malicious = result.get("malicious").getAsBoolean();
+                    String body = response.body();
+                    Utils.log("RatterScanner: Raw API response: " + body);
 
-            if (malicious) return SafetyStatus.MALICIOUS;
-            if (safe || automatedSafe) return SafetyStatus.VERIFIED_SAFE;
+                    JsonObject json = gson.fromJson(body, JsonObject.class);
+                    if (json.has("error")) {
+                        Utils.log("RatterScanner: API returned error: " + json.get("error").getAsString());
+                        return SafetyStatus.ERROR;
+                    }
 
-            return SafetyStatus.UNCHECKED;
-        }).exceptionally(ex -> SafetyStatus.ERROR);
+                    JsonArray results = json.getAsJsonArray("results");
+                    if (results == null || results.isEmpty()) {
+                        Utils.log("RatterScanner: No results found for hash");
+                        return SafetyStatus.UNCHECKED;
+                    }
+
+                    // Check ALL results, not just the first one
+                    boolean foundMalicious = false;
+                    boolean foundSafe = false;
+
+                    for (int i = 0; i < results.size(); i++) {
+                        JsonObject result = results.get(i).getAsJsonObject();
+
+                        // Safely get boolean values
+                        boolean safe = getBooleanSafe(result, "safe");
+                        boolean automatedSafe = getBooleanSafe(result, "automated_safe");
+                        boolean malicious = getBooleanSafe(result, "malicious");
+
+                        Utils.log("RatterScanner: Result #" + i + " - safe: " + safe +
+                                ", automated_safe: " + automatedSafe + ", malicious: " + malicious);
+
+                        if (malicious) foundMalicious = true;
+                        if (safe || automatedSafe) foundSafe = true;
+                    }
+
+                    if (foundMalicious) {
+                        Utils.log("RatterScanner: Hash flagged as MALICIOUS");
+                        return SafetyStatus.MALICIOUS;
+                    }
+
+                    if (foundSafe) {
+                        Utils.log("RatterScanner: Hash verified as SAFE");
+                        return SafetyStatus.VERIFIED_SAFE;
+                    }
+
+                    Utils.log("RatterScanner: Hash found but not verified safe");
+                    return SafetyStatus.UNCHECKED;
+                })
+                .exceptionally(ex -> {
+                    Utils.log("RatterScanner: Exception during check: " + ex.getMessage());
+                    ex.printStackTrace();
+                    return SafetyStatus.ERROR;
+                });
+    }
+
+    // Helper method to safely parse booleans
+    private static boolean getBooleanSafe(JsonObject obj, String key) {
+        try {
+            return obj.has(key) && !obj.get(key).isJsonNull() && obj.get(key).getAsBoolean();
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

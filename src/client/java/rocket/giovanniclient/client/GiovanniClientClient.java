@@ -51,8 +51,10 @@ public final class GiovanniClientClient implements ClientModInitializer {
         ClientTicks.register();
         ClientCommands.register();
         ClientResources.register();
-        WiFreecam.INSTANCE.initialize();
+        ClientWorldJoinEvents.register();
         ClientLifecycle.registerClientStarted();
+
+        WiFreecam.INSTANCE.initialize();
     }
 
     private void runSafeModeInit(String version) {

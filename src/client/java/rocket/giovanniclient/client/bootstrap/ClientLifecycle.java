@@ -17,11 +17,9 @@ public final class ClientLifecycle {
     public static void registerClientStarted() {
         ClientLifecycleEvents.CLIENT_STARTED.register(client -> {
             ConfigManager.init();
-            Utils.init(ConfigManager.getConfig().dc);
+            Utils.init(ConfigManager.getConfig().debugConfig);
 
             FeatureManager.registerAll();
-
-            //UpdateCheckBootstrap.updateCheckOnStartup();
 
             Utils.debug("GiovanniClient initialized successfully! Version: " + GiovanniClientClient.MOD_VERSION);
         });

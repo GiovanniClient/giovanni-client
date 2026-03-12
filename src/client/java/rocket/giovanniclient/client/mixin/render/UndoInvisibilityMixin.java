@@ -21,7 +21,7 @@ public abstract class UndoInvisibilityMixin {
 
         Entity entity = (Entity) (Object) this;
         var rc = ConfigManager.getConfig().rc.renderEntitiesAccordion;
-        var dc = ConfigManager.getConfig().dc;
+        var dc = ConfigManager.getConfig().debugConfig;
         var riftconfig = ConfigManager.getConfig().riftconfig;
 
         if (dc.EVERYTHING_VISIBLE_TOGGLE && !(entity instanceof ArmorStandEntity)) {

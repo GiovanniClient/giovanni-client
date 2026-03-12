@@ -23,7 +23,7 @@ public abstract class InventoryScreenCraftingMaskMixin {
         int right  = x + 173;
         int bottom = y + 79;
 
-        boolean isDebugActive = ConfigManager.getConfig().dc.DEBUG;
+        boolean isDebugActive = ConfigManager.getConfig().debugConfig.DEBUG;
         ctx.fill(left, top, right, bottom, isDebugActive ? 0x4411ffcc : InventoryBackgroundColor.get());
     }
 

@@ -22,21 +22,21 @@ public final class InventoryBackgroundColor {
             try (InputStream in = rm.open(INV_TEX)) {
                 NativeImage img = NativeImage.read(in);
 
-                // Pixel “sicuro” di background (nella texture che hai inviato è background pieno)
+                // "Safe" background pixel (in the texture provided, this is solid background)
                 int argb = img.getColorArgb(25, 6);
 
-                // forza alpha pieno (in caso il pixel abbia alpha strana)
+                // Force full alpha (in case the pixel has unusual alpha values)
                 cached = argb; //(argb & 0x00FFFFFF) | 0xFF000000;
                 img.close();
 
                 return cached;
             }
         } catch (Exception e) {
-            return 0xFF000000; // fallback
+            return 0xFF000000; // Fallback
         }
     }
 
-    // Se cambi resource pack in-game, devi invalidare la cache (opzionale).
+    // If you change resource packs in-game, you must invalidate the cache (optional).
     public static void invalidate() {
         cached = null;
     }

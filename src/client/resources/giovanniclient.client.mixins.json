@@ -17,7 +17,6 @@
     "invbuttons.InventoryScreenButtonsMixin",
     "invbuttons.InventoryScreenCraftingMaskMixin",
     "invbuttons.InventoryScreenCraftingSuppressionMixin",
-    "invbuttons.NoOffHandMixin",
     "invbuttons.RecipeBookDisableMixin",
     "invbuttons.ScreenInvoker",
     "invbuttons.SlotAccessor",

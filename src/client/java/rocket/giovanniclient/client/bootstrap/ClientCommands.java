@@ -2,6 +2,7 @@ package rocket.giovanniclient.client.bootstrap;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
@@ -10,6 +11,7 @@ import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.text.Text;
 import rocket.giovanniclient.client.config.ConfigManager;
 import rocket.giovanniclient.client.features.inventorybuttons.EditModeState;
+import rocket.giovanniclient.client.features.updater.RatterScannerChecker;
 import rocket.giovanniclient.client.util.ScoreboardUtils;
 import rocket.giovanniclient.client.util.TabListUtils;
 
@@ -24,12 +26,12 @@ public final class ClientCommands {
 
     public static void register() {
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
-            registerConfigAliases(dispatcher);
-            registerSidebar(dispatcher);
-            registerInventoryButtonsEditor(dispatcher);
-            registerTabDump(dispatcher);
-            //registerRStestcommand(dispatcher);
-            //registerUpdateCommands(dispatcher);
+            slash_giovanniclient(dispatcher);
+            slash_giovanniUpdates(dispatcher);
+            inventorybuttons(dispatcher);
+            slash_dumpsidebar(dispatcher);
+            slash_dumptab(dispatcher);
+            slash_ratterscannertestsha256(dispatcher);
         });
     }
 
@@ -39,7 +41,7 @@ public final class ClientCommands {
         });
     }
 
-    private static void registerConfigAliases(CommandDispatcher<FabricClientCommandSource> dispatcher) {
+    private static void slash_giovanniclient(CommandDispatcher<FabricClientCommandSource> dispatcher) {
         String[] aliases = {"giovanni", "giovanniclient", "gio", "zoo"};
 
         for (String alias : aliases) {
@@ -50,8 +52,8 @@ public final class ClientCommands {
         }
     }
 
-    private static void registerSidebar(CommandDispatcher<FabricClientCommandSource> dispatcher) {
-        dispatcher.register(ClientCommandManager.literal("sidebar").executes(context -> {
+    private static void slash_dumpsidebar(CommandDispatcher<FabricClientCommandSource> dispatcher) {
+        dispatcher.register(ClientCommandManager.literal("dumpsidebar").executes(context -> {
             List<String> lines = ScoreboardUtils.getCleanedSidebarLines();
 
             if (lines.isEmpty()) {
@@ -67,21 +69,26 @@ public final class ClientCommands {
         }));
     }
 
-    private static void registerInventoryButtonsEditor(CommandDispatcher<FabricClientCommandSource> dispatcher) {
-        dispatcher.register(ClientCommandManager.literal("gioeditbuttons")
-                .executes(context -> {
-                    EditModeState.setEditMode(true);
-                    MinecraftClient.getInstance().send(() -> {
-                        assert MinecraftClient.getInstance().player != null;
+    private static void inventorybuttons(CommandDispatcher<FabricClientCommandSource> dispatcher) {
+        String[] aliases = {"gioeditbuttons", "inventorybuttons", "neubuttons"};
+
+        for (String alias : aliases) {
+            dispatcher.register(ClientCommandManager.literal(alias).executes(context -> {
+                EditModeState.setEditMode(true);
+                MinecraftClient.getInstance().execute(() -> {
+                    if (MinecraftClient.getInstance().player != null) {
                         MinecraftClient.getInstance().setScreen(new InventoryScreen(MinecraftClient.getInstance().player));
-                    });
-                    return 1;
-                })
-        );
+                    }
+                });
+                return 1;
+            }));
+        }
     }
 
-    private static void registerTabDump(CommandDispatcher<FabricClientCommandSource> dispatcher) {
-        dispatcher.register(ClientCommandManager.literal("tabdump").executes(ctx -> {
+    private static void slash_dumptab(CommandDispatcher<FabricClientCommandSource> dispatcher) {
+        dispatcher.register(ClientCommandManager.literal("dumptab").executes(ctx -> {
+            if (!ConfigManager.getConfig().debugConfig.DEBUG) return 0;
+
             List<String> lines = TabListUtils.getCleanedLines(true, true);
 
             if (lines.isEmpty()) {
@@ -97,32 +104,73 @@ public final class ClientCommands {
         }));
     }
 
-    /*
-    private static void registerUpdateCommands(CommandDispatcher<FabricClientCommandSource> dispatcher) {
+
+    private static void slash_giovanniUpdates(CommandDispatcher<FabricClientCommandSource> dispatcher) {
         dispatcher.register(ClientCommandManager.literal("giovanni-check-update")
                 .executes(context -> {
-                    UPDATE_MANAGER.handleCheckCommand();
+                    UPDATE_MANAGER.runUpdateFlow();
                     return 1;
                 })
         );
         dispatcher.register(ClientCommandManager.literal("giovanni-do-update")
                 .executes(context -> {
-                    UPDATE_MANAGER.handleInstallCommand();
+                    UPDATE_MANAGER.manualInstall();
                     return 1;
                 })
         );
     }
 
-    private static void registerRStestcommand(CommandDispatcher<FabricClientCommandSource> dispatcher) {
-        dispatcher.register(ClientCommandManager.literal("ratterscanner")
-                .then(ClientCommandManager.argument("sha256", StringArgumentType.string())
-                        .executes(context -> {
-                            String hash = StringArgumentType.getString(context, "sha256");
-                            UPDATE_MANAGER.handleTestCommand(hash);
-                            return 1;
-                        })
+    private static void slash_ratterscannertestsha256(CommandDispatcher<FabricClientCommandSource> dispatcher) {
+        dispatcher.register(ClientCommandManager.literal("ratterscannertestsha256")
+                .then(ClientCommandManager.argument("hash", StringArgumentType.string())
+                        .executes(ClientCommands::execute)
                 )
         );
     }
-    */
+
+    private static int execute(CommandContext<FabricClientCommandSource> context) {
+        String hash = StringArgumentType.getString(context, "hash");
+
+        // Validate SHA256 format (64 hex characters)
+        if (!hash.matches("[a-fA-F0-9]{64}")) {
+            context.getSource().sendFeedback(
+                    Text.literal("§cInvalid SHA256 hash format. Expected 64 hexadecimal characters.")
+            );
+            return 0;
+        }
+
+        context.getSource().sendFeedback(
+                Text.literal("§7Checking hash with RatterScanner...")
+        );
+
+        // Perform async check
+        RatterScannerChecker.checkHash(hash)
+                .thenAccept(status -> {
+                    // Run on render thread for UI
+                    MinecraftClient.getInstance().execute(() -> {
+                        String message = switch (status) {
+                            case VERIFIED_SAFE -> "§a✓ VERIFIED SAFE";
+                            case MALICIOUS -> "§c✗ MALICIOUS / UNSAFE";
+                            case UNCHECKED -> "§e⚠ UNCHECKED / PENDING";
+                            case ERROR -> "§c✗ API ERROR";
+                            case OFF -> "§c✗ RAT CHECK TURNED OFF";
+                        };
+
+                        context.getSource().sendFeedback(
+                                Text.literal("§7Result: " + message)
+                        );
+                    });
+                })
+                .exceptionally(ex -> {
+                    MinecraftClient.getInstance().execute(() -> {
+                        context.getSource().sendFeedback(
+                                Text.literal("§c✗ Exception: " + ex.getMessage())
+                        );
+                    });
+                    return null;
+                });
+
+        return 1; // Success
+    }
+
 }

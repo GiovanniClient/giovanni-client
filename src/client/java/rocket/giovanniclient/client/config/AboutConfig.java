@@ -23,13 +23,12 @@ public class AboutConfig extends Config {
     public boolean AUTO_CHECK_FOR_UPDATES = true;
 
     @Expose
-    @ConfigOption(name = "RatterScanner check", desc = "When update is found, check RatterScanner status for the .jar\n" +
-            "This contacts RatterScanner's servers with your IP")
+    @ConfigOption(name = "RatterScanner check", desc = "Checking .jar safety via RatterScanner exposes your IP with them.")
     @ConfigEditorBoolean
     public boolean RATTER_SCANNER_CHECK = true;
 
     @Expose
-    @ConfigOption(name = "Auto Update", desc = "Automatically download new version on each startup")
+    @ConfigOption(name = "Auto Update", desc = "Automatically download new version when update is available")
     @ConfigEditorBoolean
     public boolean AUTO_DOWNLOAD_UPDATES = false;
 
@@ -46,7 +45,7 @@ public class AboutConfig extends Config {
         }
 
         MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0f));
-        GiovanniClientClient.UPDATE_MANAGER.forceCheck(); // Delegate the check to the global UpdateManager instance
+        GiovanniClientClient.UPDATE_MANAGER.runUpdateFlow();
 
         lastUpdateCheckClick = currentTime; // Reset button cooldown
     };
