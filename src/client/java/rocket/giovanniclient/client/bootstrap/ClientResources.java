@@ -5,7 +5,7 @@ import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.SynchronousResourceReloader;
 import net.minecraft.util.Identifier;
 import rocket.giovanniclient.client.GiovanniClientClient;
-import rocket.giovanniclient.client.features.misc.InventoryBackgroundColor;
+import rocket.giovanniclient.client.features.inventorybuttons.InventoryBackgroundColor;
 
 public final class ClientResources {
     private ClientResources() {}

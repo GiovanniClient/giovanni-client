@@ -1,4 +1,4 @@
-package rocket.giovanniclient.client.features.misc;
+package rocket.giovanniclient.client.features.inventorybuttons;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;

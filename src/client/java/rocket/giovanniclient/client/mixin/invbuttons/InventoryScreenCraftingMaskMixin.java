@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import rocket.giovanniclient.client.config.ConfigManager;
-import rocket.giovanniclient.client.features.misc.InventoryBackgroundColor;
+import rocket.giovanniclient.client.features.inventorybuttons.InventoryBackgroundColor;
 
 @Mixin(InventoryScreen.class)
 public abstract class InventoryScreenCraftingMaskMixin {

@@ -8,7 +8,6 @@
   },
   "client": [
     "ActionBarMixin",
-    "ActionBarMixin",
     "ChatMessageMixin",
     "ClientPlayNetworkHandlerMixin",
     "PlayerListHudAccessor",
