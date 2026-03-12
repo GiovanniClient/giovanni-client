@@ -39,12 +39,12 @@ public class AboutConfig extends Config {
         final long CHECK_COOLDOWN_MILLIS = 5000;
         if (currentTime - lastUpdateCheckClick < CHECK_COOLDOWN_MILLIS) {
             long remainingSeconds = (CHECK_COOLDOWN_MILLIS - (currentTime - lastUpdateCheckClick)) / 1000 + 1;
-            MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.BLOCK_FIRE_EXTINGUISH, 1.0f));
+            MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.ui(SoundEvents.BLOCK_FIRE_EXTINGUISH, 1.0f));
             Utils.chat("Update check is on cooldown! Please wait " + remainingSeconds + " seconds.");
             return;
         }
 
-        MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0f));
+        MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.ui(SoundEvents.UI_BUTTON_CLICK, 1.0f));
         GiovanniClientClient.UPDATE_MANAGER.runUpdateFlow();
 
         lastUpdateCheckClick = currentTime; // Reset button cooldown

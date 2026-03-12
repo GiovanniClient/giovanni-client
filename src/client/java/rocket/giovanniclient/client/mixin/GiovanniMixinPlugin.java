@@ -11,7 +11,7 @@ import java.util.Set;
 public class GiovanniMixinPlugin implements IMixinConfigPlugin {
 
     // Must match the list in your main class exactly!
-    private static final List<String> SUPPORTED_VERSIONS = List.of("1.21.10");
+    private static final List<String> SUPPORTED_VERSIONS = List.of("1.21.11");
 
     private boolean isSupported;
 

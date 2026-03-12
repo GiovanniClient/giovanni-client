@@ -10,7 +10,7 @@ package net.wimods.freecam.mixin;
 import net.minecraft.client.render.Camera;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
 import net.minecraft.world.waypoint.TrackedWaypoint;
 import net.wimods.freecam.WiFreecam;
 import org.spongepowered.asm.mixin.Mixin;
@@ -27,7 +27,7 @@ public abstract class CameraMixin implements TrackedWaypoint.YawProvider {
 	@Inject(at = @At("RETURN"),
 		method = "update",
 		cancellable = false)
-	public void onSetup(BlockView area, Entity focusedEntity, boolean thirdPerson, boolean inverseView, float tickProgress, CallbackInfo ci) {
+	public void onSetup(World area, Entity focusedEntity, boolean thirdPerson, boolean inverseView, float tickProgress, CallbackInfo ci) {
 		WiFreecam freecam = WiFreecam.INSTANCE;
 		if(!freecam.isEnabled())
 			return;

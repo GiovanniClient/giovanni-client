@@ -12,6 +12,7 @@ import net.wimods.freecam.WiFreecam;
 import rocket.giovanniclient.client.bootstrap.*;
 import rocket.giovanniclient.client.config.ConfigManager;
 import rocket.giovanniclient.client.features.updater.UpdateManagerV3;
+import rocket.giovanniclient.client.mixin.GiovanniMixinPlugin;
 
 import java.util.List;
 
@@ -22,11 +23,11 @@ public final class GiovanniClientClient implements ClientModInitializer {
     public static final String MOD_ID = "giovanniclient";
     public static final String MOD_VERSION = getModVersion();
 
-    public static final List<String> SUPPORTED_VERSIONS = List.of(
-            // ALSO UPDATE GiovanniMixinPlugin.java!
-            // can't call this list from there because it crashes in safemode
-            "1.21.10"
-    );
+    /**
+     * ALSO UPDATE {@link GiovanniMixinPlugin}
+     * can't call this list from there because it crashes in safemode
+     */
+    public static final List<String> SUPPORTED_VERSIONS = List.of("1.21.11");
     public static final UpdateManagerV3 UPDATE_MANAGER = new UpdateManagerV3(() -> ConfigManager.getConfig().about);
 
     @Override
