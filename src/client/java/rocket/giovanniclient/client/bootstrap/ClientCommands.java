@@ -28,14 +28,14 @@ public final class ClientCommands {
             registerSidebar(dispatcher);
             registerInventoryButtonsEditor(dispatcher);
             registerTabDump(dispatcher);
-            registerRStestcommand(dispatcher);
-            registerUpdateCommands(dispatcher);
+            //registerRStestcommand(dispatcher);
+            //registerUpdateCommands(dispatcher);
         });
     }
 
     public static void registerSafemode() {
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
-            registerUpdateCommands(dispatcher);
+            //registerUpdateCommands(dispatcher);
         });
     }
 
@@ -97,6 +97,7 @@ public final class ClientCommands {
         }));
     }
 
+    /*
     private static void registerUpdateCommands(CommandDispatcher<FabricClientCommandSource> dispatcher) {
         dispatcher.register(ClientCommandManager.literal("giovanni-check-update")
                 .executes(context -> {
@@ -123,4 +124,5 @@ public final class ClientCommands {
                 )
         );
     }
+    */
 }

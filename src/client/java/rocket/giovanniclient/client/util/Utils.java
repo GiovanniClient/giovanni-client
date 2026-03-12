@@ -34,6 +34,11 @@ public class Utils {
         }
     }
 
+    public static void mutableTextToChat(MutableText text) {
+        assert MinecraftClient.getInstance().player != null;
+        MinecraftClient.getInstance().player.sendMessage(text, false);
+    }
+
     public static void chat(String message) {
         sendFormattedChatMessage("Giovanni > ", Formatting.LIGHT_PURPLE, message);
     }
@@ -46,6 +51,7 @@ public class Utils {
             LOGGER.warn("Utils.debug() called before initialization of DebugConfig: {}", message);
         }
     }
+
 
     public static void log(String message) {
         LOGGER.info("{}", message);

@@ -13,7 +13,7 @@ public final class ClientResources {
     private ClientResources() {}
 
     private static final Identifier RELOAD_ID =
-            Identifier.of(GiovanniClientClient.MODID, "inventory_bg_color_reload");
+            Identifier.of(GiovanniClientClient.MOD_ID, "inventory_bg_color_reload");
 
     public static void register() {
         ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(

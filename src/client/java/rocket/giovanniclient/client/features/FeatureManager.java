@@ -11,7 +11,7 @@ import rocket.giovanniclient.client.features.misc.CloseChocolateEggs;
 import rocket.giovanniclient.client.features.render.StarredMobESP;
 import rocket.giovanniclient.client.features.rift.AutoAgaricusCap;
 import rocket.giovanniclient.client.features.slayers.enderman.AutoSoulcry;
-import rocket.giovanniclient.client.features.updater.StartupMessageFeature;
+import rocket.giovanniclient.client.features.old_updater.StartupMessageFeature;
 import rocket.giovanniclient.client.util.PlayerLocator;
 import rocket.giovanniclient.client.util.SlayerUtils;
 

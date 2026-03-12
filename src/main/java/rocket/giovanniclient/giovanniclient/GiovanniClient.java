@@ -1,4 +1,4 @@
-package sb.rocket.giovanniclient;
+package rocket.giovanniclient.giovanniclient;
 
 import net.fabricmc.api.ModInitializer;
 

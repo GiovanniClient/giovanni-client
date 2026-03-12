@@ -10,7 +10,8 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.wimods.freecam.WiFreecam;
 import rocket.giovanniclient.client.bootstrap.*;
-import rocket.giovanniclient.client.features.updater.UpdateManagerV2;
+import rocket.giovanniclient.client.config.ConfigManager;
+import rocket.giovanniclient.client.features.updater.UpdateManagerV3;
 
 import java.util.List;
 
@@ -18,24 +19,23 @@ public final class GiovanniClientClient implements ClientModInitializer {
 
     public static final MinecraftClient mc = MinecraftClient.getInstance();
 
-    public static final String MODID = "giovanniclient";
-    public static final String MOD_VERSION_NAME = "V1.1 for mc1.21.10";
-    public static final int MOD_VERSION_CODE = 10011;
+    public static final String MOD_ID = "giovanniclient";
+    public static final String MOD_VERSION = getModVersion();
 
     public static final List<String> SUPPORTED_VERSIONS = List.of(
             // ALSO UPDATE GiovanniMixinPlugin.java!
             // can't call this list from there because it crashes in safemode
             "1.21.10"
     );
-    public static final UpdateManagerV2 UPDATE_MANAGER = new UpdateManagerV2();
+    public static final UpdateManagerV3 UPDATE_MANAGER = new UpdateManagerV3(() -> ConfigManager.getConfig().about);
 
     @Override
     public void onInitializeClient() {
         // Gatekeeper Pattern
         // Allows the mod to run on any minecraft version, but loads the features only on supported ones
         // This way we can run the updater on versions the mod was not compiled for
-        String currentMcVersion = getCurrentMcVersion();
-        UPDATE_MANAGER.prepare();
+        String currentMcVersion = getMcVersion();
+        UPDATE_MANAGER.cleanup();
 
         if (isCurrentVersionSupported()) {
             runFullInit();
@@ -61,31 +61,33 @@ public final class GiovanniClientClient implements ClientModInitializer {
 
         ClientLifecycle.registerShutdownHook();
 
-        // message warning player they are running on unsupported minecraft version pops up when they join a world
+        // inform the user they are running on unsupported minecraft version - pops up when they join a world
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
-            MutableText warning = Text.literal("\n\n\n===== ").formatted(Formatting.GOLD, Formatting.BOLD)
+            MutableText warningMessage = Text.literal("\n\n\n===== ").formatted(Formatting.GOLD, Formatting.BOLD)
                     .append(Text.literal("GIOVANNI CLIENT").formatted(Formatting.AQUA, Formatting.BOLD))
                     .append(Text.literal(" =====\n").formatted(Formatting.GOLD, Formatting.BOLD))
-                    .append(Text.literal("\nUNSUPPORTED MC VERSION: ").formatted(Formatting.RED, Formatting.BOLD)).append(Text.literal(getCurrentMcVersion()).formatted(Formatting.WHITE))
+                    .append(Text.literal("\nUNSUPPORTED MC VERSION: ").formatted(Formatting.RED, Formatting.BOLD)).append(Text.literal(getMcVersion()).formatted(Formatting.WHITE))
                     .append(Text.literal("\nFeatures are disabled to prevent crashing.\n").formatted(Formatting.GRAY))
-                    .append(Text.literal("\n[CLICK TO CHECK FOR UPDATES]").formatted(Formatting.AQUA, Formatting.BOLD, Formatting.UNDERLINE).styled(s -> s.withClickEvent(new ClickEvent.RunCommand("/giovanni-check-update"))))
+                    .append(Text.literal("\n[CLICK TO CHECK FOR UPDATES]").formatted(Formatting.AQUA, Formatting.BOLD, Formatting.UNDERLINE).styled(s -> s.withClickEvent(new ClickEvent.SuggestCommand("/giovanni-check-update"))))
                     .append(Text.literal("\n\n=========================").formatted(Formatting.GOLD, Formatting.BOLD));
 
             assert client.player != null;
-            client.player.sendMessage(warning, false);
+            client.player.sendMessage(warningMessage, false);
         });
 
         ClientCommands.registerSafemode();
         ClientLifecycle.registerClientStarted();
     }
 
-    public static String getCurrentMcVersion() {
+    public static String getMcVersion() {
         return FabricLoader.getInstance().getModContainer("minecraft").get().getMetadata().getVersion().getFriendlyString();
     }
 
-    public static boolean isCurrentVersionSupported() {
-        return SUPPORTED_VERSIONS.contains(getCurrentMcVersion());
+    public static String getModVersion() {
+        return FabricLoader.getInstance().getModContainer(MOD_ID).map(container -> container.getMetadata().getVersion().getFriendlyString()).orElse("0.1");
     }
 
-
+    public static boolean isCurrentVersionSupported() {
+        return SUPPORTED_VERSIONS.contains(getMcVersion());
+    }
 }

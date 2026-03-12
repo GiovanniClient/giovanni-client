@@ -28,6 +28,9 @@ fabricApi {
 }
 
 repositories {
+    flatDir {
+        dirs 'libs'
+    }
     mavenCentral()
     maven { url "https://maven.fabricmc.net/" }
     maven { url = 'https://maven.notenoughupdates.org/releases/' }
@@ -42,12 +45,14 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
-    // Use Fabric's include configuration to bundle MoulConfig
     modImplementation "org.notenoughupdates.moulconfig:${project.moulconfig_artifact}:${project.moulconfig_version}"
     include "org.notenoughupdates.moulconfig:${project.moulconfig_artifact}:${project.moulconfig_version}"
 
-    modImplementation "moe.nea:libautoupdate:0.1.0"
-    include "moe.nea:libautoupdate:0.1.0"
+    //modImplementation "moe.nea:libautoupdate:0.1.0"
+    //include "moe.nea:libautoupdate:0.1.0"
+
+    implementation "moe.nea:libautoupdate:1.4.1"
+    include "moe.nea:libautoupdate:1.4.1"
 
     modCompileOnly "me.shedaniel:RoughlyEnoughItems-api-fabric:${project.REI_version}"
     modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.REI_version}"
