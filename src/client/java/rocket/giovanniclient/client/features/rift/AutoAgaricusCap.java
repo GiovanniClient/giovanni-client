@@ -31,7 +31,7 @@ public final class AutoAgaricusCap extends AbstractFeature {
         if (client == null || client.player == null || client.world == null || client.interactionManager == null) return;
 
         // if in Area: The Rift
-        if (PlayerLocator.isPlayerIn("The Rift")) {
+        if (!PlayerLocator.isPlayerIn("The Rift")) {
             reset();
             return;
         }
@@ -75,7 +75,7 @@ public final class AutoAgaricusCap extends AbstractFeature {
 
         // init random delay ONCE
         if (hitDelayTicks < 0) {
-            hitDelayTicks = ThreadLocalRandom.current().nextInt(1, 7); // 1–4 ticks
+            hitDelayTicks = ThreadLocalRandom.current().nextInt(1, 3); // 1–4 ticks
             Utils.debug("delay: " + hitDelayTicks);
             return;
         }
