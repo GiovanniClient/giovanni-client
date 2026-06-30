@@ -1,6 +1,6 @@
 package rocket.giovanniclient.client.features.render;
 
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 
 import java.util.Map;
 import java.util.UUID;
@@ -19,12 +19,12 @@ public final class GlowOverrideManager {
 
     public static void set(Entity e, int rgb) {
         if (e == null) return;
-        COLOR_BY_ENTITY.put(e.getUuid(), rgb & 0xFFFFFF);
+        COLOR_BY_ENTITY.put(e.getUUID(), rgb & 0xFFFFFF);
     }
 
     public static void clear(Entity e) {
         if (e == null) return;
-        COLOR_BY_ENTITY.remove(e.getUuid());
+        COLOR_BY_ENTITY.remove(e.getUUID());
     }
 
     public static void clear(UUID uuid) {
@@ -37,12 +37,12 @@ public final class GlowOverrideManager {
     }
 
     public static boolean has(Entity e) {
-        return e != null && COLOR_BY_ENTITY.containsKey(e.getUuid());
+        return e != null && COLOR_BY_ENTITY.containsKey(e.getUUID());
     }
 
     public static int getColorOrDefault(Entity e) {
         int fallback = 0xFFFFFF;
         if (e == null) return fallback;
-        return COLOR_BY_ENTITY.getOrDefault(e.getUuid(), fallback) & 0xFFFFFF;
+        return COLOR_BY_ENTITY.getOrDefault(e.getUUID(), fallback) & 0xFFFFFF;
     }
 }

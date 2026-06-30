@@ -1,7 +1,8 @@
 package rocket.giovanniclient.client.compat;
 
-import net.minecraft.client.gui.screen.ingame.InventoryScreen;
-import net.minecraft.item.ItemStack;
+
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.world.item.ItemStack;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;

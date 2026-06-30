@@ -1,10 +1,10 @@
 package rocket.giovanniclient.client.mixin.invbuttons;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.gui.screen.ingame.InventoryScreen;
-import net.minecraft.client.input.KeyInput;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -14,12 +14,12 @@ import rocket.giovanniclient.client.features.inventorybuttons.EditModeState;
 import rocket.giovanniclient.client.features.inventorybuttons.overlay.EditModeOverlay;
 import rocket.giovanniclient.client.features.inventorybuttons.overlay.OverlayManager;
 
-@Mixin(HandledScreen.class)
-public class HandledScreenButtonsInputMixin {
+@Mixin(AbstractContainerScreen.class)
+public class AbstractContainerScreenButtonsInputMixin {
 
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
     private void onMouseClicked(
-            Click click,
+            MouseButtonEvent click,
             boolean doubled,
             CallbackInfoReturnable<Boolean> cir
     ) {
@@ -32,12 +32,12 @@ public class HandledScreenButtonsInputMixin {
     }
 
     @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
-    private void onKeyPressed(KeyInput input, CallbackInfoReturnable<Boolean> cir) {
+    private void onKeyPressed(KeyEvent input, CallbackInfoReturnable<Boolean> cir) {
         if ((Object) this instanceof InventoryScreen) {
             if (OverlayManager.activeOverlay instanceof EditModeOverlay edit) {
                 // If the user is typing in the text box, don't let the 'E' key close the inventory!
-                MinecraftClient mc = MinecraftClient.getInstance();
-                if (mc.options.inventoryKey.matchesKey(input)) {
+                Minecraft mc = Minecraft.getInstance();
+                if (mc.options.keyInventory.matches(input)) {
                     if ((edit.commandField != null && edit.commandField.isFocused()) ||
                             (edit.iconField != null && edit.iconField.isFocused())) {
                         cir.setReturnValue(true);
@@ -56,7 +56,7 @@ public class HandledScreenButtonsInputMixin {
         }
     }
 
-    @Inject(method = "isPointWithinBounds", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "isHovering(IIIIDD)Z", at = @At("HEAD"), cancellable = true)
     private void blockHoverThroughPanel(int x, int y, int width, int height, double pointX, double pointY, CallbackInfoReturnable<Boolean> cir) {
         if ((Object) this instanceof InventoryScreen) {
             // If the mouse is over our custom grey panel, tell Minecraft it's NOT over the slot

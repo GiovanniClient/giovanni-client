@@ -1,9 +1,9 @@
 package rocket.giovanniclient.client.mixin.invbuttons;
 
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.ingame.InventoryScreen;
-import net.minecraft.screen.PlayerScreenHandler;
-import net.minecraft.screen.slot.Slot;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.inventory.InventoryMenu;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -14,15 +14,15 @@ import rocket.giovanniclient.client.config.ConfigManager;
 public class InventoryScreenCraftingSuppressionMixin {
 
     // in this context this call only draws the "Crafting" string in the inventory
-    @Inject(method = "drawForeground", at = @At("HEAD"), cancellable = true)
-    protected void drawForeground(DrawContext context, int mouseX, int mouseY, CallbackInfo ci) {
+    @Inject(method = "renderLabels", at = @At("HEAD"), cancellable = true)
+    protected void drawForeground(GuiGraphics context, int mouseX, int mouseY, CallbackInfo ci) {
         if (ConfigManager.getConfig().ibc.INV_BUTTONS_IN_CRAFTING_GRID) ci.cancel();
     }
 
     @Inject(method = "init", at = @At("TAIL"))
     private void moveSlotsOffscreen(CallbackInfo ci) {
         InventoryScreen self = (InventoryScreen) (Object) this;
-        if (self.getScreenHandler() instanceof PlayerScreenHandler handler) {
+        if (self.getMenu() instanceof InventoryMenu handler) {
             if (ConfigManager.getConfig().ibc.INV_BUTTONS_IN_CRAFTING_GRID) {
                 // PlayerScreenHandler: 0=result, 1..4=input 2x2
                 for (int i = 0; i <= 4 && i < handler.slots.size(); i++) {
@@ -32,8 +32,8 @@ public class InventoryScreenCraftingSuppressionMixin {
                     a.setY(-10000);
                 }
 
-                if (handler.slots.size() > PlayerScreenHandler.OFFHAND_ID) {
-                    Slot offhandSlot = handler.slots.get(PlayerScreenHandler.OFFHAND_ID);
+                if (handler.slots.size() > InventoryMenu.SHIELD_SLOT) {
+                    Slot offhandSlot = handler.slots.get(InventoryMenu.SHIELD_SLOT);
                     SlotAccessor offhandAccessor = (SlotAccessor) offhandSlot;
                     offhandAccessor.setX(-10000);
                     offhandAccessor.setY(-10000);

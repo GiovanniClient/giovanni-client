@@ -1,64 +1,64 @@
 package rocket.giovanniclient.client.bootstrap;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
 
 public final class ClientKeybinds {
 
     private ClientKeybinds() {}
 
-    private static KeyBinding openConfig;
-    private static KeyBinding openInvButtonEditor;
-    public static KeyBinding toggleFreecam;
-    public static KeyBinding switchFreecamControlKey;
-    public static KeyBinding[] ALL_KEYS = {null, null, null};
+    private static KeyMapping openConfig;
+    private static KeyMapping openInvButtonEditor;
+    public static KeyMapping toggleFreecam;
+    public static KeyMapping switchFreecamControlKey;
+    public static KeyMapping[] ALL_KEYS = {null, null, null};
 
-    public static final KeyBinding.Category GIOVANNI = KeyBinding.Category.create(Identifier.of("giovanni"));
+    public static final KeyMapping.Category GIOVANNI = KeyMapping.Category.register(Identifier.parse("giovanni"));
     //public static final String GIOVANNI = "key.categories.giovanni";
 
-    public static final KeyBinding.Category WURST = KeyBinding.Category.create(Identifier.of("wurst"));
+    public static final KeyMapping.Category WURST = KeyMapping.Category.register(Identifier.parse("wurst"));
     //public static final String CATEGORY = "key.categories.wi_freecam";
 
     public static void register() {
-        openConfig = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+        openConfig = KeyBindingHelper.registerKeyBinding(new KeyMapping(
                 "Open Config",
-                InputUtil.Type.KEYSYM,
+                InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_K,
                 GIOVANNI
         ));
 
-        openInvButtonEditor = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+        openInvButtonEditor = KeyBindingHelper.registerKeyBinding(new KeyMapping(
                 "key.giovanniclient.open_inv_button_editor",
-                InputUtil.Type.KEYSYM,
+                InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_O,
                 GIOVANNI
         ));
 
-        toggleFreecam = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+        toggleFreecam = KeyBindingHelper.registerKeyBinding(new KeyMapping(
                 "key.wi_freecam.toggle",
-                InputUtil.Type.KEYSYM,
+                InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_U,
                 WURST
         ));
 
-        switchFreecamControlKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+        switchFreecamControlKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
                 "key.wi_freecam.switch_control",
-                InputUtil.Type.KEYSYM,
-                InputUtil.UNKNOWN_KEY.getCode(),
+                InputConstants.Type.KEYSYM,
+                InputConstants.UNKNOWN.getValue(),
                 WURST
         ));
 
-        ALL_KEYS = new KeyBinding[]{toggleFreecam, switchFreecamControlKey, openInvButtonEditor, openConfig};
+        ALL_KEYS = new KeyMapping[]{toggleFreecam, switchFreecamControlKey, openInvButtonEditor, openConfig};
     }
 
-    public static KeyBinding openConfig() {
+    public static KeyMapping openConfig() {
         return openConfig;
     }
 
-    public static KeyBinding openInvButtonEditor() {
+    public static KeyMapping openInvButtonEditor() {
         return openInvButtonEditor;
     }
 }

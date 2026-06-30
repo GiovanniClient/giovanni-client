@@ -3,7 +3,7 @@ package rocket.giovanniclient.client.features.updater;
 import moe.nea.libautoupdate.PotentialUpdate;
 import moe.nea.libautoupdate.UpdateCheckResult;
 import moe.nea.libautoupdate.UpdateData;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import rocket.giovanniclient.client.GiovanniClientClient;
 import rocket.giovanniclient.client.config.AboutConfig;
 import rocket.giovanniclient.client.util.Utils;
@@ -159,7 +159,7 @@ public class UpdateManagerV3 {
 
     private CompletableFuture<Void> handleNotifyAndInstall(UpdateCheckResult result) {
         if (result instanceof UpdateCheckResult.UpToDate) {
-            MinecraftClient.getInstance().execute(notifier::sendNoUpdates);
+            Minecraft.getInstance().execute(notifier::sendNoUpdates);
             return CompletableFuture.completedFuture(null);
         }
 
@@ -181,14 +181,14 @@ public class UpdateManagerV3 {
 
         // Send different notifications based on update type
         if (forDifferentMcVersion) {
-            MinecraftClient.getInstance().execute(() ->
+            Minecraft.getInstance().execute(() ->
                     notifier.sendUpdateForDifferentMcVersion(update.getUpdate())
             );
             Utils.log("Notification sent (different MC version)");
             Utils.log("Automatic installation blocked: Update requires different Minecraft version.");
             return CompletableFuture.completedFuture(null);
         } else {
-            MinecraftClient.getInstance().execute(() ->
+            Minecraft.getInstance().execute(() ->
                     notifier.sendUpdateAvailable(update.getUpdate(), safetyStatus)
             );
             Utils.log("Notification sent");
@@ -243,7 +243,7 @@ public class UpdateManagerV3 {
                 .thenRun(() -> {
                     Utils.log("Update installed successfully");
                     state.set(State.INSTALLED);
-                    MinecraftClient.getInstance().execute(notifier::sendInstalled);
+                    Minecraft.getInstance().execute(notifier::sendInstalled);
                 })
                 .exceptionally(ex -> {
                     Utils.log("Installation failed: " + ex.getMessage());

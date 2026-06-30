@@ -1,8 +1,8 @@
 package rocket.giovanniclient.client.features.slayers.enderman;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import org.spongepowered.asm.mixin.Unique;
 import rocket.giovanniclient.client.config.ConfigManager;
 import rocket.giovanniclient.client.features.AbstractFeature;
@@ -21,11 +21,11 @@ public class AutoSoulcry extends AbstractFeature {
 
 
     @Override
-    public void onTick(MinecraftClient client) {
+    public void onTick(Minecraft client) {
         if (sc.eman.soulcry.AUTO_SOULCRY
                 && canUse_thead_safety
                 && (clickThread == null || !clickThread.isAlive())
-                && client.currentScreen == null
+                && client.screen == null
                 && isKatanaInHand()
                 && StatusBarUtils.getMana() >= sc.eman.soulcry.MINIMAL_MANA
                 && (SlayerUtils.getCurrentSlayer() == SlayerUtils.Slayer.VOIDGLOOM_SERAPH && SlayerUtils.isBossAlive())
@@ -51,7 +51,7 @@ public class AutoSoulcry extends AbstractFeature {
         if (activeItem.getItem() == Items.GOLDEN_SWORD || activeItem.getItem() != Items.DIAMOND_SWORD) return false;
 
         for (String katana : katanas) {
-            if (activeItem.getFormattedName().getString().endsWith(katana)) return true;
+            if (activeItem.getCustomName().getString().contains(katana)) return true;
         }
 
         return false;

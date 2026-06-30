@@ -1,8 +1,8 @@
 package rocket.giovanniclient.client.util;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.scoreboard.*;
-import net.minecraft.text.MutableText;
+import net.minecraft.text.MutableComponent;
 import net.minecraft.text.Text;
 
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ public class ScoreboardUtils {
      * @param client The Minecraft client instance
      * @return The sidebar ScoreboardObjective, or null if unavailable
      */
-    public static ScoreboardObjective getSidebarObjective(MinecraftClient client) {
+    public static ScoreboardObjective getSidebarObjective(Minecraft client) {
         if (client.world == null || client.player == null) return null;
 
         Scoreboard scoreboard = client.world.getScoreboard();
@@ -71,7 +71,7 @@ public class ScoreboardUtils {
 
         for (ScoreboardEntry entry : relevant) {
             Team team = scoreboard.getScoreHolderTeam(entry.owner());
-            MutableText lineText = Text.empty();
+            MutableComponent lineText = Text.empty();
 
             if (team != null) {
                 if (team.getPrefix() != null) lineText.append(team.getPrefix());
@@ -92,7 +92,7 @@ public class ScoreboardUtils {
      * @return A list of formatted Text lines
      */
     public static List<Text> getSidebarLines() {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         ScoreboardObjective objective = getSidebarObjective(client);
         return getObjectiveFormattedLines(objective);
     }

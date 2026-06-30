@@ -1,10 +1,10 @@
 package rocket.giovanniclient.client.util;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rocket.giovanniclient.client.config.DebugConfig;
@@ -22,32 +22,32 @@ public class Utils {
         LOGGER.info("Utils initialized with DebugConfig.");
     }
 
-    private static void sendFormattedChatMessage(String prefixText, Formatting prefixStyle, String messageText) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        if (client != null && client.inGameHud != null && client.inGameHud.getChatHud() != null) {
-            MutableText prefix = Text.literal(prefixText)
+    private static void sendFormattedChatMessage(String prefixComponent, ChatFormatting prefixStyle, String messageComponent) {
+        Minecraft client = Minecraft.getInstance();
+        if (client != null && client.gui != null && client.gui.getChat() != null) {
+            MutableComponent prefix = Component.literal(prefixComponent)
                     .setStyle(Style.EMPTY.withColor(prefixStyle));
 
-            MutableText message = Text.literal(messageText)
-                    .setStyle(Style.EMPTY.withColor(Formatting.WHITE));
+            MutableComponent message = Component.literal(messageComponent)
+                    .setStyle(Style.EMPTY.withColor(ChatFormatting.WHITE));
 
-            client.inGameHud.getChatHud().addMessage(prefix.append(message));
+            client.gui.getChat().addMessage(prefix.append(message));
         }
     }
 
-    public static void mutableTextToChat(MutableText text) {
-        assert MinecraftClient.getInstance().player != null;
-        MinecraftClient.getInstance().player.sendMessage(text, false);
+    public static void MutableComponentToChat(MutableComponent Component) {
+        assert Minecraft.getInstance().player != null;
+        Minecraft.getInstance().player.displayClientMessage(Component, false);
     }
 
     public static void chat(String message) {
-        sendFormattedChatMessage("Giovanni > ", Formatting.LIGHT_PURPLE, message);
+        sendFormattedChatMessage("Giovanni > ", ChatFormatting.LIGHT_PURPLE, message);
     }
 
     public static void debug(String message) {
         LOGGER.debug("DEBUG (Giovanni): {}", message);
         if (debugConfig != null && debugConfig.DEBUG) {
-            sendFormattedChatMessage("DEBUG (Giovanni): ", Formatting.RED, message);
+            sendFormattedChatMessage("DEBUG (Giovanni): ", ChatFormatting.RED, message);
         } else if (debugConfig == null) {
             LOGGER.warn("Utils.debug() called before initialization of DebugConfig: {}", message);
         }

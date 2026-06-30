@@ -1,24 +1,24 @@
 package rocket.giovanniclient.client.mixin.render;
 
-import net.minecraft.client.gui.hud.InGameOverlayRenderer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.util.math.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.ScreenEffectRenderer;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import rocket.giovanniclient.client.config.ConfigManager;
 
-@Mixin(InGameOverlayRenderer.class)
+@Mixin(ScreenEffectRenderer.class)
 public class NoCameraOverlaysMixin {
-    @Inject(method = "renderFireOverlay", at = @At("HEAD"), cancellable = true)
-    private static void giovanni$renderFireOverlay(MatrixStack matrices, VertexConsumerProvider vertexConsumers, Sprite sprite, CallbackInfo ci) {
+    @Inject(method = "renderFire", at = @At("HEAD"), cancellable = true)
+    private static void giovanni$renderFireOverlay(PoseStack poseStack, MultiBufferSource multiBufferSource, TextureAtlasSprite textureAtlasSprite, CallbackInfo ci) {
         if (ConfigManager.getConfig().rc.cameraAccordion.NO_FIRE_OVERLAY) ci.cancel();
     }
 
-    @Inject(method = "renderInWallOverlay", at = @At("HEAD"), cancellable = true)
-    private static void giovanni$renderInWallOverlay(Sprite sprite, MatrixStack matrices, VertexConsumerProvider vertexConsumers, CallbackInfo ci) {
+    @Inject(method = "renderTex", at = @At("HEAD"), cancellable = true)
+    private static void giovanni$renderInWallOverlay(TextureAtlasSprite textureAtlasSprite, PoseStack poseStack, MultiBufferSource multiBufferSource, CallbackInfo ci) {
         if (ConfigManager.getConfig().rc.cameraAccordion.NO_BLOCK_OVERLAY) ci.cancel();
     }
 }

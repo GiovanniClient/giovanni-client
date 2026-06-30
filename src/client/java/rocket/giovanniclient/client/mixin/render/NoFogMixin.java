@@ -1,6 +1,6 @@
 package rocket.giovanniclient.client.mixin.render;
 
-import net.minecraft.client.render.fog.FogRenderer;
+import net.minecraft.client.renderer.fog.FogRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
@@ -10,8 +10,9 @@ import rocket.giovanniclient.client.config.ConfigManager;
 public class NoFogMixin {
 
     @ModifyArgs(
-            method = "applyFog(Lnet/minecraft/client/render/Camera;ILnet/minecraft/client/render/RenderTickCounter;FLnet/minecraft/client/world/ClientWorld;)Lorg/joml/Vector4f;",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/fog/FogRenderer;applyFog(Ljava/nio/ByteBuffer;ILorg/joml/Vector4f;FFFFFF)V")
+            method = "setupFog",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/fog/FogRenderer;updateBuffer(Ljava/nio/ByteBuffer;ILorg/joml/Vector4f;FFFFFF)V")
+
     )
     private static void giovanni$modifyFogDistances(Args args) {
         if (ConfigManager.getConfig().rc.NO_FOG) {

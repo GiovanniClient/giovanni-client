@@ -1,9 +1,9 @@
 package rocket.giovanniclient.client.mixin.render;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.decoration.ArmorStandEntity;
-import net.minecraft.entity.mob.EndermanEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -24,29 +24,29 @@ public abstract class UndoInvisibilityMixin {
         var dc = ConfigManager.getConfig().debugConfig;
         var riftconfig = ConfigManager.getConfig().riftconfig;
 
-        if (dc.EVERYTHING_VISIBLE_TOGGLE && !(entity instanceof ArmorStandEntity)) {
+        if (dc.EVERYTHING_VISIBLE_TOGGLE && !(entity instanceof ArmorStand)) {
             cir.setReturnValue(false);
             return;
-        } else if (dc.SEE_INVISIBLE_ARMOR_STANDS && entity instanceof ArmorStandEntity) {
+        } else if (dc.SEE_INVISIBLE_ARMOR_STANDS && entity instanceof ArmorStand) {
             cir.setReturnValue(false);
             return;
         }
 
         // Fel → mob
-        if (rc.FEL_VISIBLE_TOGGLE && entity instanceof EndermanEntity) {
+        if (rc.FEL_VISIBLE_TOGGLE && entity instanceof EnderMan) {
             if (!currentLocation.contains("Catacombs")) return;
             cir.setReturnValue(false);
             return;
         }
 
         // Shadow Assassin → player
-        if (rc.SHADOW_ASSASSIN_VISIBLE_TOGGLE && entity instanceof PlayerEntity) {
+        if (rc.SHADOW_ASSASSIN_VISIBLE_TOGGLE && entity instanceof Player) {
             if (!currentLocation.contains("Catacombs")) return;
             cir.setReturnValue(false);
             return;
         }
 
-        if (riftconfig.INVIS_PLAYERS_IN_TINY_DANCER && entity instanceof PlayerEntity
+        if (riftconfig.INVIS_PLAYERS_IN_TINY_DANCER && entity instanceof Player
                 && currentLocation.contains("Mirrorverse")) {
             cir.setReturnValue(true);
         }

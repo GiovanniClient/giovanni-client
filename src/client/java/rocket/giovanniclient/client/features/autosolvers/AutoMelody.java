@@ -1,12 +1,12 @@
 package rocket.giovanniclient.client.features.autosolvers;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ingame.GenericContainerScreen;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.ContainerScreen;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import rocket.giovanniclient.client.config.ConfigManager;
 import rocket.giovanniclient.client.features.AbstractFeature;
 import rocket.giovanniclient.client.util.InventoryUtils;
@@ -23,7 +23,7 @@ public class AutoMelody extends AbstractFeature {
 
     @Override
     public void onScreenOpen(Screen screen) {
-        if (screen instanceof GenericContainerScreen gui &&
+        if (screen instanceof ContainerScreen gui &&
                 gui.getTitle().getString().startsWith("Harp -")) {
             lastInventory.clear();
             inHarp = true;
@@ -32,23 +32,23 @@ public class AutoMelody extends AbstractFeature {
     }
 
     @Override
-    public void onTick(MinecraftClient client) {
+    public void onTick(Minecraft client) {
         if (!ConfigManager.getConfig().asc.AUTOMELODY_TOGGLE || client.player == null || ++counter % 2 == 0)
             return;
 
-        if (!inHarp || !(client.currentScreen instanceof GenericContainerScreen gui) ||
+        if (!inHarp || !(client.screen instanceof ContainerScreen gui) ||
                 !gui.getTitle().getString().startsWith("Harp -")) {
             inHarp = false;
             return;
         }
 
-        ScreenHandler handler = client.player.currentScreenHandler;
+        AbstractContainerMenu handler = client.player.containerMenu;
         List<Item> currentInventory = InventoryUtils.snapshotItems(handler);
 
         if (!lastInventory.equals(currentInventory)) {
             for (int i = 0; i < handler.slots.size(); i++) {
-                if (handler.slots.get(i).getStack().isOf(Items.QUARTZ_BLOCK)) {
-                    clickSlot(client, handler, i, InventoryUtils.MouseButton.MIDDLE, SlotActionType.CLONE);
+                if (handler.slots.get(i).getItem().is(Items.QUARTZ_BLOCK)) {
+                    clickSlot(client, handler, i, InventoryUtils.MouseButton.MIDDLE, ClickType.CLONE);
                     break;
                 }
             }

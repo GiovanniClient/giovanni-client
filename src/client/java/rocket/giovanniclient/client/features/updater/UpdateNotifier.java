@@ -1,75 +1,75 @@
 package rocket.giovanniclient.client.features.updater;
 
 import moe.nea.libautoupdate.UpdateData;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import rocket.giovanniclient.client.GiovanniClientClient;
 import rocket.giovanniclient.client.util.Utils;
 
 public class UpdateNotifier {
 
-    private MutableText buildMessage(UpdateData data, RatterScannerChecker.SafetyStatus safetyStatus) {
+    private MutableComponent buildMessage(UpdateData data, RatterScannerChecker.SafetyStatus safetyStatus) {
         boolean isMalicious = (safetyStatus == RatterScannerChecker.SafetyStatus.MALICIOUS);
 
-        Formatting statusColor = switch (safetyStatus) {
-            case VERIFIED_SAFE -> Formatting.GREEN;
-            case MALICIOUS, OFF -> Formatting.DARK_RED;
-            case UNCHECKED -> Formatting.GOLD;
-            default -> Formatting.GRAY;
+        ChatFormatting statusColor = switch (safetyStatus) {
+            case VERIFIED_SAFE -> ChatFormatting.GREEN;
+            case MALICIOUS, OFF -> ChatFormatting.DARK_RED;
+            case UNCHECKED -> ChatFormatting.GOLD;
+            default -> ChatFormatting.GRAY;
         };
 
-        MutableText installBtn = isMalicious
-                ? Text.literal("[DANGEROUS FILE - INSTALLATION BLOCKED]").formatted(Formatting.DARK_RED, Formatting.STRIKETHROUGH)
-                : Text.literal("/giovanni-do-update").formatted(Formatting.GREEN, Formatting.UNDERLINE)
-                .styled(s -> s.withClickEvent(new ClickEvent.SuggestCommand("/giovanni-do-update")));
+        MutableComponent installBtn = isMalicious
+                ? Component.literal("[DANGEROUS FILE - INSTALLATION BLOCKED]").withStyle(ChatFormatting.DARK_RED, ChatFormatting.STRIKETHROUGH)
+                : Component.literal("/giovanni-do-update").withStyle(ChatFormatting.GREEN, ChatFormatting.UNDERLINE)
+                .withStyle(s -> s.withClickEvent(new ClickEvent.SuggestCommand("/giovanni-do-update")));
 
-        return Text.literal("\n\n====== GIOVANNI CLIENT ======\n").formatted(Formatting.GOLD, Formatting.BOLD)
-                .append(Text.literal("\nNEW UPDATE AVAILABLE! ").formatted(Formatting.RED, Formatting.BOLD))
-                .append(Text.literal("Version: ").formatted(Formatting.WHITE))
-                .append(Text.literal(data.getVersionName() + "\n").formatted(Formatting.GOLD, Formatting.BOLD))
-                .append(Text.literal("RatterScanner: ").formatted(Formatting.WHITE))
-                .append(Text.literal(safetyStatus.getLabel() + "\n").formatted(statusColor, Formatting.BOLD))
-                .append(Text.literal("\nTo install: ").formatted(Formatting.GRAY))
+        return Component.literal("\n\n====== GIOVANNI CLIENT ======\n").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD)
+                .append(Component.literal("\nNEW UPDATE AVAILABLE! ").withStyle(ChatFormatting.RED, ChatFormatting.BOLD))
+                .append(Component.literal("Version: ").withStyle(ChatFormatting.WHITE))
+                .append(Component.literal(data.getVersionName() + "\n").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD))
+                .append(Component.literal("RatterScanner: ").withStyle(ChatFormatting.WHITE))
+                .append(Component.literal(safetyStatus.getLabel() + "\n").withStyle(statusColor, ChatFormatting.BOLD))
+                .append(Component.literal("\nTo install: ").withStyle(ChatFormatting.GRAY))
                 .append(installBtn)
-                .append(Text.literal("\n\n=========================").formatted(Formatting.GOLD, Formatting.BOLD));
+                .append(Component.literal("\n\n=========================").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD));
     }
 
-    private MutableText buildNoUpdatesMessage() {
-        return Text.literal("\nGiovanniClient is up to date! " + Utils.rocketEmoji).formatted(Formatting.GREEN);
+    private MutableComponent buildNoUpdatesMessage() {
+        return Component.literal("\nGiovanniClient is up to date! " + Utils.rocketEmoji).withStyle(ChatFormatting.GREEN);
     }
 
-    private MutableText buildInstalledMessage() {
-        return Text.literal("\n\n====== GIOVANNI CLIENT ======\n").formatted(Formatting.GOLD, Formatting.BOLD)
-                .append(Text.literal("\nUPDATE INSTALLED! Restart required.\n").formatted(Formatting.GREEN, Formatting.BOLD))
-                .append(Text.literal("\nPlease restart Minecraft to apply the update.\n").formatted(Formatting.WHITE))
-                .append(Text.literal("\n===========================").formatted(Formatting.GOLD, Formatting.BOLD));
+    private MutableComponent buildInstalledMessage() {
+        return Component.literal("\n\n====== GIOVANNI CLIENT ======\n").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD)
+                .append(Component.literal("\nUPDATE INSTALLED! Restart required.\n").withStyle(ChatFormatting.GREEN, ChatFormatting.BOLD))
+                .append(Component.literal("\nPlease restart Minecraft to apply the update.\n").withStyle(ChatFormatting.WHITE))
+                .append(Component.literal("\n===========================").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD));
     }
 
-    private MutableText buildDifferentMcVersionMessage(UpdateData data) {
-        return Text.literal("\n\n====== GIOVANNI CLIENT ======\n").formatted(Formatting.GOLD, Formatting.BOLD)
-                .append(Text.literal("\nUPDATE REQUIRES NEWER MINECRAFT!\n").formatted(Formatting.RED, Formatting.BOLD))
-                .append(Text.literal("Update Version: ").formatted(Formatting.WHITE))
-                .append(Text.literal(data.getVersionName() + "\n").formatted(Formatting.GOLD, Formatting.BOLD))
-                .append(Text.literal("\nPlease update Minecraft to install this update.\n").formatted(Formatting.GRAY))
-                .append(Text.literal(GiovanniClientClient.getMcVersion() + " is not supported anymore.\n").formatted(Formatting.GRAY))
-                .append(Text.literal("\n===========================").formatted(Formatting.GOLD, Formatting.BOLD));
+    private MutableComponent buildDifferentMcVersionMessage(UpdateData data) {
+        return Component.literal("\n\n====== GIOVANNI CLIENT ======\n").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD)
+                .append(Component.literal("\nUPDATE REQUIRES NEWER MINECRAFT!\n").withStyle(ChatFormatting.RED, ChatFormatting.BOLD))
+                .append(Component.literal("Update Version: ").withStyle(ChatFormatting.WHITE))
+                .append(Component.literal(data.getVersionName() + "\n").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD))
+                .append(Component.literal("\nPlease update Minecraft to install this update.\n").withStyle(ChatFormatting.GRAY))
+                .append(Component.literal(GiovanniClientClient.getMcVersion() + " is not supported anymore.\n").withStyle(ChatFormatting.GRAY))
+                .append(Component.literal("\n===========================").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD));
     }
 
     public void sendUpdateForDifferentMcVersion(UpdateData data) {
-        Utils.mutableTextToChat(buildDifferentMcVersionMessage(data));
+        Utils.MutableComponentToChat(buildDifferentMcVersionMessage(data));
     }
 
     public void sendUpdateAvailable(UpdateData data, RatterScannerChecker.SafetyStatus safetyStatus) {
-        Utils.mutableTextToChat(buildMessage(data, safetyStatus));
+        Utils.MutableComponentToChat(buildMessage(data, safetyStatus));
     }
 
     public void sendNoUpdates() {
-        Utils.mutableTextToChat(buildNoUpdatesMessage());
+        Utils.MutableComponentToChat(buildNoUpdatesMessage());
     }
 
     public void sendInstalled() {
-        Utils.mutableTextToChat(buildInstalledMessage());
+        Utils.MutableComponentToChat(buildInstalledMessage());
     }
 }

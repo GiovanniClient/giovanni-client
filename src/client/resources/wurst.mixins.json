@@ -8,13 +8,14 @@
   },
   "client": [
     "CameraMixin",
-    "ChunkRenderingDataPreparerMixin",
-    "ClientPlayerEntityMixin",
     "GameRendererMixin",
-    "HeldItemRendererMixin",
+    "GuiMixin",
     "InGameHudMixin",
-    "KeyBindingMixin",
-    "MouseMixin",
-    "WorldRendererMixin"
+    "ItemInHandRendererMixin",
+    "KeyMappingMixin",
+    "LevelRendererMixin",
+    "LocalPlayerMixin",
+    "MouseHandlerMixin",
+    "SectionOcclusionGraphMixin"
   ]
 }

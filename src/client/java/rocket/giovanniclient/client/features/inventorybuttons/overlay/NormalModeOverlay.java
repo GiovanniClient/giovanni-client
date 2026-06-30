@@ -1,8 +1,8 @@
 package rocket.giovanniclient.client.features.inventorybuttons.overlay;
 
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.ingame.InventoryScreen;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.input.MouseButtonEvent;
 import rocket.giovanniclient.client.features.inventorybuttons.EditModeState;
 import rocket.giovanniclient.client.features.inventorybuttons.JsonManager;
 import rocket.giovanniclient.client.features.inventorybuttons.LayoutManager;
@@ -11,7 +11,7 @@ public class NormalModeOverlay extends AbstractOverlay {
     public NormalModeOverlay(InventoryScreen screen) { super(screen); }
 
     @Override
-    public void render(DrawContext ctx, int mouseX, int mouseY) {
+    public void render(GuiGraphics ctx, int mouseX, int mouseY) {
         JsonManager.savedButtons.forEach((id, data) -> {
             LayoutManager slot = LayoutManager.getSlotById(id);
             if (slot != null) {
@@ -21,7 +21,7 @@ public class NormalModeOverlay extends AbstractOverlay {
     }
 
     @Override
-    public boolean mouseClicked(Click click, boolean doubled) {
+    public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
         for (var entry : JsonManager.savedButtons.entrySet()) {
             LayoutManager slot = LayoutManager.getSlotById(entry.getKey());
 
@@ -42,9 +42,9 @@ public class NormalModeOverlay extends AbstractOverlay {
                 if (cmd.startsWith("/")) cmd = cmd.substring(1).trim();
                 if (cmd.isBlank()) return true;
 
-                net.minecraft.client.MinecraftClient client = net.minecraft.client.MinecraftClient.getInstance();
+                net.minecraft.client.Minecraft client = net.minecraft.client.Minecraft.getInstance();
                 if (client.player != null) {
-                    client.player.networkHandler.sendChatCommand(cmd);
+                    client.player.connection.sendCommand(cmd);
                 }
                 return true;
             }

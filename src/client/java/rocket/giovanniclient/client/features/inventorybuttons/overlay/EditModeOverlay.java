@@ -1,10 +1,10 @@
 package rocket.giovanniclient.client.features.inventorybuttons.overlay;
 
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.ingame.InventoryScreen;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.network.chat.Component;
 import rocket.giovanniclient.client.features.inventorybuttons.JsonManager;
 import rocket.giovanniclient.client.features.inventorybuttons.LayoutManager;
 import rocket.giovanniclient.client.mixin.invbuttons.ScreenInvoker;
@@ -12,8 +12,8 @@ import rocket.giovanniclient.client.mixin.invbuttons.ScreenInvoker;
 public class EditModeOverlay extends AbstractOverlay {
     private String selectedSlotId = "right0";
 
-    public final TextFieldWidget commandField;
-    public final TextFieldWidget iconField;
+    public final EditBox commandField;
+    public final EditBox iconField;
 
     // Instance variables calculated relative to the GUI
     private final int panelX;
@@ -30,50 +30,50 @@ public class EditModeOverlay extends AbstractOverlay {
         this.panelY = this.guiY + 83;
 
         // Command field (shifted right to leave room for the "/")
-        this.commandField = new TextFieldWidget(
-                screen.getTextRenderer(),
+        this.commandField = new EditBox(
+                screen.getFont(),
                 this.panelX + 20,
                 this.panelY + 18,
                 PANEL_W - 32,
                 16,
-                Text.literal("Command")
+                Component.literal("Command")
         );
 
         // Icon field
-        this.iconField = new TextFieldWidget(
-                screen.getTextRenderer(),
+        this.iconField = new EditBox(
+                screen.getFont(),
                 this.panelX + 12,
                 this.panelY + 54,
                 PANEL_W - 24,
                 16,
-                Text.literal("Icon")
+                Component.literal("Icon")
         );
 
         this.commandField.setMaxLength(254);
         this.iconField.setMaxLength(254);
 
         // Make the text easy to read on the dark background
-        this.commandField.setEditableColor(0xFFFFFFFF);
-        this.iconField.setEditableColor(0xFFFFFFFF);
-        this.commandField.setUneditableColor(0xFFAAAAAA);
-        this.iconField.setUneditableColor(0xFFAAAAAA);
+        this.commandField.setTextColor(0xFFFFFFFF);
+        this.iconField.setTextColor(0xFFFFFFFF);
+        this.commandField.setTextColorUneditable(0xFFAAAAAA);
+        this.iconField.setTextColorUneditable(0xFFAAAAAA);
 
-        this.commandField.setPlaceholder(Text.of("say hello world!"));
-        this.iconField.setPlaceholder(Text.of("paper"));
+        this.commandField.setSuggestion("say hello world!");
+        this.iconField.setSuggestion("paper");
 
         loadDataIntoFields();
 
         // Listeners to auto-save when you type
-        this.commandField.setChangedListener(s -> saveCurrentSlot());
-        this.iconField.setChangedListener(s -> saveCurrentSlot());
+        this.commandField.setResponder(s -> saveCurrentSlot());
+        this.iconField.setResponder(s -> saveCurrentSlot());
 
         // Attach to screen so they receive normal text input
-        ((ScreenInvoker) screen).giovanni$addDrawableChild(this.commandField);
-        ((ScreenInvoker) screen).giovanni$addDrawableChild(this.iconField);
+        ((ScreenInvoker) screen).giovanni$addRenderableWidget(this.commandField);
+        ((ScreenInvoker) screen).giovanni$addRenderableWidget(this.iconField);
     }
 
     @Override
-    public void render(DrawContext ctx, int mouseX, int mouseY) {
+    public void render(GuiGraphics ctx, int mouseX, int mouseY) {
         // 1. Draw the slot ghosts
         for (LayoutManager slot : LayoutManager.getAvailableSlots()) {
             var data = JsonManager.get(slot.id());
@@ -93,20 +93,20 @@ public class EditModeOverlay extends AbstractOverlay {
         int y2 = this.panelY + PANEL_H;
 
         ctx.fill(x1, y1, x2, y2, 0xFF1c1a21);
-        ctx.drawStrokedRectangle(x1, y1, PANEL_W, PANEL_H, 0xFFFFFFFF);
+        ctx.renderOutline(x1, y1, PANEL_W, PANEL_H, 0xFFFFFFFF);
 
         // 3. Draw the Labels
-        ctx.drawText(screen.getTextRenderer(), "Command", this.panelX + 12, this.panelY + 6, 0xFF00FFFF, false);
-        ctx.drawText(screen.getTextRenderer(), "/", this.panelX + 12, this.panelY + 22, 0xFFFFFFFF, false);
+        ctx.drawString(screen.getFont(), "Command", this.panelX + 12, this.panelY + 6, 0xFF00FFFF, false);
+        ctx.drawString(screen.getFont(), "/", this.panelX + 12, this.panelY + 22, 0xFFFFFFFF, false);
 
-        ctx.drawText(screen.getTextRenderer(), "Icon", this.panelX + 12, this.panelY + 42, 0xFF00FFFF, false);
+        ctx.drawString(screen.getFont(), "Icon", this.panelX + 12, this.panelY + 42, 0xFF00FFFF, false);
 
         this.commandField.render(ctx, mouseX, mouseY, 0);
         this.iconField.render(ctx, mouseX, mouseY, 0);
     }
 
     @Override
-    public boolean mouseClicked(Click click, boolean doubled) {
+    public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
         double mx = click.x();
         double my = click.y();
 
@@ -164,20 +164,20 @@ public class EditModeOverlay extends AbstractOverlay {
         var data = JsonManager.get(selectedSlotId);
 
         // Temporarily detach listeners so loading doesn't trigger a save
-        commandField.setChangedListener(null);
-        iconField.setChangedListener(null);
+        commandField.setResponder(null);
+        iconField.setResponder(null);
 
-        commandField.setText(data != null ? data.command() : "");
-        iconField.setText(data != null ? data.icon() : "");
+        commandField.setValue(data != null ? data.command() : "");
+        iconField.setValue(data != null ? data.icon() : "");
 
         // Reattach listeners
-        commandField.setChangedListener(s -> saveCurrentSlot());
-        iconField.setChangedListener(s -> saveCurrentSlot());
+        commandField.setResponder(s -> saveCurrentSlot());
+        iconField.setResponder(s -> saveCurrentSlot());
     }
 
     private void saveCurrentSlot() {
-        String cmd = commandField.getText() == null ? "" : commandField.getText().trim();
-        String icon = iconField.getText() == null ? "" : iconField.getText().trim();
+        String cmd = commandField.getValue() == null ? "" : commandField.getValue().trim();
+        String icon = iconField.getValue() == null ? "" : iconField.getValue().trim();
 
         if (cmd.isEmpty() && icon.isEmpty()) {
             JsonManager.savedButtons.remove(selectedSlotId);

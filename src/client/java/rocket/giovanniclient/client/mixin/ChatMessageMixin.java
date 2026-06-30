@@ -1,6 +1,6 @@
 package rocket.giovanniclient.client.mixin;
 
-import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -8,13 +8,13 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import rocket.giovanniclient.client.config.ConfigManager;
 import rocket.giovanniclient.client.features.fun.FunConfig;
 
-@Mixin(ClientPlayNetworkHandler.class)
+@Mixin(ClientPacketListener.class)
 public class ChatMessageMixin {
     @Unique
     private final FunConfig fc = ConfigManager.getConfig().fc;
 
     @ModifyVariable(
-            method = "sendChatMessage(Ljava/lang/String;)V",
+            method = "sendChat",
             at = @At("HEAD"),
             argsOnly = true
     )

@@ -6,9 +6,9 @@ import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ingame.InventoryScreen;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.network.chat.Component;
 import rocket.giovanniclient.client.config.ConfigManager;
 import rocket.giovanniclient.client.features.inventorybuttons.EditModeState;
 import rocket.giovanniclient.client.features.updater.RatterScannerChecker;
@@ -57,13 +57,13 @@ public final class ClientCommands {
             List<String> lines = ScoreboardUtils.getCleanedSidebarLines();
 
             if (lines.isEmpty()) {
-                context.getSource().sendFeedback(Text.literal("No scoreboard sidebar currently displayed or it is empty."));
+                context.getSource().sendFeedback(Component.literal("No scoreboard sidebar currently displayed or it is empty."));
                 return 0;
             }
 
-            context.getSource().sendFeedback(Text.literal("--- Scoreboard Sidebar ---"));
-            for (String line : lines) context.getSource().sendFeedback(Text.literal(line));
-            context.getSource().sendFeedback(Text.literal("--------------------------"));
+            context.getSource().sendFeedback(Component.literal("--- Scoreboard Sidebar ---"));
+            for (String line : lines) context.getSource().sendFeedback(Component.literal(line));
+            context.getSource().sendFeedback(Component.literal("--------------------------"));
 
             return 1;
         }));
@@ -75,9 +75,9 @@ public final class ClientCommands {
         for (String alias : aliases) {
             dispatcher.register(ClientCommandManager.literal(alias).executes(context -> {
                 EditModeState.setEditMode(true);
-                MinecraftClient.getInstance().execute(() -> {
-                    if (MinecraftClient.getInstance().player != null) {
-                        MinecraftClient.getInstance().setScreen(new InventoryScreen(MinecraftClient.getInstance().player));
+                Minecraft.getInstance().execute(() -> {
+                    if (Minecraft.getInstance().player != null) {
+                        Minecraft.getInstance().setScreen(new InventoryScreen(Minecraft.getInstance().player));
                     }
                 });
                 return 1;
@@ -92,13 +92,13 @@ public final class ClientCommands {
             List<String> lines = TabListUtils.getCleanedLines(true, true);
 
             if (lines.isEmpty()) {
-                ctx.getSource().sendFeedback(Text.literal("No TAB list currently available (not in-world / not connected)."));
+                ctx.getSource().sendFeedback(Component.literal("No TAB list currently available (not in-world / not connected)."));
                 return 0;
             }
 
-            ctx.getSource().sendFeedback(Text.literal("--- TAB (Player List) ---"));
-            for (String line : lines) ctx.getSource().sendFeedback(Text.literal(line));
-            ctx.getSource().sendFeedback(Text.literal("-------------------------"));
+            ctx.getSource().sendFeedback(Component.literal("--- TAB (Player List) ---"));
+            for (String line : lines) ctx.getSource().sendFeedback(Component.literal(line));
+            ctx.getSource().sendFeedback(Component.literal("-------------------------"));
 
             return 1;
         }));
@@ -134,20 +134,20 @@ public final class ClientCommands {
         // Validate SHA256 format (64 hex characters)
         if (!hash.matches("[a-fA-F0-9]{64}")) {
             context.getSource().sendFeedback(
-                    Text.literal("§cInvalid SHA256 hash format. Expected 64 hexadecimal characters.")
+                    Component.literal("§cInvalid SHA256 hash format. Expected 64 hexadecimal characters.")
             );
             return 0;
         }
 
         context.getSource().sendFeedback(
-                Text.literal("§7Checking hash with RatterScanner...")
+                Component.literal("§7Checking hash with RatterScanner...")
         );
 
         // Perform async check
         RatterScannerChecker.checkHash(hash)
                 .thenAccept(status -> {
                     // Run on render thread for UI
-                    MinecraftClient.getInstance().execute(() -> {
+                    Minecraft.getInstance().execute(() -> {
                         String message = switch (status) {
                             case VERIFIED_SAFE -> "§a✓ VERIFIED SAFE";
                             case MALICIOUS -> "§c✗ MALICIOUS / UNSAFE";
@@ -157,14 +157,14 @@ public final class ClientCommands {
                         };
 
                         context.getSource().sendFeedback(
-                                Text.literal("§7Result: " + message)
+                                Component.literal("§7Result: " + message)
                         );
                     });
                 })
                 .exceptionally(ex -> {
-                    MinecraftClient.getInstance().execute(() -> {
+                    Minecraft.getInstance().execute(() -> {
                         context.getSource().sendFeedback(
-                                Text.literal("§c✗ Exception: " + ex.getMessage())
+                                Component.literal("§c✗ Exception: " + ex.getMessage())
                         );
                     });
                     return null;

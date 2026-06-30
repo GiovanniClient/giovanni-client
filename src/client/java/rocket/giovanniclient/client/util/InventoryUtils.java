@@ -1,13 +1,13 @@
 package rocket.giovanniclient.client.util;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 
@@ -38,11 +38,11 @@ public class InventoryUtils {
      * @param button    The mouse button to use for the click.
      * @param actionType The type of click action.
      */
-    public static void clickSlot(MinecraftClient client, ScreenHandler handler, int slot,
-                                 MouseButton button, SlotActionType actionType) {
-        assert client.interactionManager != null;
-        client.interactionManager.clickSlot(
-                handler.syncId,
+    public static void clickSlot(Minecraft client, AbstractContainerMenu handler, int slot,
+                                 MouseButton button, ClickType actionType) {
+        assert client.gameMode != null;
+        client.gameMode.handleInventoryMouseClick(
+                handler.containerId,
                 slot,
                 button.getValue(),
                 actionType,
@@ -57,9 +57,9 @@ public class InventoryUtils {
      * @param handler The container handler (like a GUI inventory).
      * @return A list of Items currently in the container (ignoring empty slots).
      */
-    public static List<Item> snapshotItems(ScreenHandler handler) {
+    public static List<Item> snapshotItems(AbstractContainerMenu handler) {
         return handler.slots.stream()
-                .map(Slot::getStack)
+                .map(Slot::getItem)
                 .filter(stack -> !stack.isEmpty())
                 .map(ItemStack::getItem)
                 .toList();
@@ -72,10 +72,10 @@ public class InventoryUtils {
      * @param name    The display name to search for.
      * @return The index of the first matching slot, or -1 if not found.
      */
-    public static int findItemByName(ScreenHandler handler, String name) {
+    public static int findItemByName(AbstractContainerMenu handler, String name) {
         int chestSize = Math.max(0, handler.slots.size() - 36); // 36 = 27 inventory + 9 hotbar (player inventory)
         for (int i = 0; i < chestSize; i++) {
-            if (handler.slots.get(i).getStack().getName().getString().equals(name)) {
+            if (handler.slots.get(i).getItem().getItemName().getString().equals(name)) {
                 return i;
             }
         }
@@ -83,10 +83,10 @@ public class InventoryUtils {
     }
 
     public static ItemStack getHeldItem() {
-        ClientPlayerEntity player = MinecraftClient.getInstance().player;
+        LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return ItemStack.EMPTY;
 
-        PlayerInventory playerInventory = player.getInventory();
-        return playerInventory.getStack(playerInventory.getSelectedSlot());
+        Inventory playerInventory = player.getInventory();
+        return playerInventory.getItem(playerInventory.getSelectedSlot());
     }
 }

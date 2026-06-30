@@ -1,11 +1,11 @@
 package rocket.giovanniclient.client.features.autosolvers;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ingame.GenericContainerScreen;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.ContainerScreen;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.Slot;
 import rocket.giovanniclient.client.config.ConfigManager;
 import rocket.giovanniclient.client.features.AbstractFeature;
 import rocket.giovanniclient.client.util.InventoryUtils;
@@ -33,7 +33,7 @@ public class AutoFusion extends AbstractFeature {
         if (!cfg.autoFusionAccordtion.AUTOFUSION)
             return;
 
-        if (!(screen instanceof GenericContainerScreen)) {
+        if (!(screen instanceof ContainerScreen)) {
             currentState = State.NONE;
             return;
         }
@@ -51,16 +51,16 @@ public class AutoFusion extends AbstractFeature {
     }
 
     @Override
-    public void onTick(MinecraftClient client) {
+    public void onTick(Minecraft client) {
         if (!cfg.autoFusionAccordtion.AUTOFUSION
                 || currentState == State.NONE
                 || client.player == null
-                || !(client.currentScreen instanceof GenericContainerScreen)) {
+                || !(client.screen instanceof ContainerScreen)) {
             currentState = State.NONE;
             return;
         }
 
-        ScreenHandler handler = client.player.currentScreenHandler;
+        AbstractContainerMenu handler = client.player.containerMenu;
         long now = System.currentTimeMillis();
 
         switch (currentState) {
@@ -70,14 +70,14 @@ public class AutoFusion extends AbstractFeature {
         }
     }
 
-    private void tryClick(MinecraftClient client,
-                          ScreenHandler handler,
+    private void tryClick(Minecraft client,
+                          AbstractContainerMenu handler,
                           int slot,
                           String expectedItemId,
                           long now) {
 
         Slot s = handler.slots.get(slot);
-        String itemId = s.getStack().getItem().toString();
+        String itemId = s.getItem().getItem().toString();
 
         if (itemId.equals(expectedItemId)) {
             if (clickDelay == -1) {
@@ -90,7 +90,7 @@ public class AutoFusion extends AbstractFeature {
             }
 
             if (now > clickDelay) {
-                clickSlot(client, handler, slot, InventoryUtils.MouseButton.LEFT, SlotActionType.PICKUP);
+                clickSlot(client, handler, slot, InventoryUtils.MouseButton.LEFT, ClickType.PICKUP);
                 clickDelay = -1;
             }
         }

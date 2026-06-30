@@ -1,13 +1,13 @@
 package rocket.giovanniclient.client.features.render;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.decoration.ArmorStandEntity;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.Box;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.AABB;
 import rocket.giovanniclient.client.config.ConfigManager;
 import rocket.giovanniclient.client.features.AbstractFeature;
 import rocket.giovanniclient.client.util.PlayerLocator;
@@ -33,8 +33,8 @@ public class StarredMobESP extends AbstractFeature {
     private int tickCounter = 0;
 
     @Override
-    public void onTick(MinecraftClient client) {
-        if (client == null || client.world == null) return;
+    public void onTick(Minecraft client) {
+        if (client == null || client.level == null) return;
 
         var rc = ConfigManager.getConfig().rc.renderEntitiesAccordion;
 
@@ -50,18 +50,21 @@ public class StarredMobESP extends AbstractFeature {
 
         desired.clear();
 
+        /*
+        TODO: FIX THIS FUCK MAPPINGS
         // Find starred armor stands
-        for (Entity e : client.world.getEntities()) {
-            if (!(e instanceof ArmorStandEntity as)) continue;
+        for (Entity e : client.level.getEntities()) {
+            if (!(e instanceof ArmorStand as)) continue;
             if (!as.hasCustomName()) continue;
 
             if (!containsAnyStar(getPlainName(as.getCustomName()))) continue;
 
             Entity target = findClosestLivingUnderArmorStand(client, as);
             if (target instanceof LivingEntity living && living != client.player) {
-                desired.add(living.getUuid());
+                desired.add(living.getUUID());
             }
         }
+        */
 
         // Remove no-longer-needed glow
         for (UUID old : new HashSet<>(previouslyApplied)) {
@@ -94,17 +97,17 @@ public class StarredMobESP extends AbstractFeature {
         }
     }
 
-    private static Entity findClosestLivingUnderArmorStand(MinecraftClient client, ArmorStandEntity stand) {
-        Box box = stand.getBoundingBox().expand(1.0, 3.0, 1.0).offset(0.0, -1.2, 0.0);
+    private static Entity findClosestLivingUnderArmorStand(Minecraft client, ArmorStand stand) {
+        AABB box = stand.getBoundingBox().inflate(1.0, 3.0, 1.0).move(0.0, -1.2, 0.0);
 
         Entity closest = null;
         double best = Double.MAX_VALUE;
 
-        for (Entity e : client.world.getOtherEntities(stand, box)) {
+        for (Entity e : client.level.getEntities(stand, box)) {
             if (!(e instanceof LivingEntity)) continue;
-            if (!(e instanceof MobEntity) && !(e instanceof PlayerEntity)) continue;
+            if (!(e instanceof Mob) && !(e instanceof Player)) continue;
 
-            double d = stand.squaredDistanceTo(e);
+            double d = stand.distanceToSqr(e);
             if (d < best) {
                 best = d;
                 closest = e;
@@ -121,15 +124,19 @@ public class StarredMobESP extends AbstractFeature {
         return false;
     }
 
-    private static String getPlainName(Text t) {
-        return Objects.requireNonNullElse(t, Text.empty()).getString();
+    private static String getPlainName(Component t) {
+        return Objects.requireNonNullElse(t, Component.empty()).getString();
     }
 
-    private static Entity findEntityByUuid(MinecraftClient client, UUID uuid) {
-        if (client.world == null) return null;
-        for (Entity e : client.world.getEntities()) {
-            if (e.getUuid().equals(uuid)) return e;
+    private static Entity findEntityByUuid(Minecraft client, UUID uuid) {
+        if (client.level == null) return null;
+        /*
+
+        TODO: FIX THIS FUCK MAPPINGS
+        for (Entity e : client.level.getEntities()) {
+            if (e.getUUID().equals(uuid)) return e;
         }
+        */
         return null;
     }
 }

@@ -1,7 +1,7 @@
 package rocket.giovanniclient.client.compat;
 
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;

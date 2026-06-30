@@ -1,14 +1,14 @@
 package rocket.giovanniclient.client.mixin.invbuttons;
 
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(HandledScreen.class)
+@Mixin(AbstractContainerScreen.class)
 public interface HandledScreenAccessor {
-    @Accessor("x") int giovanni$getX();
-    @Accessor("y") int giovanni$getY();
+    @Accessor("leftPos") int giovanni$getX();
+    @Accessor("topPos") int giovanni$getY();
 
-    @Accessor("backgroundWidth") int giovanni$getBackgroundWidth();
-    @Accessor("backgroundHeight") int giovanni$getBackgroundHeight();
+    @Accessor("imageWidth") int giovanni$getBackgroundWidth();
+    @Accessor("imageHeight") int giovanni$getBackgroundHeight();
 }

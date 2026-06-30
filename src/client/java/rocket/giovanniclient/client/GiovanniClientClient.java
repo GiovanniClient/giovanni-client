@@ -3,11 +3,11 @@ package rocket.giovanniclient.client;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.wimods.freecam.WiFreecam;
 import rocket.giovanniclient.client.bootstrap.*;
 import rocket.giovanniclient.client.config.ConfigManager;
@@ -18,7 +18,7 @@ import java.util.List;
 
 public final class GiovanniClientClient implements ClientModInitializer {
 
-    public static final MinecraftClient mc = MinecraftClient.getInstance();
+    public static final Minecraft mc = Minecraft.getInstance();
 
     public static final String MOD_ID = "giovanniclient";
     public static final String MOD_VERSION = getModVersion();
@@ -66,16 +66,16 @@ public final class GiovanniClientClient implements ClientModInitializer {
 
         // inform the user they are running on unsupported minecraft version - pops up when they join a world
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
-            MutableText warningMessage = Text.literal("\n\n\n===== ").formatted(Formatting.GOLD, Formatting.BOLD)
-                    .append(Text.literal("GIOVANNI CLIENT").formatted(Formatting.AQUA, Formatting.BOLD))
-                    .append(Text.literal(" =====\n").formatted(Formatting.GOLD, Formatting.BOLD))
-                    .append(Text.literal("\nUNSUPPORTED MC VERSION: ").formatted(Formatting.RED, Formatting.BOLD)).append(Text.literal(getMcVersion()).formatted(Formatting.WHITE))
-                    .append(Text.literal("\nFeatures are disabled to prevent crashing.\n").formatted(Formatting.GRAY))
-                    .append(Text.literal("\n[CLICK TO CHECK FOR UPDATES]").formatted(Formatting.AQUA, Formatting.BOLD, Formatting.UNDERLINE).styled(s -> s.withClickEvent(new ClickEvent.SuggestCommand("/giovanni-check-update"))))
-                    .append(Text.literal("\n\n=========================").formatted(Formatting.GOLD, Formatting.BOLD));
+            MutableComponent warningMessage = Component.literal("\n\n\n===== ").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD)
+                    .append(Component.literal("GIOVANNI CLIENT").withStyle(ChatFormatting.AQUA, ChatFormatting.BOLD))
+                    .append(Component.literal(" =====\n").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD))
+                    .append(Component.literal("\nUNSUPPORTED MC VERSION: ").withStyle(ChatFormatting.RED, ChatFormatting.BOLD)).append(Component.literal(getMcVersion()).withStyle(ChatFormatting.WHITE))
+                    .append(Component.literal("\nFeatures are disabled to prevent crashing.\n").withStyle(ChatFormatting.GRAY))
+                    .append(Component.literal("\n[CLICK TO CHECK FOR UPDATES]").withStyle(ChatFormatting.AQUA, ChatFormatting.BOLD, ChatFormatting.UNDERLINE).withStyle(s -> s.withClickEvent(new ClickEvent.SuggestCommand("/giovanni-check-update"))))
+                    .append(Component.literal("\n\n=========================").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD));
 
             assert client.player != null;
-            client.player.sendMessage(warningMessage, false);
+            client.player.displayClientMessage(warningMessage, false);
         });
 
         ClientCommands.registerSafemode();

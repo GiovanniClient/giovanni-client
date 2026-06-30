@@ -7,7 +7,7 @@
  */
 package net.wimods.freecam.mixinterface;
 
-import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.KeyMapping;
 
 public interface IKeyMapping
 {
@@ -15,29 +15,33 @@ public interface IKeyMapping
 	 * Returns whether the user is actually pressing this key on their keyboard
 	 * or mouse.
 	 */
-	default boolean isActuallyDown() {
+	public default boolean isActuallyDown()
+	{
 		return freecam_isActuallyDown();
 	}
 	
-	default void setDown(boolean down) {
-		asVanilla().setPressed(down);
+	public default void setDown(boolean down)
+	{
+		asVanilla().setDown(down);
 	}
 	
-	default KeyBinding asVanilla() {
-		return (KeyBinding)this;
+	public default KeyMapping asVanilla()
+	{
+		return (KeyMapping)this;
 	}
 	
 	/**
 	 * Returns the given KeyMapping object as an IKeyMapping, allowing you to
 	 * access the isActuallyDown() method.
 	 */
-	static IKeyMapping get(KeyBinding km) {
+	public static IKeyMapping get(KeyMapping km)
+	{
 		return (IKeyMapping)km;
 	}
-
+	
 	/**
 	 * @deprecated Use {@link #isActuallyDown()} instead.
 	 */
 	@Deprecated
-    boolean freecam_isActuallyDown();
+	public boolean freecam_isActuallyDown();
 }

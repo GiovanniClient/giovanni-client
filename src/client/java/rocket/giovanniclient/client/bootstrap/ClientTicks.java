@@ -16,7 +16,7 @@ public final class ClientTicks {
             // Keybind: open config
             var kb = ClientKeybinds.openConfig();
             if (kb != null) {
-                while (kb.wasPressed()) client.execute(ConfigManager::openConfigScreen);
+                while (kb.consumeClick()) client.execute(ConfigManager::openConfigScreen);
             }
 
             // Flag set by command
@@ -30,12 +30,12 @@ public final class ClientTicks {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             // 1. Toggle Freecam
             // Make sure 'toggleFreecam' is defined in ClientKeybinds
-            while (toggleFreecam.wasPressed()) {
+            while (toggleFreecam.consumeClick()) {
                 WiFreecam.INSTANCE.setEnabled(!WiFreecam.INSTANCE.isEnabled());
             }
 
             // 3. Cycle Control Mode (Camera vs Player)
-            while (switchFreecamControlKey.wasPressed()) {
+            while (switchFreecamControlKey.consumeClick()) {
                 ConfigManager.getConfig().freecamConfig.cycleInputMode();
             }
         });

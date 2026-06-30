@@ -1,6 +1,6 @@
 package rocket.giovanniclient.client.util;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import rocket.giovanniclient.client.features.AbstractFeature;
 
 public class SlayerUtils extends AbstractFeature {
@@ -85,7 +85,7 @@ public class SlayerUtils extends AbstractFeature {
     }
 
     @Override
-    public void onTick(MinecraftClient client) {
+    public void onTick(Minecraft client) {
         tick++;
 
         if (tick % 60 == 0) {

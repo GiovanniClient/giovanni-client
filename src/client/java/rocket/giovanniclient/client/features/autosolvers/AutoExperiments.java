@@ -1,16 +1,16 @@
 package rocket.giovanniclient.client.features.autosolvers;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ingame.GenericContainerScreen;
-import net.minecraft.item.DyeItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.ContainerScreen;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.DyeItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import rocket.giovanniclient.client.config.ConfigManager;
 import rocket.giovanniclient.client.features.AbstractFeature;
 import rocket.giovanniclient.client.util.InventoryUtils;
@@ -58,7 +58,7 @@ public class AutoExperiments extends AbstractFeature {
             return;
         }
 
-        if (!(screen instanceof GenericContainerScreen)) {
+        if (!(screen instanceof ContainerScreen)) {
             clearAll();
             return;
         }
@@ -79,20 +79,20 @@ public class AutoExperiments extends AbstractFeature {
     }
 
     @Override
-    public void onTick(MinecraftClient client) {
+    public void onTick(Minecraft client) {
         if (!cfg.autoExperimentsAccordion.AUTOEXPERIMENTS_TOGGLE ||
                 currentExperiment == ExperimentType.NONE ||
                 client.player == null) {
             return;
         }
 
-        if (!(client.currentScreen instanceof GenericContainerScreen)) {
+        if (!(client.screen instanceof ContainerScreen)) {
             clearAll();
             return;
         }
 
-        ScreenHandler handler = client.player.currentScreenHandler;
-        ItemStack center = handler.slots.get(49).getStack();
+        AbstractContainerMenu handler = client.player.containerMenu;
+        ItemStack center = handler.slots.get(49).getItem();
         long now = System.currentTimeMillis();
 
         if (startDelay == -1) {
@@ -110,35 +110,35 @@ public class AutoExperiments extends AbstractFeature {
         }
     }
 
-    private void tickEnd(MinecraftClient client, long now) {
+    private void tickEnd(Minecraft client, long now) {
         if (endDelay == -1) {
             endDelay = now + rng.nextInt(END_DELAY_MAX - END_DELAY_MIN) + END_DELAY_MIN;
             Utils.debug("End delay: " + (endDelay - now) + "ms");
         }
 
         if (now > endDelay && cfg.autoExperimentsAccordion.AUTOEXPERIMENTS_AUTOQUIT) {
-            client.player.closeHandledScreen();
+            client.player.closeContainer();
             clearAll();
         }
     }
 
-    private void tickChrono(MinecraftClient client, ScreenHandler handler, long now) {
-        ItemStack flag = handler.slots.get(49).getStack();
+    private void tickChrono(Minecraft client, AbstractContainerMenu handler, long now) {
+        ItemStack flag = handler.slots.get(49).getItem();
         tick_counter++;
         if (tick_counter % 9 == 0) Utils.debug("Flag Slot: " + flag.toString());
-        DefaultedList<Slot> container = handler.slots;
+        NonNullList<Slot> container = handler.slots;
 
-        if (flag.isOf(Items.GLOWSTONE) &&
-                !container.get(lastAdded).getStack().hasGlint()) {
+        if (flag.is(Items.GLOWSTONE) &&
+                !container.get(lastAdded).getItem().isEnchanted()) {
             sequenceAdded = false;
             if (chronomatronOrder.size() > (11 - cfg.autoExperimentsAccordion.METAPHYSICAL_SERUM.toInt())) {
-                client.player.closeHandledScreen();
+                client.player.closeContainer();
             }
         }
 
-        if (!sequenceAdded && flag.isOf(Items.CLOCK)) {
+        if (!sequenceAdded && flag.is(Items.CLOCK)) {
             for (int i = 10; i <= 43; i++) {
-                ItemStack stack = container.get(i).getStack();
+                ItemStack stack = container.get(i).getItem();
                 if (!stack.isEmpty() && stack.toString().contains("terracotta")) {
                     chronomatronOrder.add(i);
                     Utils.debug("Added terracotta slot: " + i);
@@ -155,7 +155,7 @@ public class AutoExperiments extends AbstractFeature {
             }
         }
 
-        if (sequenceAdded && flag.isOf(Items.CLOCK) &&
+        if (sequenceAdded && flag.is(Items.CLOCK) &&
                 chronomatronOrder.size() > clicks) {
 
             if (clickDelay == -1) {
@@ -170,28 +170,28 @@ public class AutoExperiments extends AbstractFeature {
             }
 
             if (now > clickDelay) {
-                clickSlot(client, handler, chronomatronOrder.get(clicks), InventoryUtils.MouseButton.MIDDLE, SlotActionType.CLONE);
+                clickSlot(client, handler, chronomatronOrder.get(clicks), InventoryUtils.MouseButton.MIDDLE, ClickType.CLONE);
                 clicks++;
                 clickDelay = -1;
             }
         }
     }
 
-    private void tickUltra(MinecraftClient client, ScreenHandler handler, long now) {
-        ItemStack flag = handler.slots.get(49).getStack();
-        DefaultedList<Slot> container = handler.slots;
+    private void tickUltra(Minecraft client, AbstractContainerMenu handler, long now) {
+        ItemStack flag = handler.slots.get(49).getItem();
+        NonNullList<Slot> container = handler.slots;
 
-        if (flag.isOf(Items.CLOCK)) {
+        if (flag.is(Items.CLOCK)) {
             sequenceAdded = false;
         }
 
-        if (!sequenceAdded && flag.isOf(Items.GLOWSTONE)) {
-            if (!container.get(44).hasStack()) return;
+        if (!sequenceAdded && flag.is(Items.GLOWSTONE)) {
+            if (!container.get(44).hasItem()) return;
 
             ultrasequencerOrder.clear();
 
             for (int i = 9; i <= 44; i++) {
-                ItemStack stack = container.get(i).getStack();
+                ItemStack stack = container.get(i).getItem();
                 Item item = stack.getItem();
                 if (item instanceof DyeItem || item == Items.BONE_MEAL || item == Items.INK_SAC ||
                         item == Items.LAPIS_LAZULI || item == Items.COCOA_BEANS) {
@@ -203,7 +203,7 @@ public class AutoExperiments extends AbstractFeature {
             clicks = 0;
         }
 
-        if (flag.isOf(Items.CLOCK) && ultrasequencerOrder.containsKey(clicks)) {
+        if (flag.is(Items.CLOCK) && ultrasequencerOrder.containsKey(clicks)) {
             if (clickDelay == -1) {
                 clickDelay = now + rng.nextInt(cfg.autoExperimentsAccordion.delays.MAX - cfg.autoExperimentsAccordion.delays.MIN) + cfg.autoExperimentsAccordion.delays.MIN;
                 Utils.debug("Ultra Click " + (clicks + 1) + " in " + (clickDelay - now) + "ms");
@@ -211,12 +211,12 @@ public class AutoExperiments extends AbstractFeature {
 
             if (now > clickDelay) {
                 if (ultrasequencerOrder.size() > (9 - cfg.autoExperimentsAccordion.METAPHYSICAL_SERUM.toInt())) {
-                    client.player.closeHandledScreen();
+                    client.player.closeContainer();
                 }
 
                 Integer slot = ultrasequencerOrder.get(clicks);
                 if (slot != null) {
-                    clickSlot(client, handler, slot, InventoryUtils.MouseButton.MIDDLE, SlotActionType.CLONE);
+                    clickSlot(client, handler, slot, InventoryUtils.MouseButton.MIDDLE, ClickType.CLONE);
                     clicks++;
                     clickDelay = -1;
                 }

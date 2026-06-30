@@ -1,11 +1,11 @@
 package rocket.giovanniclient.client.util;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.hud.PlayerListHud;
-import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.scoreboard.Team;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.PlayerTabOverlay;
+import net.minecraft.client.multiplayer.PlayerInfo;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.scores.PlayerTeam;
 import rocket.giovanniclient.client.GiovanniClientClient;
 import rocket.giovanniclient.client.mixin.PlayerListHudAccessor;
 
@@ -19,56 +19,56 @@ public final class TabListUtils {
     private TabListUtils() {}
 
     // =========================
-    // RAW LINES (Text)
+    // RAW LINES (Component)
     // =========================
 
-    public static List<Text> getTabLines(boolean includeHeaderFooter, boolean includePlayers) {
+    public static List<Component> getTabLines(boolean includeHeaderFooter, boolean includePlayers) {
         // Gatekeeper pattern, this class is shit
         if (!GiovanniClientClient.isCurrentVersionSupported()) {
             return Collections.emptyList();
         }
 
-        MinecraftClient client = MinecraftClient.getInstance();
-        if (client == null || client.player == null || client.getNetworkHandler() == null) return List.of();
+        Minecraft client = Minecraft.getInstance();
+        if (client == null || client.player == null || client.getConnection() == null) return List.of();
 
-        PlayerListHud hud = client.inGameHud.getPlayerListHud();
-        List<Text> out = new ArrayList<>();
+        PlayerTabOverlay hud = client.gui.getTabList();
+        List<Component> out = new ArrayList<>();
 
         if (includeHeaderFooter && hud instanceof PlayerListHudAccessor acc) {
-            Text header = acc.giovanni$getHeader();
+            Component header = acc.giovanni$getHeader();
             if (header != null && !header.getString().isBlank()) out.add(header);
         }
 
         if (includePlayers) {
-            List<PlayerListEntry> entries = new ArrayList<>(client.getNetworkHandler().getPlayerList());
+            List<PlayerInfo> entries = new ArrayList<>(client.getConnection().getOnlinePlayers());
             entries.sort(TAB_COMPARATOR);
 
-            for (PlayerListEntry e : entries) {
+            for (PlayerInfo e : entries) {
                 if (e == null || e.getProfile() == null) continue;
 
-                Text display = e.getDisplayName();
+                Component display = e.getTabListDisplayName();
                 if (display != null) {
                     out.add(display);
                     continue;
                 }
 
                 String name = e.getProfile().name();
-                Team team = e.getScoreboardTeam();
+                PlayerTeam team = e.getTeam();
 
-                MutableText line = Text.empty();
+                MutableComponent line = Component.empty();
                 if (team != null) {
-                    if (team.getPrefix() != null) line.append(team.getPrefix());
-                    line.append(Text.literal(name));
-                    if (team.getSuffix() != null) line.append(team.getSuffix());
+                    if (team.getPlayerPrefix() != null) line.append(team.getPlayerPrefix());
+                    line.append(Component.literal(name));
+                    if (team.getPlayerSuffix() != null) line.append(team.getPlayerSuffix());
                 } else {
-                    line.append(Text.literal(name));
+                    line.append(Component.literal(name));
                 }
                 out.add(line);
             }
         }
 
         if (includeHeaderFooter && hud instanceof PlayerListHudAccessor acc) {
-            Text footer = acc.giovanni$getFooter();
+            Component footer = acc.giovanni$getFooter();
             if (footer != null && !footer.getString().isBlank()) out.add(footer);
         }
 
@@ -79,10 +79,10 @@ public final class TabListUtils {
     // STRING HELPERS (RAW / CLEAN)
     // =========================
 
-    /** "Raw" nel senso: Text#getString() (con simboli unicode, ma senza i codici § perché getString li rimuove). */
+    /** "Raw" nel senso: Component#getString() (con simboli unicode, ma senza i codici § perché getString li rimuove). */
     public static List<String> getRawLines(boolean includeHeaderFooter, boolean includePlayers) {
         return getTabLines(includeHeaderFooter, includePlayers).stream()
-                .map(Text::getString)
+                .map(Component::getString)
                 .toList();
     }
 
@@ -126,10 +126,10 @@ public final class TabListUtils {
     }
 
     // Ordinamento "ragionevole" stile vanilla
-    private static final Comparator<PlayerListEntry> TAB_COMPARATOR =
-            Comparator.<PlayerListEntry, Boolean>comparing(e -> e.getGameMode() != null && !e.getGameMode().isSurvivalLike())
+    private static final Comparator<PlayerInfo> TAB_COMPARATOR =
+            Comparator.<PlayerInfo, Boolean>comparing(e -> e.getGameMode() != null && !e.getGameMode().isSurvival())
                     .thenComparing(e -> {
-                        Team t = e.getScoreboardTeam();
+                        PlayerTeam t = e.getTeam();
                         return t != null ? t.getName() : "";
                     }, String::compareToIgnoreCase)
                     .thenComparing(e -> e.getProfile() != null ? e.getProfile().name() : "", String::compareToIgnoreCase);

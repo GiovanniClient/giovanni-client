@@ -1,7 +1,7 @@
 package rocket.giovanniclient.client.features;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 
 public abstract class AbstractFeature {
 
@@ -21,9 +21,9 @@ public abstract class AbstractFeature {
      * Features that need continuous updates should override this method.
      * Default implementation does nothing.
      *
-     * @param client The MinecraftClient instance.
+     * @param client The Minecraft instance.
      */
-    public void onTick(MinecraftClient client) {
+    public void onTick(Minecraft client) {
         // Default empty implementation
     }
 
@@ -33,9 +33,9 @@ public abstract class AbstractFeature {
      * Features that need to perform actions on world join should override this method.
      * Default implementation does nothing.
      *
-     * @param client The MinecraftClient instance.
+     * @param client The Minecraft instance.
      */
-    public void onWorldLoad(MinecraftClient client) { // Changed method name to match error message
+    public void onWorldLoad(Minecraft client) { // Changed method name to match error message
         // Default empty implementation
     }
 }

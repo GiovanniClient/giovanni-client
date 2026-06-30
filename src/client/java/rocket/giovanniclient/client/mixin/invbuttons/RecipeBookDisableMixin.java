@@ -1,6 +1,6 @@
 package rocket.giovanniclient.client.mixin.invbuttons;
 
-import net.minecraft.client.gui.screen.ingame.RecipeBookScreen;
+import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -9,10 +9,10 @@ import rocket.giovanniclient.client.config.ConfigManager;
 import rocket.giovanniclient.client.features.inventorybuttons.rei.ReiAccessibilityManager;
 import rocket.giovanniclient.client.util.Utils;
 
-@Mixin(RecipeBookScreen.class)
+@Mixin(AbstractRecipeBookScreen.class)
 public abstract class RecipeBookDisableMixin {
 
-    @Inject(method = "addRecipeBook", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "initButton", at = @At("HEAD"), cancellable = true)
     private void disableRecipeBook(CallbackInfo ci) {
         if (ConfigManager.getConfig().ibc.INV_BUTTONS_IN_CRAFTING_GRID) {
             // this is probably the wrong place where to put this code, but it's 3am

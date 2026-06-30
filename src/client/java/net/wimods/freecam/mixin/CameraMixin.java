@@ -7,39 +7,44 @@
  */
 package net.wimods.freecam.mixin;
 
-import net.minecraft.client.render.Camera;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-import net.minecraft.world.waypoint.TrackedWaypoint;
-import net.wimods.freecam.WiFreecam;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Camera.class)
-public abstract class CameraMixin implements TrackedWaypoint.YawProvider {
-	@Shadow
-	private boolean thirdPerson;
-	
-	@Inject(at = @At("RETURN"),
-		method = "update",
-		cancellable = false)
-	public void onSetup(World area, Entity focusedEntity, boolean thirdPerson, boolean inverseView, float tickProgress, CallbackInfo ci) {
-		WiFreecam freecam = WiFreecam.INSTANCE;
-		if(!freecam.isEnabled())
-			return;
+import net.minecraft.client.Camera;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.waypoints.TrackedWaypoint;
+import net.wimods.freecam.WiFreecam;
 
-        this.thirdPerson = true;
-		setPos(freecam.getCamPos(tickProgress));
-		setRotation(freecam.getCamYaw(), freecam.getCamPitch());
-	}
-	
-	@Shadow
-	protected abstract void setPos(Vec3d pos);
-	
-	@Shadow
-	protected abstract void setRotation(float yaw, float pitch);
+@Mixin(Camera.class)
+public abstract class CameraMixin implements TrackedWaypoint.Camera
+{
+    @Shadow
+    private boolean detached;
+
+    @Inject(
+            method = "setup(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/Entity;ZZF)V",
+            at = @At("RETURN"),
+            cancellable = false)
+    public void onSetup(Level level, Entity entity, boolean bl, boolean bl2,
+                        float partialTicks, CallbackInfo ci)
+    {
+        WiFreecam freecam = WiFreecam.INSTANCE;
+        if(!freecam.isEnabled())
+            return;
+
+        detached = true;
+        setPosition(freecam.getCamPos(partialTicks));
+        setRotation(freecam.getCamYaw(), freecam.getCamPitch());
+    }
+
+    @Shadow
+    protected abstract void setPosition(Vec3 pos);
+
+    @Shadow
+    protected abstract void setRotation(float yaw, float pitch);
 }

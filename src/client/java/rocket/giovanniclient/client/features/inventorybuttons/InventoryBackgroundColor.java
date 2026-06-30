@@ -1,16 +1,16 @@
 package rocket.giovanniclient.client.features.inventorybuttons;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.texture.NativeImage;
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.util.Identifier;
+import com.mojang.blaze3d.platform.NativeImage;
+import net.minecraft.client.Minecraft;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.resources.ResourceManager;
 
 import java.io.InputStream;
 
 public final class InventoryBackgroundColor {
 
     private static final Identifier INV_TEX =
-            Identifier.of("textures/gui/container/inventory.png");
+            Identifier.parse("textures/gui/container/inventory.png");
 
     private static Integer cached = null;
 
@@ -18,12 +18,12 @@ public final class InventoryBackgroundColor {
         if (cached != null) return cached;
 
         try {
-            ResourceManager rm = MinecraftClient.getInstance().getResourceManager();
+            ResourceManager rm = Minecraft.getInstance().getResourceManager();
             try (InputStream in = rm.open(INV_TEX)) {
                 NativeImage img = NativeImage.read(in);
 
                 // "Safe" background pixel (in the texture provided, this is solid background)
-                int argb = img.getColorArgb(25, 6);
+                int argb = img.getPixel(25, 6);
 
                 // Force full alpha (in case the pixel has unusual alpha values)
                 cached = argb; //(argb & 0x00FFFFFF) | 0xFF000000;

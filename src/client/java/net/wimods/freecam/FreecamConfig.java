@@ -4,8 +4,7 @@ import com.google.gson.annotations.Expose;
 import io.github.notenoughupdates.moulconfig.ChromaColour;
 import io.github.notenoughupdates.moulconfig.annotations.*;
 import io.github.notenoughupdates.moulconfig.observer.Property;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.phys.Vec3;
 import rocket.giovanniclient.client.GiovanniClientClient;
 
 public class FreecamConfig {
@@ -67,27 +66,27 @@ public class FreecamConfig {
     public enum InitialPosition {
         INSIDE("Inside") {
             @Override
-            public Vec3d getOffset() {
-                return Vec3d.ZERO;
+            public Vec3 getOffset() {
+                return Vec3.ZERO;
             }
         },
 
         IN_FRONT("In Front") {
             @Override
-            public Vec3d getOffset() {
+            public Vec3 getOffset() {
                 double distance = 0.55 * GiovanniClientClient.mc.player.getScale();
                 float yawRad = GiovanniClientClient.mc.player.getYaw() * MathHelper.RADIANS_PER_DEGREE;
                 double offsetX = -MathHelper.sin(yawRad) * distance;
                 double offsetZ = MathHelper.cos(yawRad) * distance;
-                return new Vec3d(offsetX, 0, offsetZ);
+                return new Vec3(offsetX, 0, offsetZ);
             }
         },
 
         ABOVE("Above") {
             @Override
-            public Vec3d getOffset() {
+            public Vec3 getOffset() {
                 double distance = 0.55 * GiovanniClientClient.mc.player.getScale();
-                return new Vec3d(0, distance, 0);
+                return new Vec3(0, distance, 0);
             }
         };
 
@@ -97,7 +96,7 @@ public class FreecamConfig {
             this.name = name;
         }
 
-        public abstract Vec3d getOffset();
+        public abstract Vec3 getOffset();
 
         @Override
         public String toString() {

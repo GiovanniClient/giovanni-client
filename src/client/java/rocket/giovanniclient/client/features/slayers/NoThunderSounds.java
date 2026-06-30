@@ -1,6 +1,6 @@
 package rocket.giovanniclient.client.features.slayers;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import org.spongepowered.asm.mixin.Unique;
 import rocket.giovanniclient.client.config.ConfigManager;
 import rocket.giovanniclient.client.features.AbstractFeature;
@@ -11,7 +11,7 @@ public class NoThunderSounds extends AbstractFeature {
     private final SlayersConfig sc = ConfigManager.getConfig().sc;
 
     @Override
-    public void onTick(MinecraftClient client) {
+    public void onTick(Minecraft client) {
         if (sc.NO_THUNDER_SOUNDS) {
             if (PlayerLocator.isPlayerIn("The Wasteland")) {
 

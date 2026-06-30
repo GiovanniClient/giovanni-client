@@ -1,6 +1,6 @@
 package rocket.giovanniclient.client.mixin.render;
 
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -10,7 +10,7 @@ import rocket.giovanniclient.client.features.render.GlowOverrideManager;
 @Mixin(Entity.class)
 public abstract class EntityGlowOverrideMixin {
 
-    @Inject(method = "isGlowing", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "isCurrentlyGlowing", at = @At("HEAD"), cancellable = true)
     private void giovanni$forceGlow(CallbackInfoReturnable<Boolean> cir) {
         Entity e = (Entity) (Object) this;
         if (GlowOverrideManager.has(e)) {

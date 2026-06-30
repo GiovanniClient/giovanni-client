@@ -7,14 +7,13 @@
  */
 package net.wimods.freecam.util;
 
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-
-
-public enum EntityUtils {
+public enum EntityUtils
+{
 	;
 	
 	/**
@@ -27,16 +26,17 @@ public enum EntityUtils {
 	 * current tick position directly would cause animations to look choppy
 	 * because that position is only updated 20 times per second.
 	 */
-	public static Vec3d getLerpedPos(Entity e, float partialTicks) {
+	public static Vec3 getLerpedPos(Entity e, float partialTicks)
+	{
 		// When an entity is removed, it stops moving and its lastRenderX/Y/Z
 		// values are no longer updated.
 		if(e.isRemoved())
-			return e.getEntityPos();
+			return e.position();
 		
-		double x = MathHelper.lerp(partialTicks, e.lastRenderX, e.getX());
-		double y = MathHelper.lerp(partialTicks, e.lastRenderY, e.getY());
-		double z = MathHelper.lerp(partialTicks, e.lastRenderZ, e.getZ());
-		return new Vec3d(x, y, z);
+		double x = Mth.lerp(partialTicks, e.xOld, e.getX());
+		double y = Mth.lerp(partialTicks, e.yOld, e.getY());
+		double z = Mth.lerp(partialTicks, e.zOld, e.getZ());
+		return new Vec3(x, y, z);
 	}
 	
 	/**
@@ -50,13 +50,14 @@ public enum EntityUtils {
 	 * because that box, just like the position, is only updated 20 times per
 	 * second.
 	 */
-	public static Box getLerpedBox(Entity e, float partialTicks) {
+	public static AABB getLerpedBox(Entity e, float partialTicks)
+	{
 		// When an entity is removed, it stops moving and its lastRenderX/Y/Z
 		// values are no longer updated.
 		if(e.isRemoved())
 			return e.getBoundingBox();
 		
-		Vec3d offset = getLerpedPos(e, partialTicks).subtract(e.getEntityPos());
-		return e.getBoundingBox().offset(offset);
+		Vec3 offset = getLerpedPos(e, partialTicks).subtract(e.position());
+		return e.getBoundingBox().move(offset);
 	}
 }

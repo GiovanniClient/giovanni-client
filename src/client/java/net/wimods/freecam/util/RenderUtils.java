@@ -7,169 +7,424 @@
  */
 package net.wimods.freecam.util;
 
-import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.wimods.freecam.WiFreecam;
-import net.wimods.freecam.WurstRenderLayers;
+import org.joml.Matrix3x2f;
 import org.joml.Vector3f;
 
-public enum RenderUtils {
-    ;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.PoseStack.Pose;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 
-    public static Vec3d getCameraPos() {
-        Camera camera = WiFreecam.MC.gameRenderer.getCamera();
-        if(camera == null)
-            return Vec3d.ZERO;
+import net.minecraft.client.Camera;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import net.wimods.freecam.WiFreecam;
+import net.wimods.freecam.WurstRenderLayers;
 
-        return camera.getCameraPos();
-    }
-
-    public static Rotation getCameraRotation() {
-        Camera camera = WiFreecam.MC.gameRenderer.getCamera();
-        if(camera == null)
-            return new Rotation(0, 0);
-
-        return new Rotation(camera.getYaw(), camera.getPitch());
-    }
-
-    public static VertexConsumerProvider.Immediate getVCP() {
-        return WiFreecam.MC.getBufferBuilders().getEntityVertexConsumers();
-    }
-
-    public static int toIntColor(float[] rgb, float opacity) {
-        return (int)(MathHelper.clamp(opacity, 0, 1) * 255) << 24
-                | (int)(MathHelper.clamp(rgb[0], 0, 1) * 255) << 16
-                | (int)(MathHelper.clamp(rgb[1], 0, 1) * 255) << 8
-                | (int)(MathHelper.clamp(rgb[2], 0, 1) * 255);
-    }
-
-    private static Vec3d getTracerOrigin(float partialTicks) {
-        return getCameraRotation().toLookVec().multiply(10);
-    }
-
-    public static void drawTracer(MatrixStack matrices, float partialTicks, Vec3d end, int color, boolean depthTest) {
-        VertexConsumerProvider.Immediate vcp = getVCP();
-        RenderLayer layer = WurstRenderLayers.getLines(depthTest);
-        VertexConsumer buffer = vcp.getBuffer(layer);
-
-        Vec3d start = getTracerOrigin(partialTicks);
-        Vec3d offset = getCameraPos().negate();
-        drawLine(matrices, buffer, start, end.add(offset), color);
-
-        vcp.draw(layer);
-    }
-
-    public static void drawLine(MatrixStack matrices, VertexConsumer buffer, Vec3d start, Vec3d end, int color) {
-        MatrixStack.Entry entry = matrices.peek();
-        float x1 = (float)start.x;
-        float y1 = (float)start.y;
-        float z1 = (float)start.z;
-        float x2 = (float)end.x;
-        float y2 = (float)end.y;
-        float z2 = (float)end.z;
-        drawLine(entry, buffer, x1, y1, z1, x2, y2, z2, color);
-    }
-
-    public static void drawLine(MatrixStack.Entry entry, VertexConsumer buffer, float x1, float y1, float z1, float x2, float y2, float z2, int color) {
-        Vector3f normal = new Vector3f(x2, y2, z2).sub(x1, y1, z1).normalize();
-        buffer.vertex(entry, x1, y1, z1).color(color)
-                .normal(entry, normal).lineWidth(2);
-
-        // If the line goes through the screen, add another vertex there. This
-        // works around a bug in Minecraft's line shader.
-        float t = new Vector3f(x1, y1, z1).negate().dot(normal);
-        float length = new Vector3f(x2, y2, z2).sub(x1, y1, z1).length();
-        if(t > 0 && t < length)
-        {
-            Vector3f closeToCam = new Vector3f(normal).mul(t).add(x1, y1, z1);
-            buffer.vertex(entry, closeToCam).color(color)
-                    .normal(entry, normal).lineWidth(2);
-            buffer.vertex(entry, closeToCam).color(color)
-                    .normal(entry, normal).lineWidth(2);
-        }
-
-        buffer.vertex(entry, x2, y2, z2).color(color)
-                .normal(entry, normal).lineWidth(2);
-    }
-
-    public static void drawOutlinedBox(MatrixStack matrices, Box box, int color, boolean depthTest) {
-        VertexConsumerProvider.Immediate vcp = getVCP();
-        RenderLayer layer = WurstRenderLayers.getLines(depthTest);
-        VertexConsumer buffer = vcp.getBuffer(layer);
-
-        drawOutlinedBox(matrices, buffer, box.offset(getCameraPos().negate()),
-                color);
-
-        vcp.draw(layer);
-    }
-
-    public static void drawOutlinedBox(MatrixStack matrices, VertexConsumer buffer, Box box, int color) {
-        MatrixStack.Entry entry = matrices.peek();
-        float x1 = (float)box.minX;
-        float y1 = (float)box.minY;
-        float z1 = (float)box.minZ;
-        float x2 = (float)box.maxX;
-        float y2 = (float)box.maxY;
-        float z2 = (float)box.maxZ;
-
-        // bottom lines
-        buffer.vertex(entry, x1, y1, z1).color(color)
-                .normal(entry, 1, 0, 0).lineWidth(2);
-        buffer.vertex(entry, x2, y1, z1).color(color)
-                .normal(entry, 1, 0, 0).lineWidth(2);
-        buffer.vertex(entry, x1, y1, z1).color(color)
-                .normal(entry, 0, 0, 1).lineWidth(2);
-        buffer.vertex(entry, x1, y1, z2).color(color)
-                .normal(entry, 0, 0, 1).lineWidth(2);
-        buffer.vertex(entry, x2, y1, z1).color(color)
-                .normal(entry, 0, 0, 1).lineWidth(2);
-        buffer.vertex(entry, x2, y1, z2).color(color)
-                .normal(entry, 0, 0, 1).lineWidth(2);
-        buffer.vertex(entry, x1, y1, z2).color(color)
-                .normal(entry, 1, 0, 0).lineWidth(2);
-        buffer.vertex(entry, x2, y1, z2).color(color)
-                .normal(entry, 1, 0, 0).lineWidth(2);
-
-        // top lines
-        buffer.vertex(entry, x1, y2, z1).color(color)
-                .normal(entry, 1, 0, 0).lineWidth(2);
-        buffer.vertex(entry, x2, y2, z1).color(color)
-                .normal(entry, 1, 0, 0).lineWidth(2);
-        buffer.vertex(entry, x1, y2, z1).color(color)
-                .normal(entry, 0, 0, 1).lineWidth(2);
-        buffer.vertex(entry, x1, y2, z2).color(color)
-                .normal(entry, 0, 0, 1).lineWidth(2);
-        buffer.vertex(entry, x2, y2, z1).color(color)
-                .normal(entry, 0, 0, 1).lineWidth(2);
-        buffer.vertex(entry, x2, y2, z2).color(color)
-                .normal(entry, 0, 0, 1).lineWidth(2);
-        buffer.vertex(entry, x1, y2, z2).color(color)
-                .normal(entry, 1, 0, 0).lineWidth(2);
-        buffer.vertex(entry, x2, y2, z2).color(color)
-                .normal(entry, 1, 0, 0).lineWidth(2);
-
-        // side lines
-        buffer.vertex(entry, x1, y1, z1).color(color)
-                .normal(entry, 0, 1, 0).lineWidth(2);
-        buffer.vertex(entry, x1, y2, z1).color(color)
-                .normal(entry, 0, 1, 0).lineWidth(2);
-        buffer.vertex(entry, x2, y1, z1).color(color)
-                .normal(entry, 0, 1, 0).lineWidth(2);
-        buffer.vertex(entry, x2, y2, z1).color(color)
-                .normal(entry, 0, 1, 0).lineWidth(2);
-        buffer.vertex(entry, x1, y1, z2).color(color)
-                .normal(entry, 0, 1, 0).lineWidth(2);
-        buffer.vertex(entry, x1, y2, z2).color(color)
-                .normal(entry, 0, 1, 0).lineWidth(2);
-        buffer.vertex(entry, x2, y1, z2).color(color)
-                .normal(entry, 0, 1, 0).lineWidth(2);
-        buffer.vertex(entry, x2, y2, z2).color(color)
-                .normal(entry, 0, 1, 0).lineWidth(2);
-    }
+public enum RenderUtils
+{
+	;
+	
+	public static void applyRenderOffset(PoseStack matrixStack)
+	{
+		Vec3 camPos = getCameraPos();
+		matrixStack.translate(-camPos.x, -camPos.y, -camPos.z);
+	}
+	
+	public static Vec3 getCameraPos()
+	{
+		Camera camera = WiFreecam.MC.gameRenderer.getMainCamera();
+		if(camera == null)
+			return Vec3.ZERO;
+		
+		return camera.position();
+	}
+	
+	public static Rotation getCameraRotation()
+	{
+		Camera camera = WiFreecam.MC.gameRenderer.getMainCamera();
+		if(camera == null)
+			return new Rotation(0, 0);
+		
+		return new Rotation(camera.yRot(), camera.xRot());
+	}
+	
+	public static BlockPos getCameraBlockPos()
+	{
+		Camera camera = WiFreecam.MC.gameRenderer.getMainCamera();
+		if(camera == null)
+			return BlockPos.ZERO;
+		
+		return camera.blockPosition();
+	}
+	
+	public static MultiBufferSource.BufferSource getVCP()
+	{
+		return WiFreecam.MC.renderBuffers().bufferSource();
+	}
+	
+	public static int toIntColor(float[] rgb, float opacity)
+	{
+		return (int)(Mth.clamp(opacity, 0, 1) * 255) << 24
+			| (int)(Mth.clamp(rgb[0], 0, 1) * 255) << 16
+			| (int)(Mth.clamp(rgb[1], 0, 1) * 255) << 8
+			| (int)(Mth.clamp(rgb[2], 0, 1) * 255);
+	}
+	
+	public static void drawLine(PoseStack matrices, Vec3 start, Vec3 end,
+		int color, boolean depthTest)
+	{
+		MultiBufferSource.BufferSource vcp = getVCP();
+		RenderType layer = WurstRenderLayers.getLines(depthTest);
+		VertexConsumer buffer = vcp.getBuffer(layer);
+		
+		Vec3 offset = getCameraPos().reverse();
+		drawLine(matrices, buffer, start.add(offset), end.add(offset), color);
+		
+		vcp.endBatch(layer);
+	}
+	
+	private static Vec3 getTracerOrigin(float partialTicks)
+	{
+		return getCameraRotation().toLookVec().scale(10);
+	}
+	
+	public static void drawTracer(PoseStack matrices, float partialTicks,
+		Vec3 end, int color, boolean depthTest)
+	{
+		MultiBufferSource.BufferSource vcp = getVCP();
+		RenderType layer = WurstRenderLayers.getLines(depthTest);
+		VertexConsumer buffer = vcp.getBuffer(layer);
+		
+		Vec3 start = getTracerOrigin(partialTicks);
+		Vec3 offset = getCameraPos().reverse();
+		drawLine(matrices, buffer, start, end.add(offset), color);
+		
+		vcp.endBatch(layer);
+	}
+	
+	public static void drawLine(PoseStack matrices, VertexConsumer buffer,
+		Vec3 start, Vec3 end, int color)
+	{
+		Pose entry = matrices.last();
+		float x1 = (float)start.x;
+		float y1 = (float)start.y;
+		float z1 = (float)start.z;
+		float x2 = (float)end.x;
+		float y2 = (float)end.y;
+		float z2 = (float)end.z;
+		drawLine(entry, buffer, x1, y1, z1, x2, y2, z2, color);
+	}
+	
+	public static void drawLine(PoseStack.Pose entry, VertexConsumer buffer,
+		float x1, float y1, float z1, float x2, float y2, float z2, int color)
+	{
+		Vector3f normal = new Vector3f(x2, y2, z2).sub(x1, y1, z1).normalize();
+		buffer.addVertex(entry, x1, y1, z1).setColor(color)
+			.setNormal(entry, normal).setLineWidth(2);
+		
+		// If the line goes through the screen, add another vertex there. This
+		// works around a bug in Minecraft's line shader.
+		float t = new Vector3f(x1, y1, z1).negate().dot(normal);
+		float length = new Vector3f(x2, y2, z2).sub(x1, y1, z1).length();
+		if(t > 0 && t < length)
+		{
+			Vector3f closeToCam = new Vector3f(normal).mul(t).add(x1, y1, z1);
+			buffer.addVertex(entry, closeToCam).setColor(color)
+				.setNormal(entry, normal).setLineWidth(2);
+			buffer.addVertex(entry, closeToCam).setColor(color)
+				.setNormal(entry, normal).setLineWidth(2);
+		}
+		
+		buffer.addVertex(entry, x2, y2, z2).setColor(color)
+			.setNormal(entry, normal).setLineWidth(2);
+	}
+	
+	public static void drawLine(VertexConsumer buffer, float x1, float y1,
+		float z1, float x2, float y2, float z2, int color)
+	{
+		Vector3f n = new Vector3f(x2, y2, z2).sub(x1, y1, z1).normalize();
+		buffer.addVertex(x1, y1, z1).setColor(color).setNormal(n.x, n.y, n.z)
+			.setLineWidth(2);
+		buffer.addVertex(x2, y2, z2).setColor(color).setNormal(n.x, n.y, n.z)
+			.setLineWidth(2);
+	}
+	
+	public static void drawOutlinedBox(PoseStack matrices, AABB box, int color,
+		boolean depthTest)
+	{
+		MultiBufferSource.BufferSource vcp = getVCP();
+		RenderType layer = WurstRenderLayers.getLines(depthTest);
+		VertexConsumer buffer = vcp.getBuffer(layer);
+		
+		drawOutlinedBox(matrices, buffer, box.move(getCameraPos().reverse()),
+			color);
+		
+		vcp.endBatch(layer);
+	}
+	
+	public static void drawOutlinedBox(VertexConsumer buffer, AABB box,
+		int color)
+	{
+		drawOutlinedBox(new PoseStack(), buffer, box, color);
+	}
+	
+	public static void drawOutlinedBox(PoseStack matrices,
+		VertexConsumer buffer, AABB box, int color)
+	{
+		PoseStack.Pose entry = matrices.last();
+		float x1 = (float)box.minX;
+		float y1 = (float)box.minY;
+		float z1 = (float)box.minZ;
+		float x2 = (float)box.maxX;
+		float y2 = (float)box.maxY;
+		float z2 = (float)box.maxZ;
+		
+		// bottom lines
+		buffer.addVertex(entry, x1, y1, z1).setColor(color)
+			.setNormal(entry, 1, 0, 0).setLineWidth(2);
+		buffer.addVertex(entry, x2, y1, z1).setColor(color)
+			.setNormal(entry, 1, 0, 0).setLineWidth(2);
+		buffer.addVertex(entry, x1, y1, z1).setColor(color)
+			.setNormal(entry, 0, 0, 1).setLineWidth(2);
+		buffer.addVertex(entry, x1, y1, z2).setColor(color)
+			.setNormal(entry, 0, 0, 1).setLineWidth(2);
+		buffer.addVertex(entry, x2, y1, z1).setColor(color)
+			.setNormal(entry, 0, 0, 1).setLineWidth(2);
+		buffer.addVertex(entry, x2, y1, z2).setColor(color)
+			.setNormal(entry, 0, 0, 1).setLineWidth(2);
+		buffer.addVertex(entry, x1, y1, z2).setColor(color)
+			.setNormal(entry, 1, 0, 0).setLineWidth(2);
+		buffer.addVertex(entry, x2, y1, z2).setColor(color)
+			.setNormal(entry, 1, 0, 0).setLineWidth(2);
+		
+		// top lines
+		buffer.addVertex(entry, x1, y2, z1).setColor(color)
+			.setNormal(entry, 1, 0, 0).setLineWidth(2);
+		buffer.addVertex(entry, x2, y2, z1).setColor(color)
+			.setNormal(entry, 1, 0, 0).setLineWidth(2);
+		buffer.addVertex(entry, x1, y2, z1).setColor(color)
+			.setNormal(entry, 0, 0, 1).setLineWidth(2);
+		buffer.addVertex(entry, x1, y2, z2).setColor(color)
+			.setNormal(entry, 0, 0, 1).setLineWidth(2);
+		buffer.addVertex(entry, x2, y2, z1).setColor(color)
+			.setNormal(entry, 0, 0, 1).setLineWidth(2);
+		buffer.addVertex(entry, x2, y2, z2).setColor(color)
+			.setNormal(entry, 0, 0, 1).setLineWidth(2);
+		buffer.addVertex(entry, x1, y2, z2).setColor(color)
+			.setNormal(entry, 1, 0, 0).setLineWidth(2);
+		buffer.addVertex(entry, x2, y2, z2).setColor(color)
+			.setNormal(entry, 1, 0, 0).setLineWidth(2);
+		
+		// side lines
+		buffer.addVertex(entry, x1, y1, z1).setColor(color)
+			.setNormal(entry, 0, 1, 0).setLineWidth(2);
+		buffer.addVertex(entry, x1, y2, z1).setColor(color)
+			.setNormal(entry, 0, 1, 0).setLineWidth(2);
+		buffer.addVertex(entry, x2, y1, z1).setColor(color)
+			.setNormal(entry, 0, 1, 0).setLineWidth(2);
+		buffer.addVertex(entry, x2, y2, z1).setColor(color)
+			.setNormal(entry, 0, 1, 0).setLineWidth(2);
+		buffer.addVertex(entry, x1, y1, z2).setColor(color)
+			.setNormal(entry, 0, 1, 0).setLineWidth(2);
+		buffer.addVertex(entry, x1, y2, z2).setColor(color)
+			.setNormal(entry, 0, 1, 0).setLineWidth(2);
+		buffer.addVertex(entry, x2, y1, z2).setColor(color)
+			.setNormal(entry, 0, 1, 0).setLineWidth(2);
+		buffer.addVertex(entry, x2, y2, z2).setColor(color)
+			.setNormal(entry, 0, 1, 0).setLineWidth(2);
+	}
+	
+	/**
+	 * Similar to {@link GuiGraphics#fill(int, int, int, int, int)}, but uses
+	 * floating-point coordinates instead of integers.
+	 */
+	public static void fill2D(GuiGraphics context, float x1, float y1, float x2,
+		float y2, int color)
+	{
+		int scale = WiFreecam.MC.getWindow().getGuiScale();
+		int xs1 = (int)(x1 * scale);
+		int ys1 = (int)(y1 * scale);
+		int xs2 = (int)(x2 * scale);
+		int ys2 = (int)(y2 * scale);
+		
+		context.pose().pushMatrix();
+		context.pose().scale(1F / scale);
+		context.fill(xs1, ys1, xs2, ys2, color);
+		context.pose().popMatrix();
+	}
+	
+	/**
+	 * Renders the given vertices in QUADS draw mode.
+	 */
+	public static void fillQuads2D(GuiGraphics context, float[][] vertices,
+		int color)
+	{
+		Matrix3x2f pose = new Matrix3x2f(context.pose());
+		ScreenRectangle scissor = context.scissorStack.peek();
+		
+		for(int i = 0; i < vertices.length - 3; i += 4)
+		{
+			if(i + 3 >= vertices.length)
+				break;
+			
+			float x1 = vertices[i][0];
+			float y1 = vertices[i][1];
+			float x2 = vertices[i + 1][0];
+			float y2 = vertices[i + 1][1];
+			float x3 = vertices[i + 2][0];
+			float y3 = vertices[i + 2][1];
+			float x4 = vertices[i + 3][0];
+			float y4 = vertices[i + 3][1];
+			
+			context.guiRenderState.submitGuiElement(new CustomQuadRenderState(
+				pose, x1, y1, x2, y2, x3, y3, x4, y4, color, scissor));
+		}
+	}
+	
+	/**
+	 * Pretends to render the given vertices in TRIANGLES draw mode
+	 * by squeezing a bunch of quads into triangle shapes.
+	 *
+	 * <p>
+	 * ...blame Vibrant Visuals.
+	 */
+	public static void fillTriangle2D(GuiGraphics context, float[][] vertices,
+		int color)
+	{
+		Matrix3x2f pose = new Matrix3x2f(context.pose());
+		ScreenRectangle scissor = context.scissorStack.peek();
+		
+		for(int i = 0; i < vertices.length - 2; i += 3)
+		{
+			if(i + 2 >= vertices.length)
+				break;
+			
+			float x1 = vertices[i][0];
+			float y1 = vertices[i][1];
+			float x2 = vertices[i + 1][0];
+			float y2 = vertices[i + 1][1];
+			float x3 = vertices[i + 2][0];
+			float y3 = vertices[i + 2][1];
+			
+			context.guiRenderState.submitGuiElement(new CustomQuadRenderState(
+				pose, x1, y1, x2, y2, x3, y3, x3, y3, color, scissor));
+		}
+	}
+	
+	/**
+	 * Similar to {@link GuiGraphics#hLine(int, int, int, int)} and
+	 * {@link GuiGraphics#vLine(int, int, int, int)}, but supports
+	 * diagonal lines, uses floating-point coordinates instead of integers, and
+	 * is one actual pixel wide instead of one scaled pixel.
+	 */
+	public static void drawLine2D(GuiGraphics context, float x1, float y1,
+		float x2, float y2, int color)
+	{
+		int scale = WiFreecam.MC.getWindow().getGuiScale();
+		float x = x1 * scale;
+		float y = y1 * scale;
+		float w = (x2 - x1) * scale;
+		float h = (y2 - y1) * scale;
+		float angle = (float)Mth.atan2(h, w);
+		int length = Math.round(Mth.sqrt(w * w + h * h));
+		
+		context.pose().pushMatrix();
+		context.pose().scale(1F / scale);
+		context.pose().translate(x, y);
+		context.pose().rotate(angle);
+		context.pose().translate(-0.5F, -0.5F);
+		context.hLine(0, length - 1, 0, color);
+		context.pose().popMatrix();
+	}
+	
+	/**
+	 * Similar to {@link GuiGraphics#drawBorder(int, int, int, int, int)}, but
+	 * uses floating-point coordinates instead of integers, and is one actual
+	 * pixel wide instead of one scaled pixel.
+	 */
+	public static void drawBorder2D(GuiGraphics context, float x1, float y1,
+		float x2, float y2, int color)
+	{
+		int scale = WiFreecam.MC.getWindow().getGuiScale();
+		int x = (int)(x1 * scale);
+		int y = (int)(y1 * scale);
+		int w = (int)((x2 - x1) * scale);
+		int h = (int)((y2 - y1) * scale);
+		
+		context.pose().pushMatrix();
+		context.pose().scale(1F / scale);
+		context.hLine(x, x + w - 1, y, color);
+		context.hLine(x, x + w - 1, y + h - 1, color);
+		context.vLine(x, y + 1, y + h - 1, color);
+		context.vLine(x + w - 1, y + 1, y + h - 1, color);
+		context.pose().popMatrix();
+	}
+	
+	/**
+	 * Draws a 1px border around the given polygon.
+	 */
+	public static void drawLineStrip2D(GuiGraphics context, float[][] vertices,
+		int color)
+	{
+		if(vertices.length < 2)
+			return;
+		
+		for(int i = 1; i < vertices.length; i++)
+			drawLine2D(context, vertices[i - 1][0], vertices[i - 1][1],
+				vertices[i][0], vertices[i][1], color);
+		drawLine2D(context, vertices[vertices.length - 1][0],
+			vertices[vertices.length - 1][1], vertices[0][0], vertices[0][1],
+			color);
+	}
+	
+	/**
+	 * Draws a box shadow around the given rectangle.
+	 */
+	public static void drawBoxShadow2D(GuiGraphics context, int x1, int y1,
+		int x2, int y2)
+	{
+		float[] acColor = WiFreecam.INSTANCE.getGui().getAcColor();
+		
+		// outline
+		int outlineColor = toIntColor(acColor, 0.5F);
+		drawBorder2D(context, x1, y1, x2, y2, outlineColor);
+		
+		// shadow
+		float xs1 = x1 - 1;
+		float xs2 = x2 + 1;
+		float ys1 = y1 - 1;
+		float ys2 = y2 + 1;
+		
+		int shadowColor1 = toIntColor(acColor, 0.75F);
+		int shadowColor2 = 0x00000000;
+		
+		Matrix3x2f pose = new Matrix3x2f(context.pose());
+		ScreenRectangle scissor = context.scissorStack.peek();
+		
+		// top
+		context.guiRenderState.submitGuiElement(new CustomQuadRenderState(pose,
+			x1, y1, x2, y1, xs2, ys1, xs1, ys1, shadowColor1, shadowColor1,
+			shadowColor2, shadowColor2, scissor));
+		
+		// left
+		context.guiRenderState.submitGuiElement(new CustomQuadRenderState(pose,
+			xs1, ys1, xs1, ys2, x1, y2, x1, y1, shadowColor2, shadowColor2,
+			shadowColor1, shadowColor1, scissor));
+		
+		// right
+		context.guiRenderState.submitGuiElement(new CustomQuadRenderState(pose,
+			x2, y1, x2, y2, xs2, ys2, xs2, ys1, shadowColor1, shadowColor1,
+			shadowColor2, shadowColor2, scissor));
+		
+		// bottom
+		context.guiRenderState.submitGuiElement(new CustomQuadRenderState(pose,
+			x2, y2, x1, y2, xs1, ys2, xs2, ys2, shadowColor1, shadowColor1,
+			shadowColor2, shadowColor2, scissor));
+	}
 }

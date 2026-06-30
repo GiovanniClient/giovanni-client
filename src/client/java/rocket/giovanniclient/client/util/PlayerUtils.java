@@ -1,18 +1,18 @@
 package rocket.giovanniclient.client.util;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerInteractionManager;
-import net.minecraft.util.Hand;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.MultiPlayerGameMode;
+import net.minecraft.world.InteractionHand;
 
 public class PlayerUtils {
     public static void simulateClick() {
-        MinecraftClient client = MinecraftClient.getInstance();
-        ClientPlayerInteractionManager im = client.interactionManager;
+        Minecraft client = Minecraft.getInstance();
+        MultiPlayerGameMode im = client.gameMode;
 
         if (im != null) {
-            im.interactItem(
+            im.useItem(
                 client.player,
-                Hand.MAIN_HAND
+                    InteractionHand.MAIN_HAND
             );
         }
     }

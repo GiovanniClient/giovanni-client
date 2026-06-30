@@ -7,25 +7,30 @@
  */
 package net.wimods.freecam.mixin;
 
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.wimods.freecam.WiFreecam;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.mojang.blaze3d.vertex.PoseStack;
+
+import net.minecraft.client.renderer.GameRenderer;
+import net.wimods.freecam.WiFreecam;
+
 @Mixin(GameRenderer.class)
-public abstract class GameRendererMixin {
-	/**
-	 * Prevents view bobbing when in Freecam.
-	 */
-	@WrapOperation(at = @At(value = "INVOKE",
-		target = "Lnet/minecraft/client/render/GameRenderer;bobView(Lnet/minecraft/client/util/math/MatrixStack;F)V",
-		ordinal = 0),
-		method = "renderWorld")
-	private void onBobView(GameRenderer instance, MatrixStack matrices, float tickDelta, Operation<Void> original) {
-		if(!WiFreecam.INSTANCE.isEnabled())
-			original.call(instance, matrices, tickDelta);
-	}
+public abstract class GameRendererMixin
+{
+    /**
+     * Prevents view bobbing when in Freecam.
+     */
+    @WrapOperation(method = "renderLevel(Lnet/minecraft/client/DeltaTracker;)V",
+            at = @At(value = "INVOKE",
+                    target = "Lnet/minecraft/client/renderer/GameRenderer;bobView(Lcom/mojang/blaze3d/vertex/PoseStack;F)V",
+                    ordinal = 0))
+    private void onBobView(GameRenderer instance, PoseStack matrices,
+                           float tickDelta, Operation<Void> original)
+    {
+        if(!WiFreecam.INSTANCE.isEnabled())
+            original.call(instance, matrices, tickDelta);
+    }
 }
