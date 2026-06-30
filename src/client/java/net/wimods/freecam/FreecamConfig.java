@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import io.github.notenoughupdates.moulconfig.ChromaColour;
 import io.github.notenoughupdates.moulconfig.annotations.*;
 import io.github.notenoughupdates.moulconfig.observer.Property;
+import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import rocket.giovanniclient.client.GiovanniClientClient;
 
@@ -75,9 +76,9 @@ public class FreecamConfig {
             @Override
             public Vec3 getOffset() {
                 double distance = 0.55 * GiovanniClientClient.mc.player.getScale();
-                float yawRad = GiovanniClientClient.mc.player.getYaw() * MathHelper.RADIANS_PER_DEGREE;
-                double offsetX = -MathHelper.sin(yawRad) * distance;
-                double offsetZ = MathHelper.cos(yawRad) * distance;
+                float yawRad = GiovanniClientClient.mc.player.getYRot() * Mth.DEG_TO_RAD;
+                double offsetX = -Mth.sin(yawRad) * distance;
+                double offsetZ = Mth.cos(yawRad) * distance;
                 return new Vec3(offsetX, 0, offsetZ);
             }
         },
@@ -119,7 +120,7 @@ public class FreecamConfig {
     }
 
     public double getActualVerticalSpeed() {
-        return MathHelper.clamp(
+        return Mth.clamp(
                 (HORIZONTAL_SPEED / 20.0) * (VERTICAL_SPEED / 20.0),0.05, 10.0
         );
     }

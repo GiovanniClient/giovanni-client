@@ -13,7 +13,6 @@
     "PlayerListHudAccessor",
     "invbuttons.AbstractContainerScreenButtonsInputMixin",
     "invbuttons.HandledScreenAccessor",
-    "invbuttons.HandledScreenButtonsInputMixin",
     "invbuttons.InventoryScreenButtonsMixin",
     "invbuttons.InventoryScreenCraftingMaskMixin",
     "invbuttons.InventoryScreenCraftingSuppressionMixin",

@@ -10,7 +10,6 @@
     "CameraMixin",
     "GameRendererMixin",
     "GuiMixin",
-    "InGameHudMixin",
     "ItemInHandRendererMixin",
     "KeyMappingMixin",
     "LevelRendererMixin",

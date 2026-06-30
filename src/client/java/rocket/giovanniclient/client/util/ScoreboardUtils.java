@@ -1,9 +1,10 @@
 package rocket.giovanniclient.client.util;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.scoreboard.*;
-import net.minecraft.text.MutableComponent;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.scores.*;
+
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,22 +26,22 @@ public class ScoreboardUtils {
      * @param client The Minecraft client instance
      * @return The sidebar ScoreboardObjective, or null if unavailable
      */
-    public static ScoreboardObjective getSidebarObjective(Minecraft client) {
-        if (client.world == null || client.player == null) return null;
+    public static Objective getSidebarObjective(Minecraft client) {
+        if (client.level == null || client.player == null) return null;
 
-        Scoreboard scoreboard = client.world.getScoreboard();
+        Scoreboard scoreboard = client.level.getScoreboard();
         if (scoreboard == null) return null;
 
-        Team team = scoreboard.getScoreHolderTeam(client.player.getNameForScoreboard());
+        Team team = scoreboard.getPlayersTeam(client.player.getScoreboardName());
         if (team != null) {
-            ScoreboardDisplaySlot displaySlot = ScoreboardDisplaySlot.fromFormatting(team.getColor());
+            DisplaySlot displaySlot = DisplaySlot.teamColorToSlot(team.getColor());
             if (displaySlot != null) {
-                ScoreboardObjective teamObjective = scoreboard.getObjectiveForSlot(displaySlot);
+                Objective teamObjective = scoreboard.getDisplayObjective(displaySlot);
                 if (teamObjective != null) return teamObjective;
             }
         }
 
-        return scoreboard.getObjectiveForSlot(ScoreboardDisplaySlot.SIDEBAR);
+        return scoreboard.getDisplayObjective(DisplaySlot.SIDEBAR);
     }
 
     /**
@@ -49,36 +50,36 @@ public class ScoreboardUtils {
      * @param objective The scoreboard objective
      * @return List of formatted Text entries
      */
-    public static List<Text> getObjectiveFormattedLines(ScoreboardObjective objective) {
+    public static List<Component> getObjectiveFormattedLines(Objective objective) {
         if (objective == null) return List.of();
 
         Scoreboard scoreboard = objective.getScoreboard();
         if (scoreboard == null) return List.of();
 
-        Collection<ScoreboardEntry> entries = scoreboard.getScoreboardEntries(objective);
-        List<ScoreboardEntry> filtered = entries.stream()
+        Collection<PlayerScoreEntry> entries = scoreboard.listPlayerScores(objective);
+        List<PlayerScoreEntry> filtered = entries.stream()
                 .filter(entry -> entry != null && entry.owner() != null && !entry.owner().startsWith("#"))
-                .sorted(Comparator.comparingInt(ScoreboardEntry::value).reversed())
+                .sorted(Comparator.comparingInt(PlayerScoreEntry::value).reversed())
                 .toList();
 
-        List<Text> lines = new ArrayList<>();
+        List<Component> lines = new ArrayList<>();
         if (objective.getDisplayName() != null) {
             lines.add(objective.getDisplayName());
         }
 
         int start = Math.max(filtered.size() - 15, 0);
-        List<ScoreboardEntry> relevant = filtered.subList(start, filtered.size());
+        List<PlayerScoreEntry> relevant = filtered.subList(start, filtered.size());
 
-        for (ScoreboardEntry entry : relevant) {
-            Team team = scoreboard.getScoreHolderTeam(entry.owner());
-            MutableComponent lineText = Text.empty();
+        for (PlayerScoreEntry entry : relevant) {
+            PlayerTeam team = scoreboard.getPlayersTeam(entry.owner());
+            MutableComponent lineText = Component.empty();
 
             if (team != null) {
-                if (team.getPrefix() != null) lineText.append(team.getPrefix());
-                lineText.append(Text.literal(entry.owner()));
-                if (team.getSuffix() != null) lineText.append(team.getSuffix());
+                if (team.getPlayerPrefix() != null) lineText.append(team.getPlayerPrefix());
+                lineText.append(Component.literal(entry.owner()));
+                if (team.getPlayerSuffix() != null) lineText.append(team.getPlayerSuffix());
             } else {
-                lineText = Text.literal(entry.owner());
+                lineText = Component.literal(entry.owner());
             }
 
             lines.add(lineText);
@@ -91,9 +92,9 @@ public class ScoreboardUtils {
      * Gets the formatted Text lines from the current sidebar objective.
      * @return A list of formatted Text lines
      */
-    public static List<Text> getSidebarLines() {
+    public static List<Component> getSidebarLines() {
         Minecraft client = Minecraft.getInstance();
-        ScoreboardObjective objective = getSidebarObjective(client);
+        Objective objective = getSidebarObjective(client);
         return getObjectiveFormattedLines(objective);
     }
 
@@ -103,7 +104,7 @@ public class ScoreboardUtils {
      */
     public static List<String> getCleanedSidebarLines() {
         return getSidebarLines().stream()
-                .map(Text::getString)
+                .map(Component::getString)
                 .map(ScoreboardUtils::stripMinecraftFormatting)
                 .toList();
     }

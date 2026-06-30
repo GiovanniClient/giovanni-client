@@ -28,7 +28,7 @@ public class PlayerLocator extends AbstractFeature {
 
         }
 
-        if (client != null && client.inGameHud != null && client.inGameHud.getChatHud() != null) {
+        if (client != null && client.gui != null && client.gui.getChat() != null) {
             if (tick % 200 == 0)
                 Utils.debug("You are located in: " + CURRENT_PLAYER_AREA + ", " + CURRENT_PLAYER_LOCATION);
         }
