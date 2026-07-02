@@ -16,13 +16,13 @@ public class FreecamConfig {
 
     @Expose
     @ConfigOption(name = "Horizontal Speed", desc = "")
-    @ConfigEditorSlider(minValue = 1, maxValue = 200, minStep = 1)
-    public int HORIZONTAL_SPEED = 20;
+    @ConfigEditorSlider(minValue = 100, maxValue = 1000, minStep = 50)
+    public int HORIZONTAL_SPEED = 100;
 
     @Expose
     @ConfigOption(name = "Vertical Speed", desc = "")
-    @ConfigEditorSlider(minValue = 1, maxValue = 100, minStep = 1)
-    public int VERTICAL_SPEED = 20;
+    @ConfigEditorSlider(minValue = 100, maxValue = 500, minStep = 50)
+    public int VERTICAL_SPEED = 100;
 
     @Expose
     @ConfigOption(name = "Scroll to change speed", desc = "")
@@ -105,24 +105,28 @@ public class FreecamConfig {
         }
     }
 
-    public void increaseSpeed() {
-        if (HORIZONTAL_SPEED + 10 <= 200)  // Fixed: was 100
-            HORIZONTAL_SPEED += 10;
-        if (VERTICAL_SPEED + 5 <= 100)   // Fixed: was 50
+    public void increaseHorizontalSpeed() {
+        if (HORIZONTAL_SPEED + 5 <= 1000)  // Fixed: was 100
+            HORIZONTAL_SPEED += 5;
+    }
+
+    public void decereaseHorizontalSpeed() {
+        if (HORIZONTAL_SPEED - 5 >= 100)
+            HORIZONTAL_SPEED -= 5;
+    }
+
+    public void increaseVerticalSpeed() {
+        if (VERTICAL_SPEED + 5 <= 500)   // Fixed: was 50
             VERTICAL_SPEED += 5;
     }
 
-    public void decreaseSpeed() {
-        if (HORIZONTAL_SPEED - 10 >= 1)
-            HORIZONTAL_SPEED -= 10;
-        if (VERTICAL_SPEED - 5 >= 1)
+    public void decreaseVerticalSpeed() {
+        if (VERTICAL_SPEED - 5 >= 100)
             VERTICAL_SPEED -= 5;
     }
 
     public double getActualVerticalSpeed() {
-        return Mth.clamp(
-                (HORIZONTAL_SPEED / 20.0) * (VERTICAL_SPEED / 20.0),0.05, 10.0
-        );
+        return Mth.clamp(HORIZONTAL_SPEED / 200.0 * VERTICAL_SPEED / 200.0,0.05, 10);
     }
 
     public void cycleInputMode() {

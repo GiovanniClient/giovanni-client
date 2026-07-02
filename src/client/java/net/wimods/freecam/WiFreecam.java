@@ -71,7 +71,7 @@ public enum WiFreecam {
 	{
 	    MC.levelRenderer.allChanged();
 	}
-	
+
 	public void onUpdate() {
         FreecamConfig settingz = ConfigManager.getConfig().freecamConfig;
 		LocalPlayer player = MC.player;
@@ -79,7 +79,7 @@ public enum WiFreecam {
 			setEnabled(false);
 			return;
 		}
-		
+
 		// Check for damage
 		float currentHealth = player.getHealth();
 		if(settingz.DISABLE_ON_DAMAGE && currentHealth < lastHealth) {
@@ -87,22 +87,22 @@ public enum WiFreecam {
 			return;
 		}
 		lastHealth = currentHealth;
-		
+
 		if(!isMovingCamera() || MC.screen != null) {
 			prevCamPos = camPos;
 			return;
 		}
-		
+
 		// Get movement vector (x=left, y=forward)
 		Vec2 moveVector = player.input.getMoveVector();
-		
+
 		// Convert to world coordinates
 		double yawRad = MC.gameRenderer.getMainCamera().yRot() * Mth.DEG_TO_RAD;
 		double sinYaw = Mth.sin(yawRad);
 		double cosYaw = Mth.cos(yawRad);
 		double offsetX = moveVector.x * cosYaw - moveVector.y * sinYaw;
 		double offsetZ = moveVector.x * sinYaw + moveVector.y * cosYaw;
-		
+
 		// Calculate vertical offset
 		double offsetY = 0;
 		double vSpeed = settingz.getActualVerticalSpeed();
@@ -110,41 +110,47 @@ public enum WiFreecam {
 			offsetY += vSpeed;
 		if(IKeyMapping.get(MC.options.keyShift).isActuallyDown())
 			offsetY -= vSpeed;
-		
+
 		// Apply to camera
 		Vec3 offsetVec = new Vec3(offsetX, 0, offsetZ)
-			.scale(settingz.HORIZONTAL_SPEED).add(0, offsetY, 0);
+			.scale(settingz.HORIZONTAL_SPEED / 200.0).add(0, offsetY, 0);
 		prevCamPos = camPos;
 		camPos = camPos.add(offsetVec);
 	}
 
     public void onMouseScroll(double amount) {
-        FreecamConfig settingz = ConfigManager.getConfig().freecamConfig;
+		FreecamConfig settingz = ConfigManager.getConfig().freecamConfig;
 
-        if(isControllingScrollEvents())
-            return;
+		if (!isControllingScrollEvents())
+			return;
 
-        int oldHorizontal = settingz.HORIZONTAL_SPEED;
-        int oldVertical = settingz.VERTICAL_SPEED;
+		int oldHorizontal = settingz.HORIZONTAL_SPEED;
+		int oldVertical = settingz.VERTICAL_SPEED;
 
-        if(amount > 0)
-            settingz.increaseSpeed();
-        else if(amount < 0)
-            settingz.decreaseSpeed();
+		if (amount > 0) {
+			settingz.increaseHorizontalSpeed();
+			settingz.increaseVerticalSpeed();
+		}
+		else if (amount < 0) {
+			settingz.decereaseHorizontalSpeed();
+			settingz.decreaseVerticalSpeed();
+		}
 
         if (settingz.PRINT_SPEED_TO_CHAT && (settingz.HORIZONTAL_SPEED != oldHorizontal || settingz.VERTICAL_SPEED != oldVertical))
         {
             String message = String.format("§bSpeed: §fH:%.2f §fV:%.2f",
-                    settingz.HORIZONTAL_SPEED / 20.0,
-                    settingz.VERTICAL_SPEED / 20.0);
+                    settingz.HORIZONTAL_SPEED / 200.0,
+                    settingz.VERTICAL_SPEED / 200.0);
 
             Utils.chat(message);
         }
     }
 
-    public boolean isControllingScrollEvents() {
-        return !isMovingCamera() || !ConfigManager.getConfig().freecamConfig.SCROLL_TO_CHANGE_SPEED || MC.screen != null;
-    }
+	public boolean isControllingScrollEvents() {
+		return isMovingCamera()
+				&& ConfigManager.getConfig().freecamConfig.SCROLL_TO_CHANGE_SPEED
+				&& MC.screen == null;
+	}
 
     public boolean isMovingCamera()	{
         return FREECAM_ENABLED && ConfigManager.getConfig().freecamConfig.APPLY_INPUT_TO.get() == FreecamConfig.InputEnum.Camera;
@@ -182,7 +188,7 @@ public enum WiFreecam {
 	public Vec3 getScaledCamDir(double scale) {
 		return Vec3.directionFromRotation(camPitch, camYaw).scale(scale);
 	}
-	
+
 	public void turn(double deltaYaw, double deltaPitch) {
 		// This needs to be consistent with Entity.turn()
 		camYaw += (float)(deltaYaw * 0.15);

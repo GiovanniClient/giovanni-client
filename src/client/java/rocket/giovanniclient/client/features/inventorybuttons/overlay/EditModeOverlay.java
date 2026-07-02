@@ -58,8 +58,8 @@ public class EditModeOverlay extends AbstractOverlay {
         this.commandField.setTextColorUneditable(0xFFAAAAAA);
         this.iconField.setTextColorUneditable(0xFFAAAAAA);
 
-        this.commandField.setSuggestion("say hello world!");
-        this.iconField.setSuggestion("paper");
+        this.commandField.setHint(Component.literal("say hello world!"));
+        this.iconField.setHint(Component.literal("paper"));
 
         loadDataIntoFields();
 
