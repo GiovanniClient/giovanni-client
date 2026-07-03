@@ -40,9 +40,11 @@ public class MainConfig extends Config {
     @Category(name = "Render", desc = "See or hide stuff you shouldn't :P")
     public RenderConfig rc = new RenderConfig();
 
+
     @Expose
-    @Category(name = "Freecam", desc = "WI-Freecam rewritten for GiovanniClient")
-    public FreecamConfig freecamConfig = new FreecamConfig();
+    @Category(name = "Freecam", desc = "WI-Freecam. Configure Keybinds in game settings")
+    public FreecamConfig empty1 = new FreecamConfig();
+
 
     @Expose
     @Category(name = "Inventory Buttons", desc = "like NEU once did")

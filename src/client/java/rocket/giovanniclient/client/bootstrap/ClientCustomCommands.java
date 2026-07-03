@@ -70,16 +70,19 @@ public final class ClientCustomCommands {
     }
 
     private static void inventorybuttons(CommandDispatcher<FabricClientCommandSource> dispatcher) {
-        String[] aliases = {"gioeditbuttons", "inventorybuttons", "neubuttons"};
+        String[] aliases = {"gioeditbuttons", "inventorybuttons", "neubuttons", "giobuttons"};
 
         for (String alias : aliases) {
             dispatcher.register(ClientCommands.literal(alias).executes(context -> {
-                EditModeState.setEditMode(true);
-                Minecraft.getInstance().execute(() -> {
-                    if (Minecraft.getInstance().player != null) {
-                        Minecraft.getInstance().setScreen(new InventoryScreen(Minecraft.getInstance().player));
+                Minecraft client = Minecraft.getInstance();
+
+                client.execute(() -> {
+                    if (client.player != null) {
+                        EditModeState.setEditMode(true);
+                        client.setScreen(new InventoryScreen(client.player));
                     }
                 });
+
                 return 1;
             }));
         }

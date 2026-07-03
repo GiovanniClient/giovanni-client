@@ -10,6 +10,7 @@ public class PlayerUtils {
         MultiPlayerGameMode im = client.gameMode;
 
         if (im != null) {
+            assert client.player != null;
             im.useItem(
                 client.player,
                     InteractionHand.MAIN_HAND

@@ -45,10 +45,5 @@ public abstract class UndoInvisibilityMixin {
             cir.setReturnValue(false);
             return;
         }
-
-        if (riftconfig.INVIS_PLAYERS_IN_TINY_DANCER && entity instanceof Player
-                && currentLocation.contains("Mirrorverse")) {
-            cir.setReturnValue(true);
-        }
     }
 }

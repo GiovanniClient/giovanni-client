@@ -16,5 +16,9 @@
     "LocalPlayerMixin",
     "MouseHandlerMixin",
     "SectionOcclusionGraphMixin"
+  ],
+  "mixins": [
+    "ScreenAccessor",
+    "sodium.RenderSectionManagerMixin"
   ]
 }

@@ -30,7 +30,6 @@ public class ScoreboardUtils {
         if (client.level == null || client.player == null) return null;
 
         Scoreboard scoreboard = client.level.getScoreboard();
-        if (scoreboard == null) return null;
 
         Team team = scoreboard.getPlayersTeam(client.player.getScoreboardName());
         if (team != null) {
@@ -54,18 +53,15 @@ public class ScoreboardUtils {
         if (objective == null) return List.of();
 
         Scoreboard scoreboard = objective.getScoreboard();
-        if (scoreboard == null) return List.of();
 
         Collection<PlayerScoreEntry> entries = scoreboard.listPlayerScores(objective);
         List<PlayerScoreEntry> filtered = entries.stream()
-                .filter(entry -> entry != null && entry.owner() != null && !entry.owner().startsWith("#"))
+                .filter(entry -> entry != null && !entry.owner().startsWith("#"))
                 .sorted(Comparator.comparingInt(PlayerScoreEntry::value).reversed())
                 .toList();
 
         List<Component> lines = new ArrayList<>();
-        if (objective.getDisplayName() != null) {
-            lines.add(objective.getDisplayName());
-        }
+        lines.add(objective.getDisplayName());
 
         int start = Math.max(filtered.size() - 15, 0);
         List<PlayerScoreEntry> relevant = filtered.subList(start, filtered.size());
@@ -75,9 +71,9 @@ public class ScoreboardUtils {
             MutableComponent lineText = Component.empty();
 
             if (team != null) {
-                if (team.getPlayerPrefix() != null) lineText.append(team.getPlayerPrefix());
+                lineText.append(team.getPlayerPrefix());
                 lineText.append(Component.literal(entry.owner()));
-                if (team.getPlayerSuffix() != null) lineText.append(team.getPlayerSuffix());
+                lineText.append(team.getPlayerSuffix());
             } else {
                 lineText = Component.literal(entry.owner());
             }

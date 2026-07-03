@@ -22,28 +22,28 @@ import net.wimods.freecam.WiFreecam;
 @Mixin(Camera.class)
 public abstract class CameraMixin implements TrackedWaypoint.Camera
 {
-    @Shadow
-    private boolean detached;
-
-    @Inject(method = "update(Lnet/minecraft/client/DeltaTracker;)V",
-            at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/client/Camera;alignWithEntity(F)V",
-                    shift = At.Shift.AFTER))
-    private void onUpdate(DeltaTracker deltaTracker, CallbackInfo ci)
-    {
-        WiFreecam freecam = WiFreecam.INSTANCE;
-        if(!freecam.isEnabled())
-            return;
-
-        float partialTicks = deltaTracker.getGameTimeDeltaPartialTick(true);
-        detached = true;
-        setPosition(freecam.getCamPos(partialTicks));
-        setRotation(freecam.getCamYaw(), freecam.getCamPitch());
-    }
-
-    @Shadow
-    protected abstract void setPosition(Vec3 position);
-
-    @Shadow
-    protected abstract void setRotation(float yRot, float xRot);
+	@Shadow
+	private boolean detached;
+	
+	@Inject(method = "update(Lnet/minecraft/client/DeltaTracker;)V",
+		at = @At(value = "INVOKE",
+			target = "Lnet/minecraft/client/Camera;alignWithEntity(F)V",
+			shift = At.Shift.AFTER))
+	private void onUpdate(DeltaTracker deltaTracker, CallbackInfo ci)
+	{
+		WiFreecam freecam = WiFreecam.INSTANCE;
+		if(!freecam.isEnabled())
+			return;
+		
+		float partialTicks = deltaTracker.getGameTimeDeltaPartialTick(true);
+		detached = true;
+		setPosition(freecam.getCamPos(partialTicks));
+		setRotation(freecam.getCamYaw(), freecam.getCamPitch());
+	}
+	
+	@Shadow
+	protected abstract void setPosition(Vec3 pos);
+	
+	@Shadow
+	protected abstract void setRotation(float yaw, float pitch);
 }

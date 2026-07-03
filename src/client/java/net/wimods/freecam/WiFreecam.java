@@ -7,51 +7,102 @@
  */
 package net.wimods.freecam;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.brigadier.Command;
+
+import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
+import net.wimods.freecam.FreecamInputSetting.ApplyInputTo;
+import net.wimods.freecam.FreecamInteractionSetting.InteractFrom;
+import net.wimods.freecam.clickgui.ClickGui;
 import net.wimods.freecam.mixinterface.IKeyMapping;
+import net.wimods.freecam.settings.SettingsFile;
 import net.wimods.freecam.util.EntityUtils;
+import net.wimods.freecam.util.PlausibleAnalytics;
 import net.wimods.freecam.util.RenderUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import rocket.giovanniclient.client.config.ConfigManager;
-import rocket.giovanniclient.client.util.Utils;
 
-public enum WiFreecam {
+public enum WiFreecam
+{
 	INSTANCE;
 	
 	public static final Minecraft MC = Minecraft.getInstance();
 	public static final Logger LOGGER = LoggerFactory.getLogger("WI Freecam");
-
-    public static boolean FREECAM_ENABLED;
+	
+	private boolean enabled;
 	private Vec3 camPos;
 	private Vec3 prevCamPos;
 	private float camYaw;
 	private float camPitch;
 	private float lastHealth;
-
-    public void initialize() {
-        LOGGER.info("Starting WI Freecam...");
-
-        ClientTickEvents.END_CLIENT_TICK.register(mc -> {
-            if(FREECAM_ENABLED)
-                onUpdate();
-        });
-    }
-
+	
+	private FreecamSettings settings;
+	private SettingsFile settingsFile;
+	private PlausibleAnalytics plausible;
+	private ClickGui gui;
+	private boolean guiInitialized;
+	private FreecamKeybinds keybinds;
+	private FreecamTranslator translator;
+	
+	public void initialize()
+	{
+		LOGGER.info("Starting WI Freecam...");
+		
+		Path configDir = createConfigDir();
+		
+		settings = new FreecamSettings();
+		settingsFile = new SettingsFile(configDir.resolve("settings.json"));
+		settingsFile.load();
+		
+		plausible = new PlausibleAnalytics();
+		plausible.pageview("/");
+		
+		Path guiFile = configDir.resolve("windows.json");
+		gui = new ClickGui(guiFile);
+		
+		keybinds = new FreecamKeybinds();
+		ClientTickEvents.END_CLIENT_TICK.register(_ -> keybinds.onUpdate());
+		
+		translator = new FreecamTranslator();
+		
+		ClientCommandRegistrationCallback.EVENT
+			.register((dispatcher, _) -> dispatcher
+				.register(ClientCommands.literal("freecam").executes(_ -> {
+					MC.schedule(() -> getGui().open());
+					return Command.SINGLE_SUCCESS;
+				})));
+	}
+	
+	public String getRenderName()
+	{
+		if(!settings.renderSpeed.isChecked())
+			return "Freecam";
+		
+		return "Freecam [" + settings.horizontalSpeed.getValueString() + ", "
+			+ settings.verticalSpeed.getValueString() + "]";
+	}
+	
 	private void onEnable()
 	{
 		lastHealth = Float.MIN_VALUE;
 		LocalPlayer player = MC.player;
 		float eyeHeight = player.getEyeHeight(player.getPose());
 		Vec3 eyesPos = player.position().add(0, eyeHeight, 0);
-        camPos = eyesPos.add(ConfigManager.getConfig().freecamConfig.CAMERA_SPAWN_POSITION.get().getOffset());
+		camPos = eyesPos.add(settings.initialPos.getSelected().getOffset());
 		prevCamPos = camPos;
 		camYaw = player.getYRot();
 		camPitch = player.getXRot();
@@ -59,102 +110,94 @@ public enum WiFreecam {
 	
 	private void onDisable()
 	{
-	    MC.levelRenderer.allChanged();
+		if(settings.reloadChunks.isChecked())
+			MC.levelRenderer.allChanged();
 	}
-
-	public void onUpdate() {
-        FreecamConfig settingz = ConfigManager.getConfig().freecamConfig;
+	
+	public void onUpdate()
+	{
 		LocalPlayer player = MC.player;
-		if(player == null) {
+		if(player == null)
+		{
 			setEnabled(false);
 			return;
 		}
-
+		
 		// Check for damage
 		float currentHealth = player.getHealth();
-		if(settingz.DISABLE_ON_DAMAGE && currentHealth < lastHealth) {
+		if(settings.disableOnDamage.isChecked() && currentHealth < lastHealth)
+		{
 			setEnabled(false);
 			return;
 		}
 		lastHealth = currentHealth;
-
-		if(!isMovingCamera() || MC.screen != null) {
+		
+		if(!isMovingCamera() || MC.screen != null)
+		{
 			prevCamPos = camPos;
 			return;
 		}
-
+		
 		// Get movement vector (x=left, y=forward)
 		Vec2 moveVector = player.input.getMoveVector();
-
+		
 		// Convert to world coordinates
 		double yawRad = MC.gameRenderer.getMainCamera().yRot() * Mth.DEG_TO_RAD;
 		double sinYaw = Mth.sin(yawRad);
 		double cosYaw = Mth.cos(yawRad);
 		double offsetX = moveVector.x * cosYaw - moveVector.y * sinYaw;
 		double offsetZ = moveVector.x * sinYaw + moveVector.y * cosYaw;
-
+		
 		// Calculate vertical offset
 		double offsetY = 0;
-		double vSpeed = settingz.getActualVerticalSpeed();
+		double vSpeed = settings.getActualVerticalSpeed();
 		if(IKeyMapping.get(MC.options.keyJump).isActuallyDown())
 			offsetY += vSpeed;
 		if(IKeyMapping.get(MC.options.keyShift).isActuallyDown())
 			offsetY -= vSpeed;
-
+		
 		// Apply to camera
 		Vec3 offsetVec = new Vec3(offsetX, 0, offsetZ)
-			.scale(settingz.HORIZONTAL_SPEED / 200.0).add(0, offsetY, 0);
+			.scale(settings.horizontalSpeed.getValueF()).add(0, offsetY, 0);
 		prevCamPos = camPos;
 		camPos = camPos.add(offsetVec);
 	}
-
-    public void onMouseScroll(double amount) {
-		FreecamConfig settingz = ConfigManager.getConfig().freecamConfig;
-
-		if (!isControllingScrollEvents())
-			return;
-
-		int oldHorizontal = settingz.HORIZONTAL_SPEED;
-		int oldVertical = settingz.VERTICAL_SPEED;
-
-		if (amount > 0) {
-			settingz.increaseHorizontalSpeed();
-			settingz.increaseVerticalSpeed();
-		}
-		else if (amount < 0) {
-			settingz.decereaseHorizontalSpeed();
-			settingz.decreaseVerticalSpeed();
-		}
-
-        if (settingz.PRINT_SPEED_TO_CHAT && (settingz.HORIZONTAL_SPEED != oldHorizontal || settingz.VERTICAL_SPEED != oldVertical))
-        {
-            String message = String.format("§bSpeed: §fH:%.2f §fV:%.2f",
-                    settingz.HORIZONTAL_SPEED / 200.0,
-                    settingz.VERTICAL_SPEED / 200.0);
-
-            Utils.chat(message);
-        }
-    }
-
-	public boolean isControllingScrollEvents() {
-		return isMovingCamera()
-				&& ConfigManager.getConfig().freecamConfig.SCROLL_TO_CHANGE_SPEED
-				&& MC.screen == null;
-	}
-
-    public boolean isMovingCamera()	{
-        return FREECAM_ENABLED && ConfigManager.getConfig().freecamConfig.APPLY_INPUT_TO.get() == FreecamConfig.InputEnum.Camera;
-    }
-
-    public boolean isClickingFromCamera() {
-
-        return FREECAM_ENABLED && ConfigManager.getConfig().freecamConfig.APPLY_INPUT_TO.get() == FreecamConfig.InputEnum.Camera;
-    }
 	
-	public void onRender(PoseStack matrixStack, float partialTicks) {
-        if(!ConfigManager.getConfig().freecamConfig.FREECAM_TRACER) return;
-
-        int colorI = ConfigManager.getConfig().freecamConfig.FREECAM_TRACER_COLOR.getEffectiveColour().getRGB();
+	public void onMouseScroll(double amount)
+	{
+		if(!isControllingScrollEvents())
+			return;
+		
+		if(amount > 0)
+			settings.horizontalSpeed.increaseValue();
+		else if(amount < 0)
+			settings.horizontalSpeed.decreaseValue();
+	}
+	
+	public boolean isControllingScrollEvents()
+	{
+		return isMovingCamera() && settings.scrollToChangeSpeed.isChecked()
+			&& MC.screen == null;
+	}
+	
+	public boolean isMovingCamera()
+	{
+		return enabled
+			&& settings.applyInputTo.getSelected() == ApplyInputTo.CAMERA;
+	}
+	
+	public boolean isClickingFromCamera()
+	{
+		return enabled
+			&& settings.interactFrom.getSelected() == InteractFrom.CAMERA;
+	}
+	
+	public void onRender(PoseStack matrixStack, float partialTicks)
+	{
+		if(!settings.tracer.isChecked())
+			return;
+		
+		int colorI = settings.color.getColorI(0x80);
 		
 		// Box
 		double extraSize = 0.05;
@@ -166,47 +209,109 @@ public enum WiFreecam {
 		RenderUtils.drawTracer(matrixStack, partialTicks, rawBox.getCenter(),
 			colorI, false);
 	}
-
-    public boolean shouldHideHand()	{
-        return FREECAM_ENABLED && ConfigManager.getConfig().freecamConfig.HIDE_HAND;
-    }
 	
-	public Vec3 getCamPos(float partialTicks) {
+	public boolean shouldHideHand()
+	{
+		return enabled && settings.hideHand.isChecked();
+	}
+	
+	public Vec3 getCamPos(float partialTicks)
+	{
 		return Mth.lerp(partialTicks, prevCamPos, camPos);
 	}
 	
-	public Vec3 getScaledCamDir(double scale) {
+	public Vec3 getScaledCamDir(double scale)
+	{
 		return Vec3.directionFromRotation(camPitch, camYaw).scale(scale);
 	}
-
-	public void turn(double deltaYaw, double deltaPitch) {
+	
+	public void turn(double deltaYaw, double deltaPitch)
+	{
 		// This needs to be consistent with Entity.turn()
 		camYaw += (float)(deltaYaw * 0.15);
 		camPitch += (float)(deltaPitch * 0.15);
 		camPitch = Mth.clamp(camPitch, -90, 90);
 	}
 	
-	public float getCamYaw() {
+	public float getCamYaw()
+	{
 		return camYaw;
 	}
 	
-	public float getCamPitch() {
+	public float getCamPitch()
+	{
 		return camPitch;
 	}
 	
-	public boolean isEnabled() {
-		return FREECAM_ENABLED;
+	public boolean isEnabled()
+	{
+		return enabled;
 	}
-
-    public void setEnabled(boolean enabled) {
-        if(this.FREECAM_ENABLED == enabled)
-            return;
-
-        this.FREECAM_ENABLED = enabled;
-
-        if(enabled)
-            onEnable();
-        else
-            onDisable();
-    }
+	
+	public void setEnabled(boolean enabled)
+	{
+		if(this.enabled == enabled)
+			return;
+		
+		this.enabled = enabled;
+		
+		FreecamHud.updateState(this);
+		
+		if(enabled)
+			onEnable();
+		else
+			onDisable();
+	}
+	
+	private Path createConfigDir()
+	{
+		try
+		{
+			Path configDir =
+				FabricLoader.getInstance().getConfigDir().resolve("wi_freecam");
+			Files.createDirectories(configDir);
+			return configDir;
+			
+		}catch(IOException e)
+		{
+			throw new RuntimeException(
+				"Couldn't create WI Freecam config directory.", e);
+		}
+	}
+	
+	public FreecamSettings getSettings()
+	{
+		return settings;
+	}
+	
+	public void saveSettings()
+	{
+		settingsFile.save();
+	}
+	
+	public PlausibleAnalytics getPlausible()
+	{
+		return plausible;
+	}
+	
+	public ClickGui getGui()
+	{
+		if(!guiInitialized)
+		{
+			guiInitialized = true;
+			gui.init();
+		}
+		
+		return gui;
+	}
+	
+	public FreecamKeybinds getKeybinds()
+	{
+		return keybinds;
+	}
+	
+	public FreecamTranslator getTranslator()
+	{
+		return translator;
+	}
 }

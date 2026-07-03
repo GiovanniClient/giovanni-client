@@ -36,21 +36,6 @@ public final class ClientKeybinds {
                 GLFW.GLFW_KEY_O,
                 GIOVANNI
         ));
-
-        toggleFreecam = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-                "key.wi_freecam.toggle",
-                InputConstants.Type.KEYSYM,
-                GLFW.GLFW_KEY_U,
-                WURST
-        ));
-
-        switchFreecamControlKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-                "key.wi_freecam.switch_control",
-                InputConstants.Type.KEYSYM,
-                InputConstants.UNKNOWN.getValue(),
-                WURST
-        ));
-
         ALL_KEYS = new KeyMapping[]{toggleFreecam, switchFreecamControlKey, openInvButtonEditor, openConfig};
     }
 

@@ -7,12 +7,7 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigOption;
 
 public class RiftConfig {
     @Expose
-    @ConfigOption(name = "Auto Agaricus Cap", desc = "The annoying mushrooms")
+    @ConfigOption(name = "Auto Agaricus Cap", desc = "Look at the mushrooms")
     @ConfigEditorBoolean
     public boolean AUTOAGARICUS_CAP_TOGGLE = false;
-
-    @Expose
-    @ConfigOption(name = "Invis players in tiny dancer", desc = "")
-    @ConfigEditorBoolean
-    public boolean INVIS_PLAYERS_IN_TINY_DANCER = false;
 }

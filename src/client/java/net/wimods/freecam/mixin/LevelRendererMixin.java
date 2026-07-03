@@ -27,22 +27,22 @@ import net.wimods.freecam.WiFreecam;
 @Mixin(LevelRenderer.class)
 public class LevelRendererMixin
 {
-    @Inject(
-            method = "renderLevel(Lcom/mojang/blaze3d/resource/GraphicsResourceAllocator;Lnet/minecraft/client/DeltaTracker;ZLnet/minecraft/client/renderer/state/level/CameraRenderState;Lorg/joml/Matrix4fc;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;Lorg/joml/Vector4f;ZLnet/minecraft/client/renderer/chunk/ChunkSectionsToRender;)V",
-            at = @At("RETURN"))
-    private void onRender(GraphicsResourceAllocator resourceAllocator,
-                          DeltaTracker deltaTracker, boolean renderOutline,
-                          CameraRenderState cameraState, Matrix4fc modelViewMatrix,
-                          GpuBufferSlice terrainFog, Vector4f fogColor,
-                          boolean shouldRenderSky, ChunkSectionsToRender chunkSectionsToRender,
-                          CallbackInfo ci)
-    {
-        PoseStack matrixStack = new PoseStack();
-        matrixStack.mulPose(modelViewMatrix);
-        float tickProgress = deltaTracker.getGameTimeDeltaPartialTick(false);
-
-        WiFreecam freecam = WiFreecam.INSTANCE;
-        if(freecam.isEnabled())
-            freecam.onRender(matrixStack, tickProgress);
-    }
+	@Inject(
+		method = "renderLevel(Lcom/mojang/blaze3d/resource/GraphicsResourceAllocator;Lnet/minecraft/client/DeltaTracker;ZLnet/minecraft/client/renderer/state/level/CameraRenderState;Lorg/joml/Matrix4fc;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;Lorg/joml/Vector4f;ZLnet/minecraft/client/renderer/chunk/ChunkSectionsToRender;)V",
+		at = @At("RETURN"))
+	private void onRender(GraphicsResourceAllocator allocator,
+		DeltaTracker tickCounter, boolean renderBlockOutline,
+		CameraRenderState cameraState, Matrix4fc positionMatrix,
+		GpuBufferSlice gpuBufferSlice, Vector4f vector4f,
+		boolean shouldRenderSky, ChunkSectionsToRender chunkSectionsToRender,
+		CallbackInfo ci)
+	{
+		PoseStack matrixStack = new PoseStack();
+		matrixStack.mulPose(positionMatrix);
+		float tickProgress = tickCounter.getGameTimeDeltaPartialTick(false);
+		
+		WiFreecam freecam = WiFreecam.INSTANCE;
+		if(freecam.isEnabled())
+			freecam.onRender(matrixStack, tickProgress);
+	}
 }

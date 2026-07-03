@@ -7,31 +7,33 @@
  */
 package net.wimods.freecam.mixin;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.ItemInHandRenderer;
-import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.wimods.freecam.WiFreecam;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.ItemInHandRenderer;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.wimods.freecam.WiFreecam;
+
 @Mixin(ItemInHandRenderer.class)
 public abstract class ItemInHandRendererMixin
 {
-    /**
-     * Makes the "Hide hand" setting work.
-     */
-    @Inject(
-            method = "renderHandsWithItems(FLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/player/LocalPlayer;I)V",
-            at = @At("HEAD"),
-            cancellable = true)
-    private void onRenderHandsWithItems(float frameInterp, PoseStack poseStack,
-                                        SubmitNodeCollector submitNodeCollector, LocalPlayer player,
-                                        int lightCoords, CallbackInfo ci)
-    {
-        if(WiFreecam.INSTANCE.shouldHideHand())
-            ci.cancel();
-    }
+	/**
+	 * Makes the "Hide hand" setting work.
+	 */
+	@Inject(
+		method = "renderHandsWithItems(FLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/player/LocalPlayer;I)V",
+		at = @At("HEAD"),
+		cancellable = true)
+	private void onRenderHandsWithItems(float tickProgress, PoseStack matrices,
+		SubmitNodeCollector entityRenderCommandQueue, LocalPlayer player,
+		int light, CallbackInfo ci)
+	{
+		if(WiFreecam.INSTANCE.shouldHideHand())
+			ci.cancel();
+	}
 }

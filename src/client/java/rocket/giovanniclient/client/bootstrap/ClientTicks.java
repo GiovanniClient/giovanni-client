@@ -25,19 +25,5 @@ public final class ClientTicks {
                 client.execute(ConfigManager::openConfigScreen);
             }
         });
-
-
-        ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            // 1. Toggle Freecam
-            // Make sure 'toggleFreecam' is defined in ClientKeybinds
-            while (toggleFreecam.consumeClick()) {
-                WiFreecam.INSTANCE.setEnabled(!WiFreecam.INSTANCE.isEnabled());
-            }
-
-            // 3. Cycle Control Mode (Camera vs Player)
-            while (switchFreecamControlKey.consumeClick()) {
-                ConfigManager.getConfig().freecamConfig.cycleInputMode();
-            }
-        });
     }
 }
