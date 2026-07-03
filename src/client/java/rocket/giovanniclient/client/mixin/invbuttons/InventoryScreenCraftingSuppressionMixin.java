@@ -1,9 +1,9 @@
 package rocket.giovanniclient.client.mixin.invbuttons;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
-import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.inventory.Slot;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -14,8 +14,8 @@ import rocket.giovanniclient.client.config.ConfigManager;
 public class InventoryScreenCraftingSuppressionMixin {
 
     // in this context this call only draws the "Crafting" string in the inventory
-    @Inject(method = "renderLabels", at = @At("HEAD"), cancellable = true)
-    protected void drawForeground(GuiGraphics context, int mouseX, int mouseY, CallbackInfo ci) {
+    @Inject(method = "extractLabels", at = @At("HEAD"), cancellable = true)
+    protected void drawForeground(GuiGraphicsExtractor graphics, int xm, int ym, CallbackInfo ci) {
         if (ConfigManager.getConfig().ibc.INV_BUTTONS_IN_CRAFTING_GRID) ci.cancel();
     }
 

@@ -4,7 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -39,9 +39,9 @@ public class InventoryUtils {
      * @param actionType The type of click action.
      */
     public static void clickSlot(Minecraft client, AbstractContainerMenu handler, int slot,
-                                 MouseButton button, ClickType actionType) {
+                                 MouseButton button, ContainerInput actionType) {
         assert client.gameMode != null;
-        client.gameMode.handleInventoryMouseClick(
+        client.gameMode.handleContainerInput(
                 handler.containerId,
                 slot,
                 button.getValue(),

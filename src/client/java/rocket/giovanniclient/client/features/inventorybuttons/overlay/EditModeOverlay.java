@@ -1,6 +1,6 @@
 package rocket.giovanniclient.client.features.inventorybuttons.overlay;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -73,7 +73,7 @@ public class EditModeOverlay extends AbstractOverlay {
     }
 
     @Override
-    public void render(GuiGraphics ctx, int mouseX, int mouseY) {
+    public void render(GuiGraphicsExtractor ctx, int mouseX, int mouseY) {
         // 1. Draw the slot ghosts
         for (LayoutManager slot : LayoutManager.getAvailableSlots()) {
             var data = JsonManager.get(slot.id());
@@ -93,16 +93,16 @@ public class EditModeOverlay extends AbstractOverlay {
         int y2 = this.panelY + PANEL_H;
 
         ctx.fill(x1, y1, x2, y2, 0xFF1c1a21);
-        ctx.renderOutline(x1, y1, PANEL_W, PANEL_H, 0xFFFFFFFF);
+        ctx.outline(x1, y1, PANEL_W, PANEL_H, 0xFFFFFFFF);
 
         // 3. Draw the Labels
-        ctx.drawString(screen.getFont(), "Command", this.panelX + 12, this.panelY + 6, 0xFF00FFFF, false);
-        ctx.drawString(screen.getFont(), "/", this.panelX + 12, this.panelY + 22, 0xFFFFFFFF, false);
+        ctx.text(screen.getFont(), "Command", this.panelX + 12, this.panelY + 6, 0xFF00FFFF, false);
+        ctx.text(screen.getFont(), "/", this.panelX + 12, this.panelY + 22, 0xFFFFFFFF, false);
 
-        ctx.drawString(screen.getFont(), "Icon", this.panelX + 12, this.panelY + 42, 0xFF00FFFF, false);
+        ctx.text(screen.getFont(), "Icon", this.panelX + 12, this.panelY + 42, 0xFF00FFFF, false);
 
-        this.commandField.render(ctx, mouseX, mouseY, 0);
-        this.iconField.render(ctx, mouseX, mouseY, 0);
+        this.commandField.extractWidgetRenderState(ctx, mouseX, mouseY, 0);
+        this.iconField.extractWidgetRenderState(ctx, mouseX, mouseY, 0);
     }
 
     @Override

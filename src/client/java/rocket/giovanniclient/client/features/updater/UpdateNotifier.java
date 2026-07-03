@@ -58,18 +58,18 @@ public class UpdateNotifier {
     }
 
     public void sendUpdateForDifferentMcVersion(UpdateData data) {
-        Utils.MutableComponentToChat(buildDifferentMcVersionMessage(data));
+        Utils.mutableComponentToChat(buildDifferentMcVersionMessage(data));
     }
 
     public void sendUpdateAvailable(UpdateData data, RatterScannerChecker.SafetyStatus safetyStatus) {
-        Utils.MutableComponentToChat(buildMessage(data, safetyStatus));
+        Utils.mutableComponentToChat(buildMessage(data, safetyStatus));
     }
 
     public void sendNoUpdates() {
-        Utils.MutableComponentToChat(buildNoUpdatesMessage());
+        Utils.mutableComponentToChat(buildNoUpdatesMessage());
     }
 
     public void sendInstalled() {
-        Utils.MutableComponentToChat(buildInstalledMessage());
+        Utils.mutableComponentToChat(buildInstalledMessage());
     }
 }

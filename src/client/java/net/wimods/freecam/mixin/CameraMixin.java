@@ -14,8 +14,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import net.minecraft.client.Camera;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.Level;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.waypoints.TrackedWaypoint;
 import net.wimods.freecam.WiFreecam;
@@ -26,25 +25,25 @@ public abstract class CameraMixin implements TrackedWaypoint.Camera
     @Shadow
     private boolean detached;
 
-    @Inject(
-            method = "setup(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/Entity;ZZF)V",
-            at = @At("RETURN"),
-            cancellable = false)
-    public void onSetup(Level level, Entity entity, boolean bl, boolean bl2,
-                        float partialTicks, CallbackInfo ci)
+    @Inject(method = "update(Lnet/minecraft/client/DeltaTracker;)V",
+            at = @At(value = "INVOKE",
+                    target = "Lnet/minecraft/client/Camera;alignWithEntity(F)V",
+                    shift = At.Shift.AFTER))
+    private void onUpdate(DeltaTracker deltaTracker, CallbackInfo ci)
     {
         WiFreecam freecam = WiFreecam.INSTANCE;
         if(!freecam.isEnabled())
             return;
 
+        float partialTicks = deltaTracker.getGameTimeDeltaPartialTick(true);
         detached = true;
         setPosition(freecam.getCamPos(partialTicks));
         setRotation(freecam.getCamYaw(), freecam.getCamPitch());
     }
 
     @Shadow
-    protected abstract void setPosition(Vec3 pos);
+    protected abstract void setPosition(Vec3 position);
 
     @Shadow
-    protected abstract void setRotation(float yaw, float pitch);
+    protected abstract void setRotation(float yRot, float xRot);
 }

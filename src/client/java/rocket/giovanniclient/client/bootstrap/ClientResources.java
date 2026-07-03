@@ -16,7 +16,7 @@ public final class ClientResources {
     );
 
     public static void register() {
-        ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloader(
+        ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloadListener(
                 RELOAD_ID,
                 (ResourceManagerReloadListener) manager -> InventoryBackgroundColor.invalidate()
         );

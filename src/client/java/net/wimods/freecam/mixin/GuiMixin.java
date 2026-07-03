@@ -7,15 +7,14 @@
  */
 package net.wimods.freecam.mixin;
 
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.wimods.freecam.WiFreecam;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
-import net.wimods.freecam.WiFreecam;
 
 @Mixin(Gui.class)
 public abstract class GuiMixin
@@ -25,14 +24,14 @@ public abstract class GuiMixin
 	 * and before tabList.setVisible()
 	 */
 	@Inject(
-		method = "renderTabList(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V",
+		method = "extractTabList",
 		at = @At("HEAD"))
-	private void onRenderTabList(GuiGraphics context, DeltaTracker tickCounter,
-		CallbackInfo ci)
+	private void onRenderTabList(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker,
+	                             CallbackInfo ci)
 	{
 		if(WiFreecam.MC.debugEntries.isOverlayVisible())
 			return;
 		
-		float tickDelta = tickCounter.getGameTimeDeltaPartialTick(true);
+		float tickDelta = deltaTracker.getGameTimeDeltaPartialTick(true);
 	}
 }

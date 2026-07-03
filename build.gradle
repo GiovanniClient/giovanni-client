@@ -1,24 +1,10 @@
 plugins {
-    id 'fabric-loom' version '1.15.3'
+    id 'net.fabricmc.fabric-loom' version "${loom_version}"
     id 'maven-publish'
 }
 
 version = project.mod_version
 group = project.maven_group
-
-base {
-    archivesName = project.archives_base_name
-}
-
-loom {
-    splitEnvironmentSourceSets()
-}
-
-fabricApi {
-    configureDataGeneration {
-        client = true
-    }
-}
 
 repositories {
     mavenCentral()
@@ -29,22 +15,33 @@ repositories {
     maven { url = "https://maven.shedaniel.me" }
 }
 
+loom {
+    splitEnvironmentSourceSets()
+
+    mods {
+        "giovanniclient" {
+            sourceSet sourceSets.main
+            sourceSet sourceSets.client
+        }
+    }
+}
+
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings loom.officialMojangMappings()
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
-    modImplementation "org.notenoughupdates.moulconfig:${project.moulconfig_artifact}:${project.moulconfig_version}"
+    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+    implementation "org.notenoughupdates.moulconfig:${project.moulconfig_artifact}:${project.moulconfig_version}"
     include "org.notenoughupdates.moulconfig:${project.moulconfig_artifact}:${project.moulconfig_version}"
 
     implementation "moe.nea:libautoupdate:1.4.1"
     include "moe.nea:libautoupdate:1.4.1"
 
-    modCompileOnly "me.shedaniel:RoughlyEnoughItems-api-fabric:${project.REI_version}"
-    modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.REI_version}"
+    compileOnly "me.shedaniel:RoughlyEnoughItems-api-fabric:${project.REI_version}"
+    runtimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.REI_version}"
 
-    modRuntimeOnly "me.djtheredstoner:DevAuth-fabric:1.2.2"
+    runtimeOnly "me.djtheredstoner:DevAuth-fabric:1.2.2"
 }
 
 processResources {
@@ -60,25 +57,22 @@ processResources {
     }
 }
 
-def targetJavaVersion = 21
 tasks.withType(JavaCompile).configureEach {
-    it.options.encoding = "UTF-8"
-    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
-        it.options.release.set(targetJavaVersion)
-    }
+    it.options.release = 25
 }
 
 java {
-    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
-    if (JavaVersion.current() < javaVersion) {
-        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
-    }
     withSourcesJar()
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
 }
 
 jar {
+    def projectName = project.name
+    inputs.property "projectName", projectName
+
     from("LICENSE") {
-        rename { "${it}_${project.archives_base_name}" }
+        rename { "${it}_$projectName"}
     }
 }
 

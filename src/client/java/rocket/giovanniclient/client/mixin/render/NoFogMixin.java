@@ -1,29 +1,26 @@
 package rocket.giovanniclient.client.mixin.render;
 
+import com.mojang.blaze3d.buffers.GpuBuffer;
+import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import net.minecraft.client.renderer.fog.FogRenderer;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyArgs;
-import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
-import rocket.giovanniclient.client.config.ConfigManager;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
 @Mixin(FogRenderer.class)
 public class NoFogMixin {
 
-    @ModifyArgs(
-            method = "setupFog",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/fog/FogRenderer;updateBuffer(Ljava/nio/ByteBuffer;ILorg/joml/Vector4f;FFFFFF)V")
+    @Final
+    @Shadow
+    private GpuBuffer emptyBuffer;
 
-    )
-    private static void giovanni$modifyFogDistances(Args args) {
-        if (ConfigManager.getConfig().rc.NO_FOG) {
-            // Index 3: environmentalStart
-            // Index 4: environmentalEnd
-            // Index 5: renderDistanceStart
-            // Index 6: renderDistanceEnd
-            args.set(3, 998f);
-            args.set(4, 999f);
-            args.set(5, 998f);
-            args.set(6, 999f);
-        }
+    @Inject(method = "getBuffer", at = @At("HEAD"), cancellable = true)
+    private void noFog(FogRenderer.FogMode mode, CallbackInfoReturnable<GpuBufferSlice> cir) {
+
+        // ritorna buffer vuoto SEMPRE
+        cir.setReturnValue((emptyBuffer.slice(0L, FogRenderer.FOG_UBO_SIZE)));
     }
 }

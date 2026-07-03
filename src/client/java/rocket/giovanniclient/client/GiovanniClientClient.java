@@ -3,8 +3,8 @@ package rocket.giovanniclient.client;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.Minecraft;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -27,7 +27,7 @@ public final class GiovanniClientClient implements ClientModInitializer {
      * ALSO UPDATE {@link GiovanniMixinPlugin}
      * can't call this list from there because it crashes in safemode
      */
-    public static final List<String> SUPPORTED_VERSIONS = List.of("1.21.11");
+    public static final List<String> SUPPORTED_VERSIONS = List.of("26.1.2");
     public static final UpdateManagerV3 UPDATE_MANAGER = new UpdateManagerV3(() -> ConfigManager.getConfig().about);
 
     @Override
@@ -50,7 +50,7 @@ public final class GiovanniClientClient implements ClientModInitializer {
         ClientLifecycle.registerShutdownHook();
         ClientKeybinds.register();
         ClientTicks.register();
-        ClientCommands.register();
+        ClientCustomCommands.register();
         ClientResources.register();
         ClientWorldJoinEvents.register();
         ClientLifecycle.registerClientStarted();
@@ -75,10 +75,10 @@ public final class GiovanniClientClient implements ClientModInitializer {
                     .append(Component.literal("\n\n=========================").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD));
 
             assert client.player != null;
-            client.player.displayClientMessage(warningMessage, false);
+            client.gui.getChat().addClientSystemMessage(warningMessage);
         });
 
-        ClientCommands.registerSafemode();
+        ClientCustomCommands.registerSafemode();
         ClientLifecycle.registerClientStarted();
     }
 

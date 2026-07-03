@@ -7,7 +7,7 @@
  */
 package net.wimods.freecam.mixin;
 
-import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 import org.joml.Vector4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -18,26 +18,28 @@ import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.resource.GraphicsResourceAllocator;
 import com.mojang.blaze3d.vertex.PoseStack;
 
-import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.chunk.ChunkSectionsToRender;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.wimods.freecam.WiFreecam;
 
 @Mixin(LevelRenderer.class)
 public class LevelRendererMixin
 {
     @Inject(
-            method = "renderLevel(Lcom/mojang/blaze3d/resource/GraphicsResourceAllocator;Lnet/minecraft/client/DeltaTracker;ZLnet/minecraft/client/Camera;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;Lorg/joml/Vector4f;Z)V",
+            method = "renderLevel(Lcom/mojang/blaze3d/resource/GraphicsResourceAllocator;Lnet/minecraft/client/DeltaTracker;ZLnet/minecraft/client/renderer/state/level/CameraRenderState;Lorg/joml/Matrix4fc;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;Lorg/joml/Vector4f;ZLnet/minecraft/client/renderer/chunk/ChunkSectionsToRender;)V",
             at = @At("RETURN"))
-    private void onRenderLevel(GraphicsResourceAllocator allocator,
-                               DeltaTracker tickCounter, boolean renderBlockOutline, Camera camera,
-                               Matrix4f positionMatrix, Matrix4f projectionMatrix, Matrix4f matrix4f2,
-                               GpuBufferSlice gpuBufferSlice, Vector4f vector4f, boolean bl,
-                               CallbackInfo ci)
+    private void onRender(GraphicsResourceAllocator resourceAllocator,
+                          DeltaTracker deltaTracker, boolean renderOutline,
+                          CameraRenderState cameraState, Matrix4fc modelViewMatrix,
+                          GpuBufferSlice terrainFog, Vector4f fogColor,
+                          boolean shouldRenderSky, ChunkSectionsToRender chunkSectionsToRender,
+                          CallbackInfo ci)
     {
         PoseStack matrixStack = new PoseStack();
-        matrixStack.mulPose(positionMatrix);
-        float tickProgress = tickCounter.getGameTimeDeltaPartialTick(false);
+        matrixStack.mulPose(modelViewMatrix);
+        float tickProgress = deltaTracker.getGameTimeDeltaPartialTick(false);
 
         WiFreecam freecam = WiFreecam.INSTANCE;
         if(freecam.isEnabled())

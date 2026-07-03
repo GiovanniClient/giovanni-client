@@ -4,7 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.ContainerScreen;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import rocket.giovanniclient.client.config.ConfigManager;
 import rocket.giovanniclient.client.features.AbstractFeature;
 import rocket.giovanniclient.client.util.InventoryUtils;
@@ -55,7 +55,7 @@ public class AutoShardsClaim extends AbstractFeature {
                 Utils.debug("Click delay: " + (clickDelay - now) + "ms");
             } else if (now > clickDelay) {
                 Utils.debug(shardToClaim + " found in slot " + slot);
-                clickSlot(client, handler, slot, InventoryUtils.MouseButton.RIGHT, ClickType.PICKUP);
+                clickSlot(client, handler, slot, InventoryUtils.MouseButton.RIGHT, ContainerInput.PICKUP);
                 clickDelay = -1;
             }
         }

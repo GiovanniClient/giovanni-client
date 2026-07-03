@@ -3,8 +3,8 @@ package rocket.giovanniclient.client.bootstrap;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -19,9 +19,9 @@ import java.util.List;
 
 import static rocket.giovanniclient.client.GiovanniClientClient.UPDATE_MANAGER;
 
-public final class ClientCommands {
+public final class ClientCustomCommands {
 
-    private ClientCommands() {
+    private ClientCustomCommands() {
     }
 
     public static void register() {
@@ -45,7 +45,7 @@ public final class ClientCommands {
         String[] aliases = {"giovanni", "giovanniclient", "gio", "zoo"};
 
         for (String alias : aliases) {
-            dispatcher.register(ClientCommandManager.literal(alias).executes(context -> {
+            dispatcher.register(ClientCommands.literal(alias).executes(context -> {
                 ConfigManager.openConfigScreenFromCommand();
                 return 1;
             }));
@@ -53,7 +53,7 @@ public final class ClientCommands {
     }
 
     private static void slash_dumpsidebar(CommandDispatcher<FabricClientCommandSource> dispatcher) {
-        dispatcher.register(ClientCommandManager.literal("dumpsidebar").executes(context -> {
+        dispatcher.register(ClientCommands.literal("dumpsidebar").executes(context -> {
             List<String> lines = ScoreboardUtils.getCleanedSidebarLines();
 
             if (lines.isEmpty()) {
@@ -73,7 +73,7 @@ public final class ClientCommands {
         String[] aliases = {"gioeditbuttons", "inventorybuttons", "neubuttons"};
 
         for (String alias : aliases) {
-            dispatcher.register(ClientCommandManager.literal(alias).executes(context -> {
+            dispatcher.register(ClientCommands.literal(alias).executes(context -> {
                 EditModeState.setEditMode(true);
                 Minecraft.getInstance().execute(() -> {
                     if (Minecraft.getInstance().player != null) {
@@ -86,7 +86,7 @@ public final class ClientCommands {
     }
 
     private static void slash_dumptab(CommandDispatcher<FabricClientCommandSource> dispatcher) {
-        dispatcher.register(ClientCommandManager.literal("dumptab").executes(ctx -> {
+        dispatcher.register(ClientCommands.literal("dumptab").executes(ctx -> {
             if (!ConfigManager.getConfig().debugConfig.DEBUG) return 0;
 
             List<String> lines = TabListUtils.getCleanedLines(true, true);
@@ -106,13 +106,13 @@ public final class ClientCommands {
 
 
     private static void slash_giovanniUpdates(CommandDispatcher<FabricClientCommandSource> dispatcher) {
-        dispatcher.register(ClientCommandManager.literal("giovanni-check-update")
+        dispatcher.register(ClientCommands.literal("giovanni-check-update")
                 .executes(context -> {
                     UPDATE_MANAGER.runUpdateFlow();
                     return 1;
                 })
         );
-        dispatcher.register(ClientCommandManager.literal("giovanni-do-update")
+        dispatcher.register(ClientCommands.literal("giovanni-do-update")
                 .executes(context -> {
                     UPDATE_MANAGER.manualInstall();
                     return 1;
@@ -121,9 +121,9 @@ public final class ClientCommands {
     }
 
     private static void slash_ratterscannertestsha256(CommandDispatcher<FabricClientCommandSource> dispatcher) {
-        dispatcher.register(ClientCommandManager.literal("ratterscannertestsha256")
-                .then(ClientCommandManager.argument("hash", StringArgumentType.string())
-                        .executes(ClientCommands::execute)
+        dispatcher.register(ClientCommands.literal("ratterscannertestsha256")
+                .then(ClientCommands.argument("hash", StringArgumentType.string())
+                        .executes(ClientCustomCommands::execute)
                 )
         );
     }

@@ -8,11 +8,11 @@ import rocket.giovanniclient.client.config.ConfigManager;
 
 @Mixin(GameRenderer.class)
 public abstract class NoNauseaMixin {
-    @ModifyVariable(method = "renderLevel", at = @At("STORE"), ordinal = 5)
-    private float nauseaStrengthToZero(float original) {
+    @ModifyVariable(method = "renderLevel", at = @At("STORE"), name = "spinningEffectIntensity")
+    private float nauseaStrengthToZero(float spinningEffectIntensity) {
         if (ConfigManager.getConfig().rc.cameraAccordion.NO_NAUSEA)
             return 0.0F;
-        return original;
+        return spinningEffectIntensity;
     }
 }
 

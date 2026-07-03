@@ -1,6 +1,6 @@
 package rocket.giovanniclient.client.features.inventorybuttons.overlay;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.input.MouseButtonEvent;
 import rocket.giovanniclient.client.features.inventorybuttons.LayoutManager;
@@ -18,16 +18,16 @@ public abstract class AbstractOverlay {
         this.guiY = ((HandledScreenAccessor) screen).giovanni$getY();
     }
 
-    public abstract void render(GuiGraphics ctx, int mouseX, int mouseY);
+    public abstract void render(GuiGraphicsExtractor ctx, int mouseX, int mouseY);
 
     public abstract boolean mouseClicked(MouseButtonEvent click, boolean doubled);
 
-    protected void drawButton(GuiGraphics ctx, LayoutManager slot, String icon, boolean hovered, int borderColor) {
+    protected void drawButton(GuiGraphicsExtractor ctx, LayoutManager slot, String icon, boolean hovered, int borderColor) {
         int x = guiX + slot.relX();
         int y = guiY + slot.relY();
 
         ctx.fill(x, y, x + 18, y + 18, hovered ? 0x77FFFFFF : 0x44000000);
-        ctx.renderOutline(x, y, 18, 18, borderColor);
+        ctx.outline(x, y, 18, 18, borderColor);
 
         if (icon != null && !icon.isBlank()) {
             SimpleIconRenderer.render(ctx, icon, x + 1, y + 1);

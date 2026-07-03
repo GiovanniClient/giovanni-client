@@ -1,7 +1,7 @@
 package rocket.giovanniclient.client.bootstrap;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
@@ -23,28 +23,28 @@ public final class ClientKeybinds {
     //public static final String CATEGORY = "key.categories.wi_freecam";
 
     public static void register() {
-        openConfig = KeyBindingHelper.registerKeyBinding(new KeyMapping(
+        openConfig = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "Open Config",
                 InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_K,
                 GIOVANNI
         ));
 
-        openInvButtonEditor = KeyBindingHelper.registerKeyBinding(new KeyMapping(
+        openInvButtonEditor = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.giovanniclient.open_inv_button_editor",
                 InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_O,
                 GIOVANNI
         ));
 
-        toggleFreecam = KeyBindingHelper.registerKeyBinding(new KeyMapping(
+        toggleFreecam = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.wi_freecam.toggle",
                 InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_U,
                 WURST
         ));
 
-        switchFreecamControlKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
+        switchFreecamControlKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.wi_freecam.switch_control",
                 InputConstants.Type.KEYSYM,
                 InputConstants.UNKNOWN.getValue(),

@@ -11,7 +11,7 @@ import rocket.giovanniclient.client.config.ConfigManager;
 public class NoDarknessMixin {
     // don't touch applyStartEndModifier lmao
     @Inject(method = "getModifiedDarkness", at = @At("HEAD"), cancellable = true)
-    private void giovanni$applyDarknessModifier(net.minecraft.world.entity.LivingEntity livingEntity, float f, float g, CallbackInfoReturnable<Float> cir) {
+    private void giovanni$applyDarknessModifier(net.minecraft.world.entity.LivingEntity entity, float darkness, float partialTickTime, CallbackInfoReturnable<Float> cir) {
         var cfg = ConfigManager.getConfig().rc.cameraAccordion;
 
         if (cfg.NO_DARKNESS) cir.cancel();

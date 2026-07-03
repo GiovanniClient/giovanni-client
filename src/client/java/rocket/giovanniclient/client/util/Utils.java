@@ -31,13 +31,15 @@ public class Utils {
             MutableComponent message = Component.literal(messageComponent)
                     .setStyle(Style.EMPTY.withColor(ChatFormatting.WHITE));
 
-            client.gui.getChat().addMessage(prefix.append(message));
+            client.gui.getChat().addClientSystemMessage(prefix.append(message));
         }
     }
 
-    public static void MutableComponentToChat(MutableComponent Component) {
-        assert Minecraft.getInstance().player != null;
-        Minecraft.getInstance().player.displayClientMessage(Component, false);
+    public static void mutableComponentToChat(Component message) {
+        Minecraft client = Minecraft.getInstance();
+        assert client.gui != null;
+
+        client.gui.getChat().addClientSystemMessage(message);
     }
 
     public static void chat(String message) {

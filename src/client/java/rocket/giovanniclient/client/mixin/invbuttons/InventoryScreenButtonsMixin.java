@@ -1,6 +1,6 @@
 package rocket.giovanniclient.client.mixin.invbuttons;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -26,10 +26,10 @@ public class InventoryScreenButtonsMixin {
         }
     }
 
-    @Inject(method = "render", at = @At("TAIL"))
-    private void onRender(GuiGraphics ctx, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+    @Inject(method = "extractRenderState(Lnet/minecraft/client/gui/GuiGraphicsExtractor;IIF)V", at = @At("TAIL"))
+    private void onRender(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a, CallbackInfo ci) {
         if (OverlayManager.activeOverlay != null) {
-            OverlayManager.activeOverlay.render(ctx, mouseX, mouseY);
+            OverlayManager.activeOverlay.render(graphics, mouseX, mouseY);
         }
     }
 }

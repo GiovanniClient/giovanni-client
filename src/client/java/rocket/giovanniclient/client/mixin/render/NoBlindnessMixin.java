@@ -11,7 +11,7 @@ import rocket.giovanniclient.client.config.ConfigManager;
 @Mixin(BlindnessFogEnvironment.class)
 public class NoBlindnessMixin {
     @Inject(method = "getModifiedDarkness", at = @At("HEAD"), cancellable = true)
-    public void giovanni$applyDarknessModifier(LivingEntity cameraEntity, float darkness, float tickProgress, CallbackInfoReturnable<Float> cir) {
+    public void giovanni$applyDarknessModifier(LivingEntity entity, float darkness, float partialTickTime, CallbackInfoReturnable<Float> cir) {
         if (ConfigManager.getConfig().rc.cameraAccordion.NO_BLINDNESS) cir.cancel();
     }
 }

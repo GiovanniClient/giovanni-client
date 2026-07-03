@@ -7,31 +7,29 @@
  */
 package net.wimods.freecam.mixin;
 
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
+import net.minecraft.client.MouseHandler;
+import net.minecraft.world.entity.player.Inventory;
+import net.wimods.freecam.WiFreecam;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
-
-import net.minecraft.client.MouseHandler;
-import net.minecraft.world.entity.player.Inventory;
-import net.wimods.freecam.WiFreecam;
-
 @Mixin(MouseHandler.class)
 public abstract class MouseHandlerMixin
 {
     @Inject(method = "onScroll(JDD)V", at = @At("RETURN"))
-    private void onOnScroll(long window, double horizontal, double vertical,
+    private void onOnScroll(long handle, double xoffset, double yoffset,
                             CallbackInfo ci)
     {
-        WiFreecam.INSTANCE.onMouseScroll(vertical);
+        WiFreecam.INSTANCE.onMouseScroll(yoffset);
     }
 
     @WrapWithCondition(method = "onScroll(JDD)V",
             at = @At(value = "INVOKE",
                     target = "Lnet/minecraft/world/entity/player/Inventory;setSelectedSlot(I)V"))
-    private boolean wrapOnScroll(Inventory inventory, int slot)
+    private boolean wrapOnScroll(Inventory inventory, int selected)
     {
         return !WiFreecam.INSTANCE.isControllingScrollEvents();
     }

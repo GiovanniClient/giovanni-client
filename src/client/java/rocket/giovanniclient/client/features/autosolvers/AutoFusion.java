@@ -4,7 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.ContainerScreen;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import rocket.giovanniclient.client.config.ConfigManager;
 import rocket.giovanniclient.client.features.AbstractFeature;
@@ -90,7 +90,7 @@ public class AutoFusion extends AbstractFeature {
             }
 
             if (now > clickDelay) {
-                clickSlot(client, handler, slot, InventoryUtils.MouseButton.LEFT, ClickType.PICKUP);
+                clickSlot(client, handler, slot, InventoryUtils.MouseButton.LEFT, ContainerInput.CLONE);
                 clickDelay = -1;
             }
         }

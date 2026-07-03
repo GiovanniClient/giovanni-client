@@ -4,7 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.ContainerScreen;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import rocket.giovanniclient.client.config.ConfigManager;
@@ -48,7 +48,7 @@ public class AutoMelody extends AbstractFeature {
         if (!lastInventory.equals(currentInventory)) {
             for (int i = 0; i < handler.slots.size(); i++) {
                 if (handler.slots.get(i).getItem().is(Items.QUARTZ_BLOCK)) {
-                    clickSlot(client, handler, i, InventoryUtils.MouseButton.MIDDLE, ClickType.CLONE);
+                    clickSlot(client, handler, i, InventoryUtils.MouseButton.MIDDLE, ContainerInput.CLONE);
                     break;
                 }
             }

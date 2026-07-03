@@ -5,7 +5,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.ContainerScreen;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.Item;
@@ -170,7 +170,7 @@ public class AutoExperiments extends AbstractFeature {
             }
 
             if (now > clickDelay) {
-                clickSlot(client, handler, chronomatronOrder.get(clicks), InventoryUtils.MouseButton.MIDDLE, ClickType.CLONE);
+                clickSlot(client, handler, chronomatronOrder.get(clicks), InventoryUtils.MouseButton.MIDDLE, ContainerInput.CLONE);
                 clicks++;
                 clickDelay = -1;
             }
@@ -216,7 +216,7 @@ public class AutoExperiments extends AbstractFeature {
 
                 Integer slot = ultrasequencerOrder.get(clicks);
                 if (slot != null) {
-                    clickSlot(client, handler, slot, InventoryUtils.MouseButton.MIDDLE, ClickType.CLONE);
+                    clickSlot(client, handler, slot, InventoryUtils.MouseButton.MIDDLE, ContainerInput.CLONE);
                     clicks++;
                     clickDelay = -1;
                 }

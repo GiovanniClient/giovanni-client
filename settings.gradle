@@ -4,14 +4,9 @@ pluginManagement {
             name = 'Fabric'
             url = 'https://maven.fabricmc.net/'
         }
+        mavenCentral()
         gradlePluginPortal()
     }
-    plugins {
-        id 'org.jetbrains.kotlin.jvm' version '2.2.0'
-    }
-}
-plugins {
-    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.8.0'
 }
 
 includeBuild('libautoupdate-gc') {

@@ -1,6 +1,6 @@
 package rocket.giovanniclient.client.features.inventorybuttons.overlay;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.input.MouseButtonEvent;
 import rocket.giovanniclient.client.features.inventorybuttons.EditModeState;
@@ -11,7 +11,7 @@ public class NormalModeOverlay extends AbstractOverlay {
     public NormalModeOverlay(InventoryScreen screen) { super(screen); }
 
     @Override
-    public void render(GuiGraphics ctx, int mouseX, int mouseY) {
+    public void render(GuiGraphicsExtractor ctx, int mouseX, int mouseY) {
         JsonManager.savedButtons.forEach((id, data) -> {
             LayoutManager slot = LayoutManager.getSlotById(id);
             if (slot != null) {
