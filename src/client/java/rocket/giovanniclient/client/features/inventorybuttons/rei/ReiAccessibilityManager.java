@@ -35,7 +35,8 @@ public final class ReiAccessibilityManager {
 
             ConfigManager.getInstance().saveConfig();
             return true;
-        } catch (NoSuchFieldException | IllegalAccessException e) {
+        } catch (Exception e) {
+            System.err.println("ReiAccessibilityManager crashed!");
             e.printStackTrace();
             return false;
         }
