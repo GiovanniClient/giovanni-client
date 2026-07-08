@@ -45,13 +45,13 @@ public final class ClickGui
 	private final ArrayList<Popup> popups = new ArrayList<>();
 	private final Path windowsFile;
 	
-	private float[] bgColor = {0.25F, 0.25F, 0.25F};
-	private float[] acColor = {0.0625F, 0.0625F, 0.0625F};
-	private int txtColor = 0xFFF0F0F0;
-	private float opacity = 0.5F;
-	private float ttOpacity = 0.75F;
-	private int maxHeight = 400;
-	private int maxSettingsHeight = 400;
+	private final float[] bgColor = {0.25F, 0.25F, 0.25F};
+	private final float[] acColor = {0.0625F, 0.0625F, 0.0625F};
+	private final int txtColor = 0xFFF0F0F0;
+	private final float opacity = 0.5F;
+	private final float ttOpacity = 0.75F;
+	private final int maxHeight = 400;
+	private final int maxSettingsHeight = 400;
 	
 	private String tooltip = "";
 	

@@ -7,6 +7,7 @@ import io.github.notenoughupdates.moulconfig.observer.Property;
 import io.github.notenoughupdates.moulconfig.processor.BuiltinMoulConfigGuis;
 import io.github.notenoughupdates.moulconfig.processor.ConfigProcessorDriver;
 import io.github.notenoughupdates.moulconfig.processor.MoulConfigProcessor;
+import rocket.giovanniclient.giovanniclient.config.ProxyState;
 
 import java.io.File;
 import java.io.FileReader;
@@ -42,19 +43,20 @@ public class ConfigManager {
     public static void init() {
         CONFIG_FILE.getParentFile().mkdirs();
         loadConfig();
+        syncProxyState();
 
         processor = new MoulConfigProcessor<>(config);
         BuiltinMoulConfigGuis.addProcessors(processor);
         driver = new ConfigProcessorDriver(processor);
         driver.processConfig(config);
 
-        SCHEDULER.scheduleAtFixedRate(() -> saveConfig("auto-save"), 60, 60, TimeUnit.SECONDS);
+        SCHEDULER.scheduleAtFixedRate(() -> saveConfig(), 60, 60, TimeUnit.SECONDS);
     }
 
     private static void loadConfig() {
         if (!CONFIG_FILE.exists()) {
             config = new MainConfig();
-            saveConfig("initial");
+            saveConfig();
             return;
         }
         try (FileReader fr = new FileReader(CONFIG_FILE)) {
@@ -73,7 +75,9 @@ public class ConfigManager {
         }
     }
 
-    public static void saveConfig(String reason) {
+    public static void saveConfig() {
+        syncProxyState();
+
         try (FileWriter fw = new FileWriter(CONFIG_FILE)) {
             fw.write(GSON.toJson(config));
         } catch (IOException e) {
@@ -98,7 +102,7 @@ public class ConfigManager {
 
     public static void shutdown() {
         SCHEDULER.shutdownNow();
-        saveConfig("shutdown");
+        saveConfig();
     }
 
     // Custom TypeAdapter to properly serialize/deserialize Property fields
@@ -118,6 +122,14 @@ public class ConfigManager {
                 return Property.of(value);
             }
             throw new JsonParseException("Cannot deserialize Property without generic type");
+        }
+    }
+
+    public static void syncProxyState() {
+        if (config != null && config.proxyConfig != null) {
+            ProxyState.enabled = config.proxyConfig.PROXY_TOGGLE;
+        } else {
+            ProxyState.enabled = false;
         }
     }
 }

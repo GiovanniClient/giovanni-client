@@ -9,6 +9,7 @@ import rocket.giovanniclient.client.features.autosolvers.AutoSolversConfig;
 import rocket.giovanniclient.client.features.fun.FunConfig;
 import rocket.giovanniclient.client.features.inventorybuttons.InventoryButtonsConfig;
 import rocket.giovanniclient.client.features.misc.MiscConfig;
+import rocket.giovanniclient.client.features.proxy.ProxyConfig;
 import rocket.giovanniclient.client.features.render.RenderConfig;
 import rocket.giovanniclient.client.features.rift.RiftConfig;
 import rocket.giovanniclient.client.features.slayers.SlayersConfig;
@@ -53,6 +54,10 @@ public class MainConfig extends Config {
     @Expose
     @Category(name = "Misc", desc = "Stuff I don't know where to put")
     public MiscConfig msc = new MiscConfig();
+
+    @Expose
+    @Category(name = "Networking", desc = "")
+    public ProxyConfig proxyConfig = new ProxyConfig();
 
     @Expose
     @Category(name = "Fun", desc = "becuater bagu")

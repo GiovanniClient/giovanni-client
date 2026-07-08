@@ -1,9 +1,12 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "sb.rocket.giovanniclient.mixin",
+  "package": "rocket.giovanniclient.giovanniclient.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "ClientIntentionPacketMixin",
+    "YggdrasilMinecraftSessionServiceMixin",
+    "YggdrasilServicesKeyInfoMixin"
   ],
   "injectors": {
     "defaultRequire": 1
