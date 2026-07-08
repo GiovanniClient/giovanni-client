@@ -7,18 +7,10 @@
  */
 package net.wimods.freecam;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.brigadier.Command;
-
-import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
@@ -35,6 +27,12 @@ import net.wimods.freecam.settings.SettingsFile;
 import net.wimods.freecam.util.EntityUtils;
 import net.wimods.freecam.util.PlausibleAnalytics;
 import net.wimods.freecam.util.RenderUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public enum WiFreecam
 {

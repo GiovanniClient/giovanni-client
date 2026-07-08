@@ -7,13 +7,13 @@
  */
 package net.wimods.freecam.util.json;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 
 /**
  * Custom version of {@link JsonArray} that only throws checked exceptions and

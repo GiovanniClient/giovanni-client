@@ -7,13 +7,12 @@
  */
 package net.wimods.freecam.clickgui;
 
-import org.lwjgl.glfw.GLFW;
-
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.wimods.freecam.WiFreecam;
 import net.wimods.freecam.settings.EnumSetting;
 import net.wimods.freecam.util.RenderUtils;
+import org.lwjgl.glfw.GLFW;
 
 public final class ComboBoxPopup<T extends Enum<T>> extends Popup
 {

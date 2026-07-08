@@ -7,16 +7,15 @@
  */
 package net.wimods.freecam.settings;
 
-import java.util.Objects;
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
-
 import net.wimods.freecam.WiFreecam;
 import net.wimods.freecam.clickgui.Component;
 import net.wimods.freecam.clickgui.components.ComboBoxComponent;
 import net.wimods.freecam.util.json.JsonUtils;
 import net.wimods.freecam.util.text.WText;
+
+import java.util.Objects;
 
 public class EnumSetting<T extends Enum<T>> extends Setting
 {

@@ -7,17 +7,6 @@
  */
 package net.wimods.freecam.clickgui.screens;
 
-import java.awt.Color;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-
-import javax.imageio.ImageIO;
-
-import net.wimods.freecam.mixin.ScreenAccessor;
-import org.lwjgl.glfw.GLFW;
-
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
@@ -30,9 +19,18 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.CommonColors;
+import net.wimods.freecam.mixin.ScreenAccessor;
 import net.wimods.freecam.settings.ColorSetting;
 import net.wimods.freecam.util.ColorUtils;
 import net.wimods.freecam.util.WurstColors;
+import org.lwjgl.glfw.GLFW;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
 
 public final class EditColorScreen extends Screen
 {

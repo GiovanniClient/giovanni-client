@@ -9,7 +9,6 @@ package net.wimods.freecam.settings;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
-
 import net.minecraft.util.Mth;
 import net.wimods.freecam.WiFreecam;
 import net.wimods.freecam.clickgui.Component;

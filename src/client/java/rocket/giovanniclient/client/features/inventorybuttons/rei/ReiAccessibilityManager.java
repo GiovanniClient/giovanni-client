@@ -2,10 +2,12 @@ package rocket.giovanniclient.client.features.inventorybuttons.rei;
 
 import me.shedaniel.rei.api.client.config.ConfigManager;
 import me.shedaniel.rei.api.client.config.ConfigObject;
+import rocket.giovanniclient.client.util.Utils;
 
 import java.lang.reflect.Field;
 
 public final class ReiAccessibilityManager {
+    private static boolean disableAttempted;
 
     private ReiAccessibilityManager() {}
 
@@ -17,7 +19,26 @@ public final class ReiAccessibilityManager {
      * This is kind of annoying and an issue for inventory buttons, so I would like to disable it... but there is no setter
      * for this setting in REI's config. So here's some unorthodox code to disable this feature
      */
-    public static boolean disableClickableRecipeArrows() {
+    public static void disableClickableRecipeArrowsIfNeeded() {
+        if (disableAttempted) {
+            return;
+        }
+
+        disableAttempted = true;
+
+        if (!areClickableRecipeArrowsEnabled()) {
+            Utils.debug("REI Clickable Recipe Arrows is already disabled.");
+            return;
+        }
+
+        if (disableClickableRecipeArrows()) {
+            Utils.debug("[REI] Clickable Recipe Arrows disabled successfully.");
+        } else {
+            Utils.debug("[REI] Failed to disable Clickable Recipe Arrows.");
+        }
+    }
+
+    private static boolean disableClickableRecipeArrows() {
         try {
             ConfigObject config = ConfigObject.getInstance();
 
@@ -36,8 +57,7 @@ public final class ReiAccessibilityManager {
             ConfigManager.getInstance().saveConfig();
             return true;
         } catch (Exception e) {
-            System.err.println("ReiAccessibilityManager crashed!");
-            e.printStackTrace();
+            Utils.error("ReiAccessibilityManager crashed while disabling clickable recipe arrows.", e);
             return false;
         }
     }

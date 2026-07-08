@@ -7,11 +7,11 @@
  */
 package net.wimods.freecam.util.text;
 
-import java.util.Map;
-import java.util.Objects;
-
 import net.wimods.freecam.FreecamTranslator;
 import net.wimods.freecam.WiFreecam;
+
+import java.util.Map;
+import java.util.Objects;
 
 public final class WTranslatedTextContent implements WTextContent
 {

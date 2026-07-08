@@ -7,12 +7,12 @@
  */
 package net.wimods.freecam;
 
-import java.util.ArrayList;
-
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.util.CommonColors;
 import net.wimods.freecam.clickgui.screens.ClickGuiScreen;
+
+import java.util.ArrayList;
 
 public final class FreecamHud
 {

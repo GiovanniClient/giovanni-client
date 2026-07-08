@@ -7,11 +7,11 @@
  */
 package net.wimods.freecam.clickgui;
 
-import java.util.stream.Stream;
-
 import net.minecraft.util.Mth;
 import net.wimods.freecam.WiFreecam;
 import net.wimods.freecam.settings.Setting;
+
+import java.util.stream.Stream;
 
 public final class SettingsWindow extends Window
 {

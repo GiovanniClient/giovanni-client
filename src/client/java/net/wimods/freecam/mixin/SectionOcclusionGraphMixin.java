@@ -7,16 +7,14 @@
  */
 package net.wimods.freecam.mixin;
 
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-
 import net.minecraft.client.renderer.SectionOcclusionGraph;
 import net.minecraft.client.renderer.chunk.SectionMesh;
 import net.minecraft.core.Direction;
 import net.wimods.freecam.WiFreecam;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(SectionOcclusionGraph.class)
 public class SectionOcclusionGraphMixin

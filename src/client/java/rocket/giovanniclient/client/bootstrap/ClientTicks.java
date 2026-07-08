@@ -1,11 +1,7 @@
 package rocket.giovanniclient.client.bootstrap;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.wimods.freecam.WiFreecam;
 import rocket.giovanniclient.client.config.ConfigManager;
-
-import static rocket.giovanniclient.client.bootstrap.ClientKeybinds.switchFreecamControlKey;
-import static rocket.giovanniclient.client.bootstrap.ClientKeybinds.toggleFreecam;
 
 public final class ClientTicks {
 

@@ -1,9 +1,11 @@
 package rocket.giovanniclient.client.bootstrap;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
+import net.fabricmc.loader.api.FabricLoader;
 import rocket.giovanniclient.client.GiovanniClientClient;
 import rocket.giovanniclient.client.config.ConfigManager;
 import rocket.giovanniclient.client.features.FeatureManager;
+import rocket.giovanniclient.client.features.inventorybuttons.rei.ReiAccessibilityManager;
 import rocket.giovanniclient.client.util.Utils;
 
 public final class ClientLifecycle {
@@ -18,6 +20,11 @@ public final class ClientLifecycle {
         ClientLifecycleEvents.CLIENT_STARTED.register(client -> {
             ConfigManager.init();
             Utils.init(ConfigManager.getConfig().debugConfig);
+
+            if (ConfigManager.getConfig().ibc.INV_BUTTONS_IN_CRAFTING_GRID
+                    && FabricLoader.getInstance().isModLoaded("roughlyenoughitems")) {
+                ReiAccessibilityManager.disableClickableRecipeArrowsIfNeeded();
+            }
 
             FeatureManager.registerAll();
 

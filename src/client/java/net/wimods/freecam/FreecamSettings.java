@@ -7,17 +7,17 @@
  */
 package net.wimods.freecam;
 
-import java.awt.Color;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import net.minecraft.util.Mth;
 import net.wimods.freecam.settings.CheckboxSetting;
 import net.wimods.freecam.settings.ColorSetting;
 import net.wimods.freecam.settings.Setting;
 import net.wimods.freecam.settings.SliderSetting;
 import net.wimods.freecam.settings.SliderSetting.ValueDisplay;
+
+import java.awt.*;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public final class FreecamSettings
 {

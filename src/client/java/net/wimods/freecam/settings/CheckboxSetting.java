@@ -9,7 +9,6 @@ package net.wimods.freecam.settings;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
-
 import net.wimods.freecam.WiFreecam;
 import net.wimods.freecam.clickgui.Component;
 import net.wimods.freecam.clickgui.components.CheckboxComponent;

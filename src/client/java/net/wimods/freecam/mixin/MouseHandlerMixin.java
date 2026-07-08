@@ -7,16 +7,14 @@
  */
 package net.wimods.freecam.mixin;
 
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
+import net.minecraft.client.MouseHandler;
+import net.minecraft.world.entity.player.Inventory;
+import net.wimods.freecam.WiFreecam;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
-
-import net.minecraft.client.MouseHandler;
-import net.minecraft.world.entity.player.Inventory;
-import net.wimods.freecam.WiFreecam;
 
 @Mixin(MouseHandler.class)
 public abstract class MouseHandlerMixin

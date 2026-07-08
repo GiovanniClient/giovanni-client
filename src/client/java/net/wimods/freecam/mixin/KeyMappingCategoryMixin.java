@@ -7,17 +7,16 @@
  */
 package net.wimods.freecam.mixin;
 
+import net.minecraft.client.KeyMapping;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.wimods.freecam.WiFreecam;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import net.minecraft.client.KeyMapping;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
-import net.wimods.freecam.WiFreecam;
 
 @Mixin(KeyMapping.Category.class)
 public class KeyMappingCategoryMixin

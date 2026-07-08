@@ -7,6 +7,21 @@
  */
 package net.wimods.freecam.clickgui;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.wimods.freecam.WiFreecam;
+import net.wimods.freecam.clickgui.screens.ClickGuiScreen;
+import net.wimods.freecam.settings.Setting;
+import net.wimods.freecam.util.RenderUtils;
+import net.wimods.freecam.util.json.JsonUtils;
+import org.joml.Matrix3x2fStack;
+import org.lwjgl.glfw.GLFW;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -18,23 +33,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
-
-import org.joml.Matrix3x2fStack;
-import org.lwjgl.glfw.GLFW;
-
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.input.MouseButtonEvent;
-import net.wimods.freecam.WiFreecam;
-import net.wimods.freecam.clickgui.screens.ClickGuiScreen;
-import net.wimods.freecam.settings.Setting;
-import net.wimods.freecam.util.RenderUtils;
-import net.wimods.freecam.util.json.JsonUtils;
 
 public final class ClickGui
 {
