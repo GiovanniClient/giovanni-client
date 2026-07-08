@@ -7,12 +7,12 @@
  */
 package net.wimods.freecam.util.json;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import java.util.Objects;
-
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 /**
  * Custom version of {@link JsonObject} that only throws checked exceptions and

@@ -7,6 +7,13 @@
  */
 package net.wimods.freecam.settings;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import net.wimods.freecam.WiFreecam;
+import net.wimods.freecam.util.json.JsonException;
+import net.wimods.freecam.util.json.JsonUtils;
+import net.wimods.freecam.util.json.WsonObject;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -14,14 +21,6 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
-import net.wimods.freecam.WiFreecam;
-import net.wimods.freecam.util.json.JsonException;
-import net.wimods.freecam.util.json.JsonUtils;
-import net.wimods.freecam.util.json.WsonObject;
 
 public final class SettingsFile
 {

@@ -7,11 +7,11 @@
  */
 package net.wimods.freecam.clickgui;
 
-import java.util.ArrayList;
-
 import net.minecraft.client.gui.Font;
 import net.minecraft.util.Mth;
 import net.wimods.freecam.WiFreecam;
+
+import java.util.ArrayList;
 
 public class Window
 {

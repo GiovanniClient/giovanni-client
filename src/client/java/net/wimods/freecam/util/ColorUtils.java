@@ -7,10 +7,10 @@
  */
 package net.wimods.freecam.util;
 
-import java.awt.Color;
-
 import net.minecraft.util.Mth;
 import net.wimods.freecam.util.json.JsonException;
+
+import java.awt.*;
 
 public enum ColorUtils
 {

@@ -7,19 +7,14 @@
  */
 package net.wimods.freecam.util.json;
 
+import com.google.gson.*;
+import com.google.gson.stream.MalformedJsonException;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.stream.MalformedJsonException;
 
 public enum JsonUtils
 {

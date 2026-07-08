@@ -7,12 +7,8 @@
  */
 package net.wimods.freecam.settings;
 
-import java.awt.Color;
-import java.util.Objects;
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
-
 import net.minecraft.util.Mth;
 import net.wimods.freecam.WiFreecam;
 import net.wimods.freecam.clickgui.Component;
@@ -21,6 +17,9 @@ import net.wimods.freecam.util.ColorUtils;
 import net.wimods.freecam.util.json.JsonException;
 import net.wimods.freecam.util.json.JsonUtils;
 import net.wimods.freecam.util.text.WText;
+
+import java.awt.*;
+import java.util.Objects;
 
 public final class ColorSetting extends Setting
 {

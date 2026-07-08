@@ -7,10 +7,6 @@
  */
 package net.wimods.freecam.clickgui.components;
 
-import java.util.Arrays;
-
-import org.lwjgl.glfw.GLFW;
-
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -21,6 +17,9 @@ import net.wimods.freecam.clickgui.ComboBoxPopup;
 import net.wimods.freecam.clickgui.Component;
 import net.wimods.freecam.settings.EnumSetting;
 import net.wimods.freecam.util.RenderUtils;
+import org.lwjgl.glfw.GLFW;
+
+import java.util.Arrays;
 
 public final class ComboBoxComponent<T extends Enum<T>> extends Component
 {

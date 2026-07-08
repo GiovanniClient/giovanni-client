@@ -7,17 +7,16 @@
  */
 package net.wimods.freecam.settings;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.StringJoiner;
-
 import com.google.gson.JsonElement;
-
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
 import net.wimods.freecam.WiFreecam;
 import net.wimods.freecam.clickgui.Component;
 import net.wimods.freecam.util.text.WText;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.StringJoiner;
 
 public abstract class Setting
 {

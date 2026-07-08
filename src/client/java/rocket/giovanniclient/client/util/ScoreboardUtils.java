@@ -5,7 +5,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.scores.*;
 
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;

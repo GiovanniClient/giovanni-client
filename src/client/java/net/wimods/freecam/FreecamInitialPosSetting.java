@@ -7,12 +7,12 @@
  */
 package net.wimods.freecam;
 
-import static net.wimods.freecam.WiFreecam.*;
-
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.wimods.freecam.settings.EnumSetting;
 import net.wimods.freecam.util.text.WText;
+
+import static net.wimods.freecam.WiFreecam.MC;
 
 public final class FreecamInitialPosSetting
 	extends EnumSetting<FreecamInitialPosSetting.InitialPosition>

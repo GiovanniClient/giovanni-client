@@ -7,13 +7,9 @@
  */
 package net.wimods.freecam.util;
 
-import org.joml.Matrix3x2f;
-import org.joml.Vector3f;
-
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.PoseStack.Pose;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-
 import net.minecraft.client.Camera;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
@@ -25,6 +21,8 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.wimods.freecam.WiFreecam;
 import net.wimods.freecam.WurstRenderLayers;
+import org.joml.Matrix3x2f;
+import org.joml.Vector3f;
 
 public enum RenderUtils
 {

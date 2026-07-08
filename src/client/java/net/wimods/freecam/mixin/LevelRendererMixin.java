@@ -7,22 +7,20 @@
  */
 package net.wimods.freecam.mixin;
 
+import com.mojang.blaze3d.buffers.GpuBufferSlice;
+import com.mojang.blaze3d.resource.GraphicsResourceAllocator;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.chunk.ChunkSectionsToRender;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.wimods.freecam.WiFreecam;
 import org.joml.Matrix4fc;
 import org.joml.Vector4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import com.mojang.blaze3d.buffers.GpuBufferSlice;
-import com.mojang.blaze3d.resource.GraphicsResourceAllocator;
-import com.mojang.blaze3d.vertex.PoseStack;
-
-import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.chunk.ChunkSectionsToRender;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
-import net.wimods.freecam.WiFreecam;
 
 @Mixin(LevelRenderer.class)
 public class LevelRendererMixin

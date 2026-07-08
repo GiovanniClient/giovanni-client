@@ -7,8 +7,6 @@
  */
 package net.wimods.freecam.clickgui.components;
 
-import org.lwjgl.glfw.GLFW;
-
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -18,6 +16,7 @@ import net.wimods.freecam.clickgui.ClickGuiIcons;
 import net.wimods.freecam.clickgui.Component;
 import net.wimods.freecam.settings.CheckboxSetting;
 import net.wimods.freecam.util.RenderUtils;
+import org.lwjgl.glfw.GLFW;
 
 public final class CheckboxComponent extends Component
 {

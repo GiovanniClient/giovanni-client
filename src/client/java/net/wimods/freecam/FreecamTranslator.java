@@ -7,20 +7,8 @@
  */
 package net.wimods.freecam;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.IllegalFormatException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.BiConsumer;
-
 import com.google.common.collect.Lists;
 import com.google.gson.JsonParseException;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.ClientLanguage;
 import net.minecraft.client.resources.language.I18n;
@@ -30,6 +18,11 @@ import net.minecraft.server.packs.repository.KnownPack;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+import java.util.function.BiConsumer;
 
 public final class FreecamTranslator implements ResourceManagerReloadListener
 {

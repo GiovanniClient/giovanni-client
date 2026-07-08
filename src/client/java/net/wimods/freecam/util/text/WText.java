@@ -7,11 +7,10 @@
  */
 package net.wimods.freecam.util.text;
 
-import java.util.ArrayList;
-
 import com.google.common.collect.Lists;
-
 import net.minecraft.network.chat.Component;
+
+import java.util.ArrayList;
 
 /**
  * Allows you to build more complex text out of multiple Wurst translations and

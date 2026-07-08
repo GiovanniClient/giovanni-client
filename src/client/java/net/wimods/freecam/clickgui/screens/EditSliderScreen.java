@@ -7,9 +7,6 @@
  */
 package net.wimods.freecam.clickgui.screens;
 
-import net.wimods.freecam.mixin.ScreenAccessor;
-import org.lwjgl.glfw.GLFW;
-
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
@@ -19,9 +16,11 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.CommonColors;
+import net.wimods.freecam.mixin.ScreenAccessor;
 import net.wimods.freecam.settings.SliderSetting;
 import net.wimods.freecam.settings.SliderSetting.ValueDisplay;
 import net.wimods.freecam.util.MathUtils;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 
