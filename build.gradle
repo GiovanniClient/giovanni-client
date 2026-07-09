@@ -70,6 +70,7 @@ java {
 jar {
     def projectName = project.name
     inputs.property "projectName", projectName
+    archiveFileName = "${project.archives_base_name}-${project.version}-mc${project.minecraft_version}.jar"
 
     from("LICENSE") {
         rename { "${it}_$projectName"}
