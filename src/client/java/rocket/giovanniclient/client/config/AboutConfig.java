@@ -18,12 +18,12 @@ public class AboutConfig extends Config {
     private long lastUpdateCheckClick = 0; // to cooldown update click checks
 
     @Expose
-    @ConfigOption(name = "Check for Updates", desc = "Automatically checks for updates once per startup")
+    @ConfigOption(name = "Check for Updates", desc = "Update check (§4CHECK ONLY!§r no auto update) on startup")
     @ConfigEditorBoolean
     public boolean AUTO_CHECK_FOR_UPDATES = true;
 
     @Expose
-    @ConfigOption(name = "RatterScanner check", desc = "Checking .jar safety via RatterScanner exposes your IP with them.")
+    @ConfigOption(name = "RatterScanner update check", desc = "Checking .jar safety via RatterScanner exposes your IP with them.")
     @ConfigEditorBoolean
     public boolean RATTER_SCANNER_CHECK = true;
 

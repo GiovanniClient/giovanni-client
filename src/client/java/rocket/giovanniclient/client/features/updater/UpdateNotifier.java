@@ -2,9 +2,13 @@ package rocket.giovanniclient.client.features.updater;
 
 import moe.nea.libautoupdate.UpdateData;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.toasts.SystemToast;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.sounds.SoundEvents;
 import rocket.giovanniclient.client.GiovanniClientClient;
 import rocket.giovanniclient.client.util.Utils;
 
@@ -17,7 +21,16 @@ public class UpdateNotifier {
                 .withStyle(style -> style.withClickEvent(new ClickEvent.OpenUrl(URI.create(GiovanniClientClient.RELEASES_URL))));
     }
 
-    private MutableComponent buildMessage(UpdateData data, RatterScannerChecker.SafetyStatus safetyStatus) {
+    private MutableComponent buildDownloadLine(RatterScannerChecker.SafetyStatus safetyStatus) {
+        MutableComponent prompt = safetyStatus == RatterScannerChecker.SafetyStatus.MALICIOUS
+                ? Component.literal("RatterScanner flagged this jar. Verify before downloading: ")
+                        .withStyle(ChatFormatting.DARK_RED, ChatFormatting.BOLD)
+                : Component.literal("GiovanniClient update: ").withStyle(ChatFormatting.GOLD);
+
+        return prompt.append(buildDownloadLink());
+    }
+
+    private MutableComponent buildUpdateToastBody(UpdateData data, RatterScannerChecker.SafetyStatus safetyStatus) {
         ChatFormatting statusColor = switch (safetyStatus) {
             case VERIFIED_SAFE -> ChatFormatting.GREEN;
             case MALICIOUS -> ChatFormatting.DARK_RED;
@@ -26,48 +39,48 @@ public class UpdateNotifier {
             default -> ChatFormatting.GRAY;
         };
 
-        MutableComponent downloadPrompt = safetyStatus == RatterScannerChecker.SafetyStatus.MALICIOUS
-                ? Component.literal("RatterScanner flagged this jar. Do not download it unless you verify the release yourself.\nRelease page: ")
-                        .withStyle(ChatFormatting.DARK_RED, ChatFormatting.BOLD)
-                : Component.literal("Download manually: ").withStyle(ChatFormatting.GRAY);
-
-        return Component.literal("\n\n====== GIOVANNI CLIENT ======\n").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD)
-                .append(Component.literal("\nNEW UPDATE AVAILABLE! ").withStyle(ChatFormatting.RED, ChatFormatting.BOLD))
-                .append(Component.literal("Version: ").withStyle(ChatFormatting.WHITE))
-                .append(Component.literal(data.getVersionName() + "\n").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD))
-                .append(Component.literal("RatterScanner: ").withStyle(ChatFormatting.WHITE))
-                .append(Component.literal(safetyStatus.getLabel() + "\n").withStyle(statusColor, ChatFormatting.BOLD))
-                .append(Component.literal("\nGiovanniClient will not download updates automatically.\n").withStyle(ChatFormatting.GRAY))
-                .append(downloadPrompt)
-                .append(buildDownloadLink())
-                .append(Component.literal("\n\n=========================").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD));
+        return Component.literal("Version ")
+                .append(Component.literal(data.getVersionName()).withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD))
+                .append(Component.literal(" - RatterScanner: ").withStyle(ChatFormatting.WHITE))
+                .append(Component.literal(safetyStatus.getLabel()).withStyle(statusColor, ChatFormatting.BOLD));
     }
 
-    private MutableComponent buildNoUpdatesMessage() {
-        return Component.literal("\nGiovanniClient is up to date! " + Utils.rocketEmoji).withStyle(ChatFormatting.GREEN);
-    }
-
-    private MutableComponent buildDifferentMcVersionMessage(UpdateData data) {
-        return Component.literal("\n\n====== GIOVANNI CLIENT ======\n").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD)
-                .append(Component.literal("\nUPDATE REQUIRES NEWER MINECRAFT!\n").withStyle(ChatFormatting.RED, ChatFormatting.BOLD))
-                .append(Component.literal("Update Version: ").withStyle(ChatFormatting.WHITE))
-                .append(Component.literal(data.getVersionName() + "\n").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD))
-                .append(Component.literal("\nPlease update Minecraft to use this update.\n").withStyle(ChatFormatting.GRAY))
-                .append(Component.literal(GiovanniClientClient.getMcVersion() + " is not supported anymore.\n").withStyle(ChatFormatting.GRAY))
-                .append(Component.literal("\nDownload manually: ").withStyle(ChatFormatting.GRAY))
-                .append(buildDownloadLink())
-                .append(Component.literal("\n===========================").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD));
+    private void showToast(Component title, Component message) {
+        Minecraft client = Minecraft.getInstance();
+        SystemToast.addOrUpdate(
+                client.getToastManager(),
+                SystemToast.SystemToastId.PERIODIC_NOTIFICATION,
+                title,
+                message
+        );
+        client.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.VILLAGER_TRADE, 1.0F));
     }
 
     public void sendUpdateForDifferentMcVersion(UpdateData data) {
-        Utils.mutableComponentToChat(buildDifferentMcVersionMessage(data));
+        showToast(
+                Component.literal("GiovanniClient Update").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD),
+                Component.literal("Version ")
+                        .append(Component.literal(data.getVersionName()).withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD))
+                        .append(Component.literal(" needs another Minecraft version.").withStyle(ChatFormatting.RED))
+        );
+        Utils.mutableComponentToChat(
+                Component.literal("GiovanniClient update for another MC version: ").withStyle(ChatFormatting.GOLD)
+                        .append(buildDownloadLink())
+        );
     }
 
     public void sendUpdateAvailable(UpdateData data, RatterScannerChecker.SafetyStatus safetyStatus) {
-        Utils.mutableComponentToChat(buildMessage(data, safetyStatus));
+        showToast(
+                Component.literal("GiovanniClient Update Available").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD),
+                buildUpdateToastBody(data, safetyStatus)
+        );
+        Utils.mutableComponentToChat(buildDownloadLine(safetyStatus));
     }
 
     public void sendNoUpdates() {
-        Utils.mutableComponentToChat(buildNoUpdatesMessage());
+        showToast(
+                Component.literal("GiovanniClient").withStyle(ChatFormatting.GREEN, ChatFormatting.BOLD),
+                Component.literal("You are up to date.").withStyle(ChatFormatting.GREEN)
+        );
     }
 }
