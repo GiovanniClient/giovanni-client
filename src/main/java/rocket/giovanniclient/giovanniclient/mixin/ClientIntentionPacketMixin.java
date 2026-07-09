@@ -4,7 +4,7 @@ import net.minecraft.network.protocol.handshake.ClientIntentionPacket;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
-import rocket.giovanniclient.giovanniclient.config.ProxyState;
+import rocket.giovanniclient.giovanniclient.config.ClientConfigState;
 
 @Mixin(ClientIntentionPacket.class)
 public class ClientIntentionPacketMixin {
@@ -18,6 +18,6 @@ public class ClientIntentionPacketMixin {
             index = 0
     )
     private String modifyHostName(String originalHost) {
-        return ProxyState.enabled ? "mc.hypixel.net" : originalHost;
+        return ClientConfigState.proxyEnabled ? "mc.hypixel.net" : originalHost;
     }
 }

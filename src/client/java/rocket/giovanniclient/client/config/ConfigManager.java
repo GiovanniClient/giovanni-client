@@ -7,7 +7,7 @@ import io.github.notenoughupdates.moulconfig.observer.Property;
 import io.github.notenoughupdates.moulconfig.processor.BuiltinMoulConfigGuis;
 import io.github.notenoughupdates.moulconfig.processor.ConfigProcessorDriver;
 import io.github.notenoughupdates.moulconfig.processor.MoulConfigProcessor;
-import rocket.giovanniclient.giovanniclient.config.ProxyState;
+import rocket.giovanniclient.giovanniclient.config.ClientConfigState;
 
 import java.io.File;
 import java.io.FileReader;
@@ -43,7 +43,8 @@ public class ConfigManager {
     public static void init() {
         CONFIG_FILE.getParentFile().mkdirs();
         loadConfig();
-        syncProxyState();
+        registerClientConfigStateObservers();
+        syncClientConfigState();
 
         processor = new MoulConfigProcessor<>(config);
         BuiltinMoulConfigGuis.addProcessors(processor);
@@ -76,7 +77,7 @@ public class ConfigManager {
     }
 
     public static void saveConfig() {
-        syncProxyState();
+        syncClientConfigState();
 
         try (FileWriter fw = new FileWriter(CONFIG_FILE)) {
             fw.write(GSON.toJson(config));
@@ -91,7 +92,7 @@ public class ConfigManager {
 
     public static void openConfigScreen() {
         if (editor == null) {
-            editor = new MoulConfigEditor<>(processor);
+            editor = new GiovanniConfigEditor(processor);
         }
         IMinecraft.getInstance().openWrappedScreen(editor);
     }
@@ -125,11 +126,38 @@ public class ConfigManager {
         }
     }
 
-    public static void syncProxyState() {
-        if (config != null && config.proxyConfig != null) {
-            ProxyState.enabled = config.proxyConfig.PROXY_TOGGLE;
-        } else {
-            ProxyState.enabled = false;
+    public static void syncClientConfigState() {
+        ClientConfigState.proxyEnabled = config != null
+                && config.proxyConfig != null
+                && Boolean.TRUE.equals(config.proxyConfig.PROXY_TOGGLE.get());
+        ClientConfigState.suppressYggdrasilWarnings = config != null
+                && config.debugConfig != null
+                && Boolean.TRUE.equals(config.debugConfig.YGGDRASIL.get());
+    }
+
+    private static void registerClientConfigStateObservers() {
+        if (config == null) {
+            return;
+        }
+
+        if (config.proxyConfig != null && config.proxyConfig.PROXY_TOGGLE != null) {
+            config.proxyConfig.PROXY_TOGGLE.addObserver((oldValue, newValue) -> syncClientConfigState());
+        }
+
+        if (config.debugConfig != null && config.debugConfig.YGGDRASIL != null) {
+            config.debugConfig.YGGDRASIL.addObserver((oldValue, newValue) -> syncClientConfigState());
+        }
+    }
+
+    private static class GiovanniConfigEditor extends MoulConfigEditor<MainConfig> {
+        private GiovanniConfigEditor(MoulConfigProcessor<MainConfig> processor) {
+            super(processor);
+        }
+
+        @Override
+        public void onAfterClose() {
+            super.onAfterClose();
+            saveConfig();
         }
     }
 }

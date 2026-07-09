@@ -10,7 +10,7 @@ import rocket.giovanniclient.client.features.AbstractFeature;
 
 public class CloseChocolateEggs extends AbstractFeature {
     @Unique
-    private final MiscConfig msc = ConfigManager.getConfig().msc;
+    private final MiscConfig msc = ConfigManager.getConfig().miscConfig;
     private final String[] eggNames = {"Breakfast Egg", "Brunch Egg", "Lunch Egg", "Déjeuner Egg", "Dinner Egg", "Supper Egg"};
 
     @Override

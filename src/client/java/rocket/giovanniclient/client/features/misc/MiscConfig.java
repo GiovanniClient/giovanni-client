@@ -10,4 +10,9 @@ public class MiscConfig {
     @ConfigOption(name = "No egg GUI", desc = "Automatically close chocolate egg GUI during Hoppity's hunt")
     @ConfigEditorBoolean
     public boolean CLOSE_EGGS = false;
+
+    @Expose
+    @ConfigOption(name = "No Text Shadows", desc = "Thanks Sciophobia!")
+    @ConfigEditorBoolean
+    public boolean NO_TEXT_SHADOWS = false;
 }

@@ -12,6 +12,10 @@ import com.mojang.authlib.yggdrasil.TextureUrlChecker;
 import com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService;
 import com.mojang.authlib.yggdrasil.response.MinecraftTexturesPayload;
 import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import rocket.giovanniclient.giovanniclient.config.ClientConfigState;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -28,12 +32,15 @@ public abstract class YggdrasilMinecraftSessionServiceMixin {
     @Final
     private ServicesKeySet servicesKeySet;
 
-    /**
-     * @author stopbuggingbeintellij
-     * @reason Suppress noisy texture payload decode/url validation logging.
-     */
-    @Overwrite
-    public MinecraftProfileTextures unpackTextures(final Property packedTextures) {
+    @Inject(method = "unpackTextures", at = @At("HEAD"), cancellable = true)
+    private void giovanni$unpackTexturesSilently(
+            final Property packedTextures,
+            final CallbackInfoReturnable<MinecraftProfileTextures> cir
+    ) {
+        if (!ClientConfigState.suppressYggdrasilWarnings) {
+            return;
+        }
+
         final String value = packedTextures.value();
         final SignatureState signatureState = this.getPropertySignatureStateSilent(packedTextures);
 
@@ -42,27 +49,30 @@ public abstract class YggdrasilMinecraftSessionServiceMixin {
             final String json = new String(Base64.getDecoder().decode(value), StandardCharsets.UTF_8);
             result = this.gson.fromJson(json, MinecraftTexturesPayload.class);
         } catch (final JsonParseException | IllegalArgumentException e) {
-            return MinecraftProfileTextures.EMPTY;
+            cir.setReturnValue(MinecraftProfileTextures.EMPTY);
+            return;
         }
 
         if (result == null || result.textures() == null || result.textures().isEmpty()) {
-            return MinecraftProfileTextures.EMPTY;
+            cir.setReturnValue(MinecraftProfileTextures.EMPTY);
+            return;
         }
 
         final Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> textures = result.textures();
         for (final Map.Entry<MinecraftProfileTexture.Type, MinecraftProfileTexture> entry : textures.entrySet()) {
             final String url = entry.getValue().getUrl();
             if (url == null || !TextureUrlChecker.isAllowedTextureDomain(url)) {
-                return MinecraftProfileTextures.EMPTY;
+                cir.setReturnValue(MinecraftProfileTextures.EMPTY);
+                return;
             }
         }
 
-        return new MinecraftProfileTextures(
+        cir.setReturnValue(new MinecraftProfileTextures(
                 textures.get(MinecraftProfileTexture.Type.SKIN),
                 textures.get(MinecraftProfileTexture.Type.CAPE),
                 textures.get(MinecraftProfileTexture.Type.ELYTRA),
                 signatureState
-        );
+        ));
     }
 
     @Unique

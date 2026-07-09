@@ -33,6 +33,6 @@
     "render.UndoInvisibilityMixin"
   ],
   "mixins": [
-    "SyncProxyConfig"
+    "FontMixin"
   ]
 }
