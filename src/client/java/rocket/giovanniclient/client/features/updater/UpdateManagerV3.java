@@ -19,8 +19,6 @@ public class UpdateManagerV3 {
         CHECKING,
         SAFETY_CHECKING,
         UPDATE_AVAILABLE,
-        INSTALLING,
-        INSTALLED,
         UP_TO_DATE
     }
 
@@ -29,7 +27,6 @@ public class UpdateManagerV3 {
     private final Supplier<AboutConfig> config;
 
     private final UpdateChecker checker;
-    private final UpdateInstaller installer;
     private final UpdateNotifier notifier;
 
     private volatile PotentialUpdate pendingUpdate;
@@ -45,7 +42,6 @@ public class UpdateManagerV3 {
                 GiovanniClientClient.getMcVersion(),
                 GiovanniClientClient.class
         );
-        this.installer = new UpdateInstaller();
         this.notifier = new UpdateNotifier();
     }
 
@@ -63,7 +59,7 @@ public class UpdateManagerV3 {
             return;
         }
 
-        // Allow re-checking from any completed state (IDLE, UP_TO_DATE, UPDATE_AVAILABLE, INSTALLED)
+        // Allow re-checking from any completed state (IDLE, UP_TO_DATE, UPDATE_AVAILABLE)
         if (!state.compareAndSet(currentState, State.CHECKING)) {
             Utils.log("Failed to start update check: state changed concurrently. Current state: " + state.get());
             return;
@@ -78,7 +74,7 @@ public class UpdateManagerV3 {
         checker.check()
                 .thenCompose(this::handleCheckResult)
                 .thenCompose(this::handleSafetyResult)
-                .thenCompose(this::handleNotifyAndInstall)
+                .thenCompose(this::handleNotify)
                 .exceptionally(ex -> {
                     state.set(State.IDLE);
                     Utils.log("Update flow failed: " + ex.getMessage());
@@ -157,7 +153,7 @@ public class UpdateManagerV3 {
                 });
     }
 
-    private CompletableFuture<Void> handleNotifyAndInstall(UpdateCheckResult result) {
+    private CompletableFuture<Void> handleNotify(UpdateCheckResult result) {
         if (result instanceof UpdateCheckResult.UpToDate) {
             Minecraft.getInstance().execute(notifier::sendNoUpdates);
             return CompletableFuture.completedFuture(null);
@@ -185,7 +181,7 @@ public class UpdateManagerV3 {
                     notifier.sendUpdateForDifferentMcVersion(update.getUpdate())
             );
             Utils.log("Notification sent (different MC version)");
-            Utils.log("Automatic installation blocked: Update requires different Minecraft version.");
+            Utils.log("Update requires a different Minecraft version. Manual download link shown.");
             return CompletableFuture.completedFuture(null);
         } else {
             Minecraft.getInstance().execute(() ->
@@ -194,63 +190,8 @@ public class UpdateManagerV3 {
             Utils.log("Notification sent");
         }
 
-        // Continue with normal update logic
-        if (isMalicious()) {
-            Utils.log("Automatic installation blocked: Update flagged as malicious.");
-            return CompletableFuture.completedFuture(null);
-        }
-
-        if (shouldAutoInstall()) {
-            Utils.log("Proceeding with automatic update installation.");
-            return install(update);
-        }
-
-        Utils.log("Update notification sent. Manual installation required.");
+        Utils.log("Update notification sent. Manual download required.");
         return CompletableFuture.completedFuture(null);
-    }
-
-    private boolean isMalicious() {
-        return safetyStatus == RatterScannerChecker.SafetyStatus.MALICIOUS;
-    }
-
-    private boolean shouldAutoInstall() {
-        return config.get().AUTO_DOWNLOAD_UPDATES;
-    }
-
-    // -------------------------
-    // Manual install (for command)
-    // -------------------------
-
-    public CompletableFuture<Void> manualInstall() {
-        if (pendingUpdate == null || pendingUpdateData == null) {
-            Utils.log("Manual install failed: " + "No pending update found.");
-            return CompletableFuture.completedFuture(null);
-        }
-
-        if (safetyStatus == RatterScannerChecker.SafetyStatus.MALICIOUS) {
-            Utils.log("Manual install blocked: File is malicious.");
-            return CompletableFuture.completedFuture(null);
-        }
-
-        return install(pendingUpdate);
-    }
-
-    private CompletableFuture<Void> install(PotentialUpdate update) {
-        state.set(State.INSTALLING);
-        Utils.log("Installing: " + update.getUpdate().getVersionName());
-
-        return installer.install(update)
-                .thenRun(() -> {
-                    Utils.log("Update installed successfully");
-                    state.set(State.INSTALLED);
-                    Minecraft.getInstance().execute(notifier::sendInstalled);
-                })
-                .exceptionally(ex -> {
-                    Utils.log("Installation failed: " + ex.getMessage());
-                    ex.printStackTrace();
-                    state.set(State.IDLE); // CRITICAL: Reset on failure
-                    return null;
-                });
     }
 
     public void sendUpdateFoundMessage() {
@@ -258,20 +199,11 @@ public class UpdateManagerV3 {
         notifier.sendUpdateAvailable(pendingUpdateData, safetyStatus);
     }
 
-    public void cleanup() {
-        Utils.log("Cleaning up UpdateManager resources.");
-        checker.cleanup();
-    }
-
     // -------------------------
     // State Queries
     // -------------------------
 
     public boolean hasUpdate() { return pendingUpdate != null; }
-
-    public boolean isUpdateScheduled() {
-        return state.get() == State.INSTALLED;
-    }
 
     public State getState() { return state.get(); }
 

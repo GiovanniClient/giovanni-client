@@ -6,6 +6,7 @@ import rocket.giovanniclient.client.config.ConfigManager;
 import rocket.giovanniclient.client.util.Utils;
 
 public final class ClientWorldJoinEvents {
+    private static boolean startupUpdateCheckDone;
 
     private ClientWorldJoinEvents() {}
 
@@ -13,6 +14,12 @@ public final class ClientWorldJoinEvents {
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
             Utils.debug("Player joined world.");
 
+            if (startupUpdateCheckDone) {
+                Utils.log("Startup update check skipped: already checked this session.");
+                return;
+            }
+
+            startupUpdateCheckDone = true;
             updateCheckOnStartup();
         });
     }

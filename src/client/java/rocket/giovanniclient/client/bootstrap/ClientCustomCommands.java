@@ -37,7 +37,7 @@ public final class ClientCustomCommands {
 
     public static void registerSafemode() {
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
-            //registerUpdateCommands(dispatcher);
+            slash_giovanniUpdates(dispatcher);
         });
     }
 
@@ -112,12 +112,6 @@ public final class ClientCustomCommands {
         dispatcher.register(ClientCommands.literal("giovanni-check-update")
                 .executes(context -> {
                     UPDATE_MANAGER.runUpdateFlow();
-                    return 1;
-                })
-        );
-        dispatcher.register(ClientCommands.literal("giovanni-do-update")
-                .executes(context -> {
-                    UPDATE_MANAGER.manualInstall();
                     return 1;
                 })
         );

@@ -22,8 +22,4 @@ public class UpdateChecker {
             return new UpdateCheckResult.UpToDate();
         });
     }
-
-    public void cleanup() {
-        updater.cleanup();
-    }
 }

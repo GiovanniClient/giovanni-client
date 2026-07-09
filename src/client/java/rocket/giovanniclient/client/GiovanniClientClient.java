@@ -22,6 +22,8 @@ public final class GiovanniClientClient implements ClientModInitializer {
 
     public static final String MOD_ID = "giovanniclient";
     public static final String MOD_VERSION = getModVersion();
+    public static final String RELEASES_URL = "https://github.com/GiovanniClient/giovanni-client/releases/latest";
+    private static boolean unsupportedVersionWarningShown;
 
     /**
      * ALSO UPDATE {@link GiovanniMixinPlugin}
@@ -36,7 +38,6 @@ public final class GiovanniClientClient implements ClientModInitializer {
         // Allows the mod to run on any minecraft version, but loads the features only on supported ones
         // This way we can run the updater on versions the mod was not compiled for
         String currentMcVersion = getMcVersion();
-        UPDATE_MANAGER.cleanup();
 
         if (isCurrentVersionSupported()) {
             runFullInit();
@@ -66,6 +67,9 @@ public final class GiovanniClientClient implements ClientModInitializer {
 
         // inform the user they are running on unsupported minecraft version - pops up when they join a world
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
+            if (unsupportedVersionWarningShown) return;
+            unsupportedVersionWarningShown = true;
+
             MutableComponent warningMessage = Component.literal("\n\n\n===== ").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD)
                     .append(Component.literal("GIOVANNI CLIENT").withStyle(ChatFormatting.AQUA, ChatFormatting.BOLD))
                     .append(Component.literal(" =====\n").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD))
