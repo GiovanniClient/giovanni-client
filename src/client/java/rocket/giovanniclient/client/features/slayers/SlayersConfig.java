@@ -35,7 +35,13 @@ public class SlayersConfig {
     }
 
     @Expose
-    @ConfigOption(name = "No Thunderlord/Thunderbolt sounds", desc = "")
-    @ConfigEditorBoolean
-    public boolean NO_THUNDER_SOUNDS = false;
+    @Accordion
+    @ConfigOption(name = "Inferno Demonlord", desc = "")
+    public BlazeAccordion blaze = new BlazeAccordion();
+    public static class BlazeAccordion {
+        @Expose
+        @ConfigOption(name = "No Blaze Particles", desc = "Blocks annoying particles in Smoldering Tomb.")
+        @ConfigEditorBoolean
+        public boolean NO_BLAZE_PARTICLES = false;
+    }
 }

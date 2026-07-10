@@ -146,17 +146,17 @@ public class EditModeOverlay extends AbstractOverlay {
         commandField.setFocused(false);
         iconField.setFocused(false);
 
-        if (OverlayManager.isHoveringReiEntryList(mx, my)) {
-            return false;
-        }
-
-        // 4. Handle slot selection
+        // 4. Handle slot selection before letting REI consume clicks.
         for (LayoutManager slot : LayoutManager.getAvailableSlots()) {
             if (isMouseOverSlot(slot, mx, my)) {
                 this.selectedSlotId = slot.id();
                 loadDataIntoFields();
                 return true; // Consume the click
             }
+        }
+
+        if (OverlayManager.isHoveringReiEntryList(mx, my)) {
+            return false;
         }
 
         return false;

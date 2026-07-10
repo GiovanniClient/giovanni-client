@@ -66,10 +66,7 @@ public final class FreecamSettings
 	public final CheckboxSetting reloadChunks =
 		new CheckboxSetting("Reload chunks",
 			"description.wurst.setting.freecam.reload_chunks", true);
-	
-	public final CheckboxSetting excludeFromStats = new CheckboxSetting(
-		"Exclude me from statistics",
-		"description.wurst.setting.freecam.exclude_me_from_statistics", false);
+
 	
 	public FreecamSettings()
 	{
@@ -85,7 +82,6 @@ public final class FreecamSettings
 		add(hideHand);
 		add(disableOnDamage);
 		add(reloadChunks);
-		add(excludeFromStats);
 	}
 	
 	private void add(Setting setting)

@@ -71,19 +71,33 @@ public class UpdateManagerV3 {
         pendingUpdateData = null;
         safetyStatus = RatterScannerChecker.SafetyStatus.UNCHECKED;
 
-        checker.check()
+        checker.checkSafely()
+                .thenCompose(this::handleCheckOutcome)
                 .thenCompose(this::handleCheckResult)
                 .thenCompose(this::handleSafetyResult)
                 .thenCompose(this::handleNotify)
                 .exceptionally(ex -> {
                     state.set(State.IDLE);
                     Utils.log("Update flow failed: " + ex.getMessage());
-                    ex.printStackTrace();
                     return null;
                 });
     }
 
+    private CompletableFuture<UpdateCheckResult> handleCheckOutcome(UpdateChecker.UpdateCheckOutcome outcome) {
+        if (outcome.failed()) {
+            state.set(State.IDLE);
+            Utils.log("Update check skipped: GitHub releases could not be reached.");
+            return CompletableFuture.completedFuture(null);
+        }
+
+        return CompletableFuture.completedFuture(outcome.result());
+    }
+
     private CompletableFuture<UpdateCheckResult> handleCheckResult(UpdateCheckResult result) {
+        if (result == null) {
+            return CompletableFuture.completedFuture(null);
+        }
+
         Utils.log("Current Mod Version: " + GiovanniClientClient.MOD_VERSION);
         Utils.log("Current MC Version: " + GiovanniClientClient.getMcVersion());
 
@@ -114,6 +128,10 @@ public class UpdateManagerV3 {
     }
 
     private CompletableFuture<UpdateCheckResult> handleSafetyResult(UpdateCheckResult result) {
+        if (result == null) {
+            return CompletableFuture.completedFuture(null);
+        }
+
         // Extract update from either type
         PotentialUpdate update = null;
         if (result instanceof UpdateCheckResult.UpdateAvailable(PotentialUpdate u)) {
@@ -154,6 +172,10 @@ public class UpdateManagerV3 {
     }
 
     private CompletableFuture<Void> handleNotify(UpdateCheckResult result) {
+        if (result == null) {
+            return CompletableFuture.completedFuture(null);
+        }
+
         if (result instanceof UpdateCheckResult.UpToDate) {
             Minecraft.getInstance().execute(notifier::sendNoUpdates);
             return CompletableFuture.completedFuture(null);

@@ -16,10 +16,12 @@ public class PlayerLocator extends AbstractFeature {
         tick++;
 
         if (tick % 60 == 0) {
-            if (ScoreboardUtils.scoreboardContainsRaw("⏣")) {
-                setPlayerLocation(stripLeadingSymbols(ScoreboardUtils.getRawLineContaining("⏣")));
+            if (ScoreboardUtils.scoreboardContainsRaw("\uE067")) { // new character after texture pack change
+                setPlayerLocation(stripLeadingSymbols(ScoreboardUtils.getRawLineContaining("\uE067")));
             } else if (ScoreboardUtils.scoreboardContainsRaw("ф")) { // rift
                 setPlayerLocation(stripLeadingSymbols(ScoreboardUtils.getRawLineContaining("ф")));
+            } else if (ScoreboardUtils.scoreboardContainsRaw("⏣")) {
+                setPlayerLocation(stripLeadingSymbols(ScoreboardUtils.getRawLineContaining("⏣")));
             } else setPlayerLocation("None");
 
             if (TabListUtils.tabContainsRaw("Area")) {
@@ -47,7 +49,7 @@ public class PlayerLocator extends AbstractFeature {
     private void setPlayerArea(String area) { CURRENT_PLAYER_AREA = area; }
 
     public static String stripLeadingSymbols(String input) {
-        return input.replaceFirst("^[\\s\\p{So}ф]+", "");
+        return input.replaceFirst("^[\\s\\p{So}\\p{Co}ф]+", "");
     }
 
     public static boolean isPlayerIn(String loc) {

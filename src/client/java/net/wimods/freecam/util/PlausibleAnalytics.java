@@ -121,7 +121,7 @@ public final class PlausibleAnalytics
 	
 	public boolean isEnabled()
 	{
-		return !WiFreecam.INSTANCE.getSettings().excludeFromStats.isChecked();
+		return true;
 	}
 	
 	private boolean isDebugMode()
