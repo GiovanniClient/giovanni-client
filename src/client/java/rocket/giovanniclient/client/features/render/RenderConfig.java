@@ -13,24 +13,14 @@ public class RenderConfig {
     public RenderEntitiesAccordion renderEntitiesAccordion = new RenderEntitiesAccordion();
     public static class RenderEntitiesAccordion {
         @Expose
-        @ConfigOption(name = "Make Fel Visible", desc = "")
+        @ConfigOption(name = "Dungeon ESP", desc = "Highlights fels, shadow assassins, and starred mobs in Dungeons.")
         @ConfigEditorBoolean
-        public boolean FEL_VISIBLE_TOGGLE = false;
+        public boolean DUNGEON_ESP = false;
 
         @Expose
-        @ConfigOption(name = "Shadow Assassin ESP", desc = "")
+        @ConfigOption(name = "Frozen Corpses ESP", desc = "Highlights corpses in tunnels.")
         @ConfigEditorBoolean
-        public boolean SHADOW_ASSASSIN_VISIBLE_TOGGLE = false;
-
-        @Expose
-        @ConfigOption(name = "Starred Mob ESP", desc = "Glowing on starred mobs (✯) in Dungeons.")
-        @ConfigEditorBoolean
-        public boolean STARRED_MOB_ESP = false;
-
-        @Expose
-        @ConfigOption(name = "Mineshaft Armor Stand ESP", desc = "Highlights Mineshaft armor stands by chestplate.")
-        @ConfigEditorBoolean
-        public boolean MINESHAFT_ARMOR_STAND_ESP = false;
+        public boolean MINESHAFT_CORPSES_ESP = false;
 
         @Expose
         @ConfigOption(name = "No Lightning Bolts", desc = "No Lightning bolts rendered, but you can still hear the thunders.")
@@ -44,14 +34,9 @@ public class RenderConfig {
     public CameraAccordion cameraAccordion = new CameraAccordion();
     public static class CameraAccordion {
         @Expose
-        @ConfigOption(name = "No Blindness Effect", desc = "")
+        @ConfigOption(name = "No Fog Effects", desc = "Removes fog, blindness, and darkness effects.")
         @ConfigEditorBoolean
-        public boolean NO_BLINDNESS = false;
-
-        @Expose
-        @ConfigOption(name = "No Darkness Effect", desc = "")
-        @ConfigEditorBoolean
-        public boolean NO_DARKNESS = false;
+        public boolean NO_FOG_EFFECTS = false;
 
         @Expose
         @ConfigOption(name = "No Nausea Effect", desc = "")
@@ -59,25 +44,10 @@ public class RenderConfig {
         public boolean NO_NAUSEA = false;
 
         @Expose
-        @ConfigOption(name = "No Fire Overlay", desc = "i can't see sh*t when i'm on fire!")
+        @ConfigOption(name = "No Camera Overlays", desc = "Removes fire, in-wall, and pumpkin overlays.")
         @ConfigEditorBoolean
-        public boolean NO_FIRE_OVERLAY = false;
-
-        @Expose
-        @ConfigOption(name = "No In-Wall overlay", desc = "stop rendering a flat texture when you've got a block on your head")
-        @ConfigEditorBoolean
-        public boolean NO_BLOCK_OVERLAY = false;
-
-        @Expose
-        @ConfigOption(name = "No Pumpkin Overlay", desc = "")
-        @ConfigEditorBoolean
-        public boolean NO_PUMPKIN_OVERLAY = false;
+        public boolean NO_CAMERA_OVERLAYS = false;
     }
-
-    @Expose
-    @ConfigOption(name = "No Fog", desc = "also makes you see better underwater/lava and when you've got blindness/darkness")
-    @ConfigEditorBoolean
-    public boolean NO_FOG = false;
 
     @Expose
     @ConfigOption(name = "No Hurtcam", desc = "")

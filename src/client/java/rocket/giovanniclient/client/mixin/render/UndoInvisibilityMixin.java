@@ -33,14 +33,14 @@ public abstract class UndoInvisibilityMixin {
         }
 
         // Fel → mob
-        if (rc.FEL_VISIBLE_TOGGLE && entity instanceof EnderMan) {
+        if (rc.DUNGEON_ESP && entity instanceof EnderMan) {
             if (!currentLocation.contains("Catacombs")) return;
             cir.setReturnValue(false);
             return;
         }
 
         // Shadow Assassin → player
-        if (rc.SHADOW_ASSASSIN_VISIBLE_TOGGLE && entity instanceof Player) {
+        if (rc.DUNGEON_ESP && entity instanceof Player) {
             if (!currentLocation.contains("Catacombs")) return;
             cir.setReturnValue(false);
             return;

@@ -1,26 +1,22 @@
 package rocket.giovanniclient.client.mixin.render;
 
-import com.mojang.blaze3d.buffers.GpuBuffer;
-import com.mojang.blaze3d.buffers.GpuBufferSlice;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import net.minecraft.client.renderer.fog.FogRenderer;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.objectweb.asm.Opcodes;
+import rocket.giovanniclient.client.config.ConfigManager;
+import rocket.giovanniclient.client.config.MainConfig;
 
 @Mixin(FogRenderer.class)
 public class NoFogMixin {
 
-    @Final
-    @Shadow
-    private GpuBuffer emptyBuffer;
-
-    @Inject(method = "getBuffer", at = @At("HEAD"), cancellable = true)
-    private void noFog(FogRenderer.FogMode mode, CallbackInfoReturnable<GpuBufferSlice> cir) {
-
-        // ritorna buffer vuoto SEMPRE
-        cir.setReturnValue((emptyBuffer.slice(0L, FogRenderer.FOG_UBO_SIZE)));
+    @ModifyExpressionValue(
+            method = "getBuffer",
+            at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/fog/FogRenderer;fogEnabled:Z", opcode = Opcodes.GETSTATIC)
+    )
+    private boolean giovanni$disableFogWhenConfigured(boolean original) {
+        MainConfig config = ConfigManager.getConfig();
+        return original && (config == null || config.rc == null || config.rc.cameraAccordion == null || !config.rc.cameraAccordion.NO_FOG_EFFECTS);
     }
 }

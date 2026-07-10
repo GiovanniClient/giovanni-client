@@ -14,11 +14,11 @@ import rocket.giovanniclient.client.config.ConfigManager;
 public class NoCameraOverlaysMixin {
     @Inject(method = "renderFire", at = @At("HEAD"), cancellable = true)
     private static void giovanni$renderFireOverlay(PoseStack poseStack, MultiBufferSource bufferSource, TextureAtlasSprite sprite, CallbackInfo ci) {
-        if (ConfigManager.getConfig().rc.cameraAccordion.NO_FIRE_OVERLAY) ci.cancel();
+        if (ConfigManager.getConfig().rc.cameraAccordion.NO_CAMERA_OVERLAYS) ci.cancel();
     }
 
     @Inject(method = "renderTex", at = @At("HEAD"), cancellable = true)
     private static void giovanni$renderInWallOverlay(TextureAtlasSprite sprite, PoseStack poseStack, MultiBufferSource bufferSource, CallbackInfo ci) {
-        if (ConfigManager.getConfig().rc.cameraAccordion.NO_BLOCK_OVERLAY) ci.cancel();
+        if (ConfigManager.getConfig().rc.cameraAccordion.NO_CAMERA_OVERLAYS) ci.cancel();
     }
 }

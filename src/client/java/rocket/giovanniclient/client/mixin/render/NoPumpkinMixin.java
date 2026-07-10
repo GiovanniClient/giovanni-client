@@ -17,7 +17,7 @@ public class NoPumpkinMixin {
     )
     private boolean giovanni$shouldRenderOverlay(Gui instance, GuiGraphicsExtractor graphics, Identifier texture, float alpha) {
         // check for Pumpkin Blur, the texture is "textures/misc/pumpkinblur.png"
-        if (ConfigManager.getConfig().rc.cameraAccordion.NO_PUMPKIN_OVERLAY && texture.getPath().contains("pumpkinblur")) {
+        if (ConfigManager.getConfig().rc.cameraAccordion.NO_CAMERA_OVERLAYS && texture.getPath().contains("pumpkinblur")) {
             return false; // Don't render
         }
 

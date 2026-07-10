@@ -38,7 +38,7 @@ public class StarredMobESP extends AbstractFeature {
 
         var rc = ConfigManager.getConfig().rc.renderEntitiesAccordion;
 
-        if (!rc.STARRED_MOB_ESP || !isInCatacombs()) {
+        if (!rc.DUNGEON_ESP || !isInCatacombs()) {
             clearPreviouslyApplied();
             desired.clear();
             previouslyApplied.clear();

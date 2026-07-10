@@ -35,7 +35,7 @@ public class MineshaftArmorStandESP extends AbstractFeature {
 
         var rc = ConfigManager.getConfig().rc.renderEntitiesAccordion;
 
-        if (!rc.MINESHAFT_ARMOR_STAND_ESP || !PlayerLocator.isPlayerIn("Mineshaft")) {
+        if (!rc.MINESHAFT_CORPSES_ESP || !PlayerLocator.isPlayerIn("Mineshaft")) {
             clearApplied();
             return;
         }
