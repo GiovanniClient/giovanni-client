@@ -15,4 +15,8 @@ public class FunConfig {
     @ConfigEditorBoolean
     public boolean TROLL_FEATURES = true;
 
+    @Expose
+    @ConfigOption(name = "3D Rats", desc = "Replaces Hypixel rat armor stand heads with a small 3D rat model.")
+    @ConfigEditorBoolean
+    public boolean RENDER_3D_RATS = true;
 }

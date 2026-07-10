@@ -9,6 +9,7 @@ import rocket.giovanniclient.client.features.autosolvers.AutoMelody;
 import rocket.giovanniclient.client.features.autosolvers.AutoShardsClaim;
 import rocket.giovanniclient.client.features.misc.CloseChocolateEggs;
 import rocket.giovanniclient.client.features.render.MineshaftArmorStandESP;
+import rocket.giovanniclient.client.features.render.RatReplacer;
 import rocket.giovanniclient.client.features.render.StarredMobESP;
 import rocket.giovanniclient.client.features.rift.AutoAgaricusCap;
 import rocket.giovanniclient.client.features.slayers.blaze.BlazeShieldHighlight;
@@ -42,6 +43,7 @@ public class FeatureManager {
 
         register(new StarredMobESP());
         register(new MineshaftArmorStandESP());
+        register(new RatReplacer());
 
         ScreenEvents.AFTER_INIT.register((client, screen, width, height) -> {
             for (AbstractFeature f : FEATURES)

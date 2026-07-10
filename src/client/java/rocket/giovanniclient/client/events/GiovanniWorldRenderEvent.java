@@ -10,6 +10,8 @@ import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector4f;
+import rocket.giovanniclient.client.features.render.GlbRatModel;
+import rocket.giovanniclient.client.features.render.RatReplacer;
 import rocket.giovanniclient.client.features.slayers.blaze.BlazeShieldHighlight;
 
 public class GiovanniWorldRenderEvent {
@@ -31,7 +33,14 @@ public class GiovanniWorldRenderEvent {
             drawFilled(box.box(), box.fillArgb());
             drawOutline(box.box(), box.outlineArgb());
         }
+        for (RatReplacer.RatRenderData rat : RatReplacer.getRenderData(tickProgress)) {
+            drawRat(rat);
+        }
         IMMEDIATE.endBatch();
+    }
+
+    private void drawRat(RatReplacer.RatRenderData rat) {
+        GlbRatModel.render(matrices, IMMEDIATE, rat, camera.pos);
     }
 
     private void drawFilled(AABB box, int color) {
