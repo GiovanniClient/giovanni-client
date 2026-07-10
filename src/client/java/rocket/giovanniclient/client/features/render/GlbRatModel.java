@@ -37,9 +37,9 @@ public final class GlbRatModel {
         this.vertices = vertices;
     }
 
-    public static boolean render(PoseStack matrices, MultiBufferSource.BufferSource buffers, RatReplacer.RatRenderData rat, Vec3 cameraPosition) {
+    public static void render(PoseStack matrices, MultiBufferSource.BufferSource buffers, RatReplacer.RatRenderData rat, Vec3 cameraPosition) {
         GlbRatModel model = get();
-        if (model == null) return false;
+        if (model == null) return;
 
         matrices.pushPose();
         matrices.translate(rat.position().x() - cameraPosition.x(), rat.position().y() - cameraPosition.y() + 1.38, rat.position().z() - cameraPosition.z());
@@ -58,7 +58,6 @@ public final class GlbRatModel {
         }
 
         matrices.popPose();
-        return true;
     }
 
     private static GlbRatModel get() {
@@ -74,7 +73,10 @@ public final class GlbRatModel {
     }
 
     private static GlbRatModel load() throws IOException {
-        byte[] data = Minecraft.getInstance().getResourceManager().open(MODEL_ID).readAllBytes();
+        byte[] data;
+        try (var stream = Minecraft.getInstance().getResourceManager().open(MODEL_ID)) {
+            data = stream.readAllBytes();
+        }
         ByteBuffer glb = ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN);
         if (glb.getInt() != 0x46546C67) {
             throw new IOException("Invalid GLB magic");

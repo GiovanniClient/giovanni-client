@@ -14,6 +14,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.storage.TagValueOutput;
 import rocket.giovanniclient.client.config.ConfigManager;
 import rocket.giovanniclient.client.features.inventorybuttons.EditModeState;
+import rocket.giovanniclient.client.features.render.PlayerTracer;
 import rocket.giovanniclient.client.features.updater.RatterScannerChecker;
 import rocket.giovanniclient.client.util.ScoreboardUtils;
 import rocket.giovanniclient.client.util.TabListUtils;
@@ -35,6 +36,7 @@ public final class ClientCustomCommands {
             slash_dumpsidebar(dispatcher);
             slash_dumptab(dispatcher);
             slash_dumpentities(dispatcher);
+            slash_tracer(dispatcher);
             slash_ratterscannertestsha256(dispatcher);
         });
     }
@@ -152,6 +154,38 @@ public final class ClientCustomCommands {
 
             return count > 0 ? 1 : 0;
         }));
+    }
+
+    private static void slash_tracer(CommandDispatcher<FabricClientCommandSource> dispatcher) {
+        String[] aliases = {"tracer", "tracker"};
+
+        for (String alias : aliases) {
+            dispatcher.register(ClientCommands.literal(alias)
+                    .executes(context -> {
+                        context.getSource().sendFeedback(Component.literal("§eUsage: /" + alias + " <on|off|name>"));
+                        return 0;
+                    })
+                    .then(ClientCommands.argument("target", StringArgumentType.greedyString())
+                            .executes(context -> {
+                                String target = StringArgumentType.getString(context, "target").trim();
+                                if (target.equalsIgnoreCase("on")) {
+                                    PlayerTracer.trackAll();
+                                    context.getSource().sendFeedback(Component.literal("§aTracking all players."));
+                                    return 1;
+                                }
+
+                                if (target.equalsIgnoreCase("off")) {
+                                    PlayerTracer.stop();
+                                    context.getSource().sendFeedback(Component.literal("§cPlayer tracer disabled."));
+                                    return 1;
+                                }
+
+                                PlayerTracer.trackName(target);
+                                context.getSource().sendFeedback(Component.literal("§aTracking players containing: §f" + target));
+                                return 1;
+                            }))
+            );
+        }
     }
 
 

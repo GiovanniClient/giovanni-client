@@ -4,6 +4,8 @@ import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
@@ -11,6 +13,8 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector4f;
 import rocket.giovanniclient.client.features.render.GlbRatModel;
+import rocket.giovanniclient.client.features.render.GiovanniRenderLayers;
+import rocket.giovanniclient.client.features.render.PlayerTracer;
 import rocket.giovanniclient.client.features.render.RatReplacer;
 import rocket.giovanniclient.client.features.slayers.blaze.BlazeShieldHighlight;
 
@@ -36,6 +40,7 @@ public class GiovanniWorldRenderEvent {
         for (RatReplacer.RatRenderData rat : RatReplacer.getRenderData(tickProgress)) {
             drawRat(rat);
         }
+        drawPlayerTracers(tickProgress);
         IMMEDIATE.endBatch();
     }
 
@@ -81,6 +86,60 @@ public class GiovanniWorldRenderEvent {
         drawLine(new Vec3(minX, maxY, maxZ), new Vec3(maxX, maxY, maxZ), consumer, color);
         drawLine(new Vec3(maxX, minY, maxZ), new Vec3(maxX, maxY, maxZ), consumer, color);
         drawLine(new Vec3(maxX, maxY, minZ), new Vec3(maxX, maxY, maxZ), consumer, color);
+    }
+
+    private void drawPlayerTracers(float tickProgress) {
+        Minecraft client = Minecraft.getInstance();
+        if (!PlayerTracer.isEnabled() || client.level == null || client.player == null) return;
+
+        int color = 0x80FFFFFF;
+        Vec3 tracerStart = camera.pos.add(Vec3.directionFromRotation(
+                client.gameRenderer.getMainCamera().xRot(),
+                client.gameRenderer.getMainCamera().yRot()
+        ).scale(10));
+        for (AbstractClientPlayer player : client.level.players()) {
+            if (player == client.player || !PlayerTracer.matches(player)) continue;
+
+            AABB rawBox = getLerpedBox(player, tickProgress);
+            VertexConsumer consumer = IMMEDIATE.getBuffer(GiovanniRenderLayers.TRACER_LINES);
+            drawOutline(rawBox.move(0, 0.05, 0).inflate(0.05), consumer, color);
+            drawLine(tracerStart, rawBox.getCenter(), consumer, color);
+        }
+    }
+
+    private void drawOutline(AABB box, VertexConsumer consumer, int color) {
+        double minX = box.minX;
+        double minY = box.minY;
+        double minZ = box.minZ;
+        double maxX = box.maxX;
+        double maxY = box.maxY;
+        double maxZ = box.maxZ;
+
+        drawLine(new Vec3(minX, minY, minZ), new Vec3(maxX, minY, minZ), consumer, color);
+        drawLine(new Vec3(minX, minY, minZ), new Vec3(minX, maxY, minZ), consumer, color);
+        drawLine(new Vec3(minX, minY, minZ), new Vec3(minX, minY, maxZ), consumer, color);
+        drawLine(new Vec3(maxX, minY, minZ), new Vec3(maxX, maxY, minZ), consumer, color);
+        drawLine(new Vec3(maxX, maxY, minZ), new Vec3(minX, maxY, minZ), consumer, color);
+        drawLine(new Vec3(minX, maxY, minZ), new Vec3(minX, maxY, maxZ), consumer, color);
+        drawLine(new Vec3(minX, maxY, maxZ), new Vec3(minX, minY, maxZ), consumer, color);
+        drawLine(new Vec3(minX, minY, maxZ), new Vec3(maxX, minY, maxZ), consumer, color);
+        drawLine(new Vec3(maxX, minY, maxZ), new Vec3(maxX, minY, minZ), consumer, color);
+        drawLine(new Vec3(minX, maxY, maxZ), new Vec3(maxX, maxY, maxZ), consumer, color);
+        drawLine(new Vec3(maxX, minY, maxZ), new Vec3(maxX, maxY, maxZ), consumer, color);
+        drawLine(new Vec3(maxX, maxY, minZ), new Vec3(maxX, maxY, maxZ), consumer, color);
+    }
+
+    private AABB getLerpedBox(AbstractClientPlayer player, float tickProgress) {
+        if (player.isRemoved()) return player.getBoundingBox();
+
+        double x = lerp(tickProgress, player.xOld, player.getX());
+        double y = lerp(tickProgress, player.yOld, player.getY());
+        double z = lerp(tickProgress, player.zOld, player.getZ());
+        return player.getBoundingBox().move(x - player.getX(), y - player.getY(), z - player.getZ());
+    }
+
+    private double lerp(float delta, double start, double end) {
+        return start + delta * (end - start);
     }
 
     private void drawQuad(Vec3 first, Vec3 second, Vec3 third, Vec3 fourth, VertexConsumer consumer, int color) {
