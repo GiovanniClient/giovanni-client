@@ -12,6 +12,7 @@
     "ClientPlayNetworkHandlerMixin",
     "PlayerListHudAccessor",
     "compat.ArchitecturyDelegateScreenInitMixin",
+    "compat.ReiDraggingStackOrderMixin",
     "invbuttons.AbstractContainerScreenButtonsInputMixin",
     "invbuttons.HandledScreenAccessor",
     "invbuttons.InventoryScreenButtonsMixin",

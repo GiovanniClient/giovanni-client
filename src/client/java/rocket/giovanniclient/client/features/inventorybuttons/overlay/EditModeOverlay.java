@@ -5,8 +5,10 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
 import rocket.giovanniclient.client.features.inventorybuttons.JsonManager;
 import rocket.giovanniclient.client.features.inventorybuttons.LayoutManager;
+import rocket.giovanniclient.client.features.inventorybuttons.icons.IconStackCodec;
 import rocket.giovanniclient.client.mixin.invbuttons.ScreenInvoker;
 
 public class EditModeOverlay extends AbstractOverlay {
@@ -50,7 +52,7 @@ public class EditModeOverlay extends AbstractOverlay {
         );
 
         this.commandField.setMaxLength(254);
-        this.iconField.setMaxLength(254);
+        this.iconField.setMaxLength(32767);
 
         // Make the text easy to read on the dark background
         this.commandField.setTextColor(0xFFFFFFFF);
@@ -99,7 +101,7 @@ public class EditModeOverlay extends AbstractOverlay {
         ctx.text(screen.getFont(), "Command", this.panelX + 12, this.panelY + 6, 0xFF00FFFF, false);
         ctx.text(screen.getFont(), "/", this.panelX + 12, this.panelY + 22, 0xFFFFFFFF, false);
 
-        ctx.text(screen.getFont(), "Icon", this.panelX + 12, this.panelY + 42, 0xFF00FFFF, false);
+        ctx.text(screen.getFont(), "Icon §7(drag from REI!)", this.panelX + 12, this.panelY + 42, 0xFF00FFFF, false);
 
         this.commandField.extractWidgetRenderState(ctx, mouseX, mouseY, 0);
         this.iconField.extractWidgetRenderState(ctx, mouseX, mouseY, 0);
@@ -144,6 +146,10 @@ public class EditModeOverlay extends AbstractOverlay {
         commandField.setFocused(false);
         iconField.setFocused(false);
 
+        if (OverlayManager.isHoveringReiEntryList(mx, my)) {
+            return false;
+        }
+
         // 4. Handle slot selection
         for (LayoutManager slot : LayoutManager.getAvailableSlots()) {
             if (isMouseOverSlot(slot, mx, my)) {
@@ -158,6 +164,31 @@ public class EditModeOverlay extends AbstractOverlay {
 
     public boolean isMouseOverPanel(double mx, double my) {
         return mx >= this.panelX && mx <= this.panelX + PANEL_W && my >= this.panelY && my <= this.panelY + PANEL_H;
+    }
+
+    public int getPanelX() {
+        return panelX;
+    }
+
+    public int getPanelY() {
+        return panelY;
+    }
+
+    public int getPanelWidth() {
+        return PANEL_W;
+    }
+
+    public int getPanelHeight() {
+        return PANEL_H;
+    }
+
+    public void applyDraggedIcon(ItemStack stack) {
+        if (stack == null || stack.isEmpty()) {
+            return;
+        }
+
+        iconField.setValue(IconStackCodec.encode(stack));
+        saveCurrentSlot();
     }
 
     private void loadDataIntoFields() {

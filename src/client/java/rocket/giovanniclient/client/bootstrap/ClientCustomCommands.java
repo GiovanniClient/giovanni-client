@@ -9,6 +9,9 @@ import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.ProblemReporter;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.storage.TagValueOutput;
 import rocket.giovanniclient.client.config.ConfigManager;
 import rocket.giovanniclient.client.features.inventorybuttons.EditModeState;
 import rocket.giovanniclient.client.features.updater.RatterScannerChecker;
@@ -31,6 +34,7 @@ public final class ClientCustomCommands {
             inventorybuttons(dispatcher);
             slash_dumpsidebar(dispatcher);
             slash_dumptab(dispatcher);
+            slash_dumpentities(dispatcher);
             slash_ratterscannertestsha256(dispatcher);
         });
     }
@@ -104,6 +108,49 @@ public final class ClientCustomCommands {
             ctx.getSource().sendFeedback(Component.literal("-------------------------"));
 
             return 1;
+        }));
+    }
+
+    private static void slash_dumpentities(CommandDispatcher<FabricClientCommandSource> dispatcher) {
+        dispatcher.register(ClientCommands.literal("dumpentities").executes(context -> {
+            Minecraft client = Minecraft.getInstance();
+
+            if (client.level == null || client.player == null) {
+                context.getSource().sendFeedback(Component.literal("Not in-world / not connected."));
+                return 0;
+            }
+
+            double radius = 7.0;
+            double radiusSquared = radius * radius;
+            int count = 0;
+
+            context.getSource().sendFeedback(Component.literal("--- Entity NBT within 7 blocks ---"));
+
+            for (Entity entity : client.level.entitiesForRendering()) {
+                if (entity.distanceToSqr(client.player) > radiusSquared) continue;
+
+                TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, entity.registryAccess());
+                entity.saveWithoutId(output);
+
+                String name = entity.getDisplayName().getString();
+                String type = entity.getType().toString();
+                double distance = Math.sqrt(entity.distanceToSqr(client.player));
+
+                context.getSource().sendFeedback(Component.literal(
+                        String.format("[%d] %s (%s) - %.2f blocks", ++count, name, type, distance)
+                ));
+                context.getSource().sendFeedback(Component.literal(output.buildResult().toString()));
+            }
+
+            if (count == 0) {
+                context.getSource().sendFeedback(Component.literal("No entities found within 7 blocks."));
+            } else {
+                context.getSource().sendFeedback(Component.literal("Dumped " + count + " entities."));
+            }
+
+            context.getSource().sendFeedback(Component.literal("----------------------------------"));
+
+            return count > 0 ? 1 : 0;
         }));
     }
 

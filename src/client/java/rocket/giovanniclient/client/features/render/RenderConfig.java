@@ -28,6 +28,11 @@ public class RenderConfig {
         public boolean STARRED_MOB_ESP = false;
 
         @Expose
+        @ConfigOption(name = "Mineshaft Armor Stand ESP", desc = "Highlights Mineshaft armor stands by chestplate.")
+        @ConfigEditorBoolean
+        public boolean MINESHAFT_ARMOR_STAND_ESP = false;
+
+        @Expose
         @ConfigOption(name = "No Lightning Bolts", desc = "No Lightning bolts rendered, but you can still hear the thunders.")
         @ConfigEditorBoolean
         public boolean NO_LIGHTNING_BOLTS = false;

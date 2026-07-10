@@ -39,6 +39,8 @@ dependencies {
     include "moe.nea:libautoupdate:1.4.1"
 
     compileOnly "me.shedaniel:RoughlyEnoughItems-api-fabric:${project.REI_version}"
+    compileOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.REI_version}"
+    compileOnly "me.shedaniel.cloth:basic-math:0.6.1"
     runtimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.REI_version}"
 
     runtimeOnly "me.djtheredstoner:DevAuth-fabric:1.2.2"

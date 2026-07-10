@@ -1,5 +1,8 @@
 package rocket.giovanniclient.client.features.inventorybuttons.overlay;
 
+import net.fabricmc.loader.api.FabricLoader;
+import rocket.giovanniclient.client.features.inventorybuttons.rei.ReiOverlayHelper;
+
 public class OverlayManager {
     public static AbstractOverlay activeOverlay = null;
 
@@ -11,5 +14,10 @@ public class OverlayManager {
             return edit.isMouseOverPanel(mx, my);
         }
         return false;
+    }
+
+    public static boolean isHoveringReiEntryList(double mx, double my) {
+        return FabricLoader.getInstance().isModLoaded("roughlyenoughitems")
+                && ReiOverlayHelper.isMouseOverEntryList(mx, my);
     }
 }

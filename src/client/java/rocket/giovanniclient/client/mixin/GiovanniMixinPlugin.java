@@ -34,6 +34,10 @@ public class GiovanniMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
+        if (mixinClassName.endsWith(".compat.ReiDraggingStackOrderMixin")) {
+            return isSupported && FabricLoader.getInstance().isModLoaded("roughlyenoughitems");
+        }
+
         // If the version is not supported, we return FALSE to stop the Mixin from loading
         return isSupported;
     }

@@ -14,9 +14,8 @@ public abstract class EntityGlowColorOverrideMixin {
     private void giovanni$forceGlowColor(CallbackInfoReturnable<Integer> cir) {
         Entity e = (Entity) (Object) this;
 
-        Integer rgb = GlowOverrideManager.getColorOrDefault(e);
-        if (rgb != null) {
-            cir.setReturnValue(rgb);
+        if (GlowOverrideManager.has(e)) {
+            cir.setReturnValue(GlowOverrideManager.getColorOrDefault(e));
         }
     }
 }
