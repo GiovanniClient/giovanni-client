@@ -23,6 +23,7 @@
     "invbuttons.SlotAccessor",
     "render.EntityGlowColorOverrideMixin",
     "render.EntityGlowOverrideMixin",
+    "render.GiovanniLevelRendererMixin",
     "render.NoBlindnessMixin",
     "render.NoCameraOverlaysMixin",
     "render.NoDarknessMixin",

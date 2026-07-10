@@ -7,6 +7,7 @@ public class PlayerLocator extends AbstractFeature {
 
     // Area is the "Island" the player is in, the one written in TAB
     // Location is more specific, and it's on the scoreboard
+    private static final String[] LOCATION_MARKERS = {"\uE067", "\uE020", "ф", "⏣"};
     private static String CURRENT_PLAYER_LOCATION = "None";
     private static String CURRENT_PLAYER_AREA = "None";
     private int tick = 0;
@@ -16,13 +17,7 @@ public class PlayerLocator extends AbstractFeature {
         tick++;
 
         if (tick % 60 == 0) {
-            if (ScoreboardUtils.scoreboardContainsRaw("\uE067")) { // new character after texture pack change
-                setPlayerLocation(stripLeadingSymbols(ScoreboardUtils.getRawLineContaining("\uE067")));
-            } else if (ScoreboardUtils.scoreboardContainsRaw("ф")) { // rift
-                setPlayerLocation(stripLeadingSymbols(ScoreboardUtils.getRawLineContaining("ф")));
-            } else if (ScoreboardUtils.scoreboardContainsRaw("⏣")) {
-                setPlayerLocation(stripLeadingSymbols(ScoreboardUtils.getRawLineContaining("⏣")));
-            } else setPlayerLocation("None");
+            setPlayerLocation(findPlayerLocation());
 
             if (TabListUtils.tabContainsRaw("Area")) {
                 setPlayerArea(stripLeadingSymbols(TabListUtils.getCleanLineContaining("Area")).substring(6));
@@ -50,6 +45,15 @@ public class PlayerLocator extends AbstractFeature {
 
     public static String stripLeadingSymbols(String input) {
         return input.replaceFirst("^[\\s\\p{So}\\p{Co}ф]+", "");
+    }
+
+    private static String findPlayerLocation() {
+        for (String marker : LOCATION_MARKERS) {
+            if (ScoreboardUtils.scoreboardContainsRaw(marker)) {
+                return stripLeadingSymbols(ScoreboardUtils.getRawLineContaining(marker));
+            }
+        }
+        return "None";
     }
 
     public static boolean isPlayerIn(String loc) {

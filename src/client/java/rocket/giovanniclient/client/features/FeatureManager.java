@@ -11,6 +11,7 @@ import rocket.giovanniclient.client.features.misc.CloseChocolateEggs;
 import rocket.giovanniclient.client.features.render.MineshaftArmorStandESP;
 import rocket.giovanniclient.client.features.render.StarredMobESP;
 import rocket.giovanniclient.client.features.rift.AutoAgaricusCap;
+import rocket.giovanniclient.client.features.slayers.blaze.BlazeShieldHighlight;
 import rocket.giovanniclient.client.features.slayers.enderman.AutoSoulcry;
 import rocket.giovanniclient.client.util.PlayerLocator;
 import rocket.giovanniclient.client.util.SlayerUtils;
@@ -34,6 +35,7 @@ public class FeatureManager {
         register(new AutoExperiments());
         register(new AutoFusion());
         register(new AutoSoulcry());
+        register(new BlazeShieldHighlight());
         register(new CloseChocolateEggs());
 
         register(new AutoAgaricusCap());

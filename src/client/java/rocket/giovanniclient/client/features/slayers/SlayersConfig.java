@@ -43,5 +43,10 @@ public class SlayersConfig {
         @ConfigOption(name = "No Blaze Particles", desc = "Blocks annoying particles in Smoldering Tomb.")
         @ConfigEditorBoolean
         public boolean NO_BLAZE_PARTICLES = false;
+
+        @Expose
+        @ConfigOption(name = "Blaze Shield Highlight", desc = "Highlights the Inferno Demonlord with a color matching its shield state.")
+        @ConfigEditorBoolean
+        public boolean BLAZE_SHIELD_HIGHLIGHT = false;
     }
 }
