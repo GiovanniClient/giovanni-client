@@ -5,6 +5,8 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "ClientIntentionPacketMixin",
+    "repo.AppendRepoResourcePackMixin",
+    "repo.RepoResourcePackFallbackMixin",
     "YggdrasilMinecraftSessionServiceMixin",
     "YggdrasilServicesKeyInfoMixin"
   ],

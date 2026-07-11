@@ -8,10 +8,23 @@ import me.shedaniel.rei.api.client.gui.drag.DraggableStackVisitor;
 import me.shedaniel.rei.api.client.gui.drag.DraggedAcceptorResult;
 import me.shedaniel.rei.api.client.gui.drag.DraggingContext;
 import me.shedaniel.rei.api.client.plugins.REIClientPlugin;
+import me.shedaniel.rei.api.client.registry.category.CategoryRegistry;
+import me.shedaniel.rei.api.client.registry.display.DisplayRegistry;
+import me.shedaniel.rei.api.client.registry.entry.CollapsibleEntryRegistry;
+import me.shedaniel.rei.api.client.registry.entry.EntryRegistry;
 import me.shedaniel.rei.api.client.registry.screen.ScreenRegistry;
+import me.shedaniel.rei.api.client.registry.transfer.TransferHandler;
+import me.shedaniel.rei.api.client.registry.transfer.TransferHandlerRegistry;
 import me.shedaniel.rei.api.common.entry.EntryStack;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import rocket.giovanniclient.giovanniclient.rei.SkyBlockReiCraftingDisplay;
+import rocket.giovanniclient.giovanniclient.rei.SkyBlockReiEntryDefinition;
+import rocket.giovanniclient.giovanniclient.rei.SkyBlockReiItemRepository;
+import rocket.giovanniclient.giovanniclient.rei.SkyBlockReiSimpleRecipeDisplay;
 import rocket.giovanniclient.client.features.inventorybuttons.EditModeState;
 import rocket.giovanniclient.client.features.inventorybuttons.overlay.EditModeOverlay;
 import rocket.giovanniclient.client.features.inventorybuttons.overlay.OverlayManager;
@@ -19,6 +32,140 @@ import rocket.giovanniclient.client.features.inventorybuttons.overlay.OverlayMan
 import java.util.stream.Stream;
 
 public class GiovanniReiPlugin implements REIClientPlugin {
+    private static boolean refreshQueued;
+
+    @Override
+    public void registerCategories(CategoryRegistry registry) {
+        registry.add(new SkyBlockReiCraftingCategory());
+        registry.add(new SkyBlockReiSimpleRecipeCategory(
+                SkyBlockReiSimpleRecipeDisplay.FORGE_CATEGORY,
+                Component.literal("SkyBlock Forge"),
+                new ItemStack(Items.ANVIL)
+        ));
+        registry.add(new SkyBlockReiSimpleRecipeCategory(
+                SkyBlockReiSimpleRecipeDisplay.KAT_CATEGORY,
+                Component.literal("Kat Upgrade"),
+                new ItemStack(Items.NAME_TAG)
+        ));
+        registry.add(new SkyBlockReiSimpleRecipeCategory(
+                SkyBlockReiSimpleRecipeDisplay.SHOP_CATEGORY,
+                Component.literal("SkyBlock Shop"),
+                new ItemStack(Items.EMERALD)
+        ));
+        registry.add(new SkyBlockReiSimpleRecipeCategory(
+                SkyBlockReiSimpleRecipeDisplay.TRADE_CATEGORY,
+                Component.literal("SkyBlock Trade"),
+                new ItemStack(Items.EMERALD)
+        ));
+        registry.add(new SkyBlockReiSimpleRecipeCategory(
+                SkyBlockReiSimpleRecipeDisplay.ESSENCE_CATEGORY,
+                Component.literal("Essence Upgrade"),
+                new ItemStack(Items.NETHER_STAR)
+        ));
+        registry.add(new SkyBlockReiSimpleRecipeCategory(
+                SkyBlockReiSimpleRecipeDisplay.REFORGE_CATEGORY,
+                Component.literal("Reforge"),
+                new ItemStack(Items.ANVIL)
+        ));
+        registry.add(new SkyBlockReiMobDropCategory());
+    }
+
+    @Override
+    public void registerDisplays(DisplayRegistry registry) {
+        if (!SkyBlockReiItemRepository.isLoaded()) {
+            SkyBlockReiItemRepository.warmupIfReiIsLoaded();
+            queueRefreshWhenLoaded();
+            return;
+        }
+
+        SkyBlockReiItemRepository.getCraftingRecipesForRei().forEach(recipe -> registry.add(recipe));
+        SkyBlockReiItemRepository.getSimpleRecipesForRei().forEach(recipe -> registry.add(recipe));
+        SkyBlockReiItemRepository.getMobDropsForRei().forEach(recipe -> registry.add(recipe));
+    }
+
+    @Override
+    public void registerCollapsibleEntries(CollapsibleEntryRegistry registry) {
+        if (!SkyBlockReiItemRepository.isLoaded()) {
+            SkyBlockReiItemRepository.warmupIfReiIsLoaded();
+            queueRefreshWhenLoaded();
+            return;
+        }
+
+        SkyBlockReiItemRepository.getParentGroupsForRei().forEach((parent, children) -> {
+            var entries = Stream.concat(children.stream(), Stream.of(parent))
+                    .map(id -> EntryStack.of(SkyBlockReiEntryDefinition.INSTANCE, SkyBlockReiItemRepository.getItemById(id)))
+                    .toList();
+            registry.group(
+                    net.minecraft.resources.Identifier.fromNamespaceAndPath("skyblock", sanitizePath(parent)),
+                    Component.literal(SkyBlockReiItemRepository.getItemById(parent).displayName()),
+                    entries
+            );
+        });
+    }
+
+    @Override
+    public void registerEntries(EntryRegistry registry) {
+        if (!SkyBlockReiItemRepository.isLoaded()) {
+            SkyBlockReiItemRepository.warmupIfReiIsLoaded();
+            queueRefreshWhenLoaded();
+            return;
+        }
+
+        replaceEntries(registry);
+    }
+
+    private static void replaceEntries(EntryRegistry registry) {
+        var items = SkyBlockReiItemRepository.getItemsForRei();
+        if (items.isEmpty()) {
+            return;
+        }
+
+        registry.removeEntryIf(entry -> true);
+        items.forEach(item ->
+                registry.addEntry(EntryStack.of(SkyBlockReiEntryDefinition.INSTANCE, item.copy())));
+        if (!registry.isReloading()) {
+            registry.refilter();
+        }
+    }
+
+    @Override
+    public void registerTransferHandlers(TransferHandlerRegistry registry) {
+        registry.register((TransferHandler) context -> {
+            if (!(context.getDisplay() instanceof SkyBlockReiCraftingDisplay display)) {
+                return TransferHandler.Result.createNotApplicable();
+            }
+            if (!context.isActuallyCrafting()) {
+                return TransferHandler.Result.createSuccessful();
+            }
+
+            Minecraft client = Minecraft.getInstance();
+            if (client.player == null || client.player.connection == null) {
+                return TransferHandler.Result.createFailed(Component.literal("Not connected to a server."));
+            }
+            client.player.connection.sendCommand("viewrecipe " + display.recipeId());
+            return TransferHandler.Result.createSuccessful().blocksFurtherHandling(false);
+        });
+    }
+
+    private static void queueRefreshWhenLoaded() {
+        if (refreshQueued) {
+            return;
+        }
+
+        refreshQueued = true;
+        SkyBlockReiItemRepository.whenLoaded(() -> Minecraft.getInstance().execute(() -> {
+            refreshQueued = false;
+            replaceEntries(EntryRegistry.getInstance());
+            SkyBlockReiItemRepository.getCraftingRecipesForRei().forEach(recipe -> DisplayRegistry.getInstance().add(recipe));
+            SkyBlockReiItemRepository.getSimpleRecipesForRei().forEach(recipe -> DisplayRegistry.getInstance().add(recipe));
+            SkyBlockReiItemRepository.getMobDropsForRei().forEach(recipe -> DisplayRegistry.getInstance().add(recipe));
+        }));
+    }
+
+    private static String sanitizePath(String id) {
+        return id.toLowerCase(java.util.Locale.ROOT).replaceAll("[^a-z0-9/._-]", "_");
+    }
+
     @Override
     public void registerScreens(ScreenRegistry registry) {
         registry.registerDraggableStackProvider(new InventoryButtonReiStackProvider());

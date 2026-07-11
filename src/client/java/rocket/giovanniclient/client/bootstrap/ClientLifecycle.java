@@ -6,6 +6,7 @@ import rocket.giovanniclient.client.GiovanniClientClient;
 import rocket.giovanniclient.client.config.ConfigManager;
 import rocket.giovanniclient.client.features.FeatureManager;
 import rocket.giovanniclient.client.features.inventorybuttons.rei.ReiAccessibilityManager;
+import rocket.giovanniclient.giovanniclient.rei.SkyBlockReiItemRepository;
 import rocket.giovanniclient.client.util.Utils;
 
 public final class ClientLifecycle {
@@ -25,6 +26,8 @@ public final class ClientLifecycle {
                     && FabricLoader.getInstance().isModLoaded("roughlyenoughitems")) {
                 ReiAccessibilityManager.disableClickableRecipeArrowsIfNeeded();
             }
+
+            SkyBlockReiItemRepository.warmupIfReiIsLoaded();
 
             FeatureManager.registerAll();
 

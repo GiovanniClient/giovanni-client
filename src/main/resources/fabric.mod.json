@@ -16,6 +16,9 @@
     "client": [
       "rocket.giovanniclient.client.GiovanniClientClient"
     ],
+    "rei_common": [
+      "rocket.giovanniclient.giovanniclient.rei.GiovanniReiCommonPlugin"
+    ],
     "rei_client": [
       "rocket.giovanniclient.client.features.inventorybuttons.rei.GiovanniReiPlugin"
     ]
