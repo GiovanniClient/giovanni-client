@@ -1,4 +1,8 @@
 ```diff
++ 11 jul 26
++ the mod is updated for 26.1.2, i will release soon but first i want to iron out
++ a couple of things still
++
 + 1 jul 26
 + i'm currently working on translating giovanniclient from Yarn Mappings to Mojang Mappings.
 + this is required to then update it to 26.x, hopefully i can drop that update soon
