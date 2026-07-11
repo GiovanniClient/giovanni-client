@@ -25,7 +25,7 @@ public class AbstractContainerScreenButtonsInputMixin {
             CallbackInfoReturnable<Boolean> cir
     ) {
         if ((Object) this instanceof InventoryScreen) {
-            if (ItemListDragHelper.beginDrag((AbstractContainerScreen<?>) (Object) this, click)) {
+            if (ItemListDragHelper.handleMiddleClick((AbstractContainerScreen<?>) (Object) this, click)) {
                 cir.setReturnValue(true);
                 return;
             }
@@ -34,13 +34,6 @@ public class AbstractContainerScreenButtonsInputMixin {
                     && OverlayManager.activeOverlay.mouseClicked(click, doubled)) {
                 cir.setReturnValue(true);
             }
-        }
-    }
-
-    @Inject(method = "mouseReleased", at = @At("HEAD"), cancellable = true)
-    private void onMouseReleased(MouseButtonEvent click, CallbackInfoReturnable<Boolean> cir) {
-        if ((Object) this instanceof InventoryScreen && ItemListDragHelper.finishDrag(click)) {
-            cir.setReturnValue(true);
         }
     }
 
@@ -66,7 +59,6 @@ public class AbstractContainerScreenButtonsInputMixin {
         if ((Object) this instanceof InventoryScreen) {
             EditModeState.setEditMode(false);
             OverlayManager.activeOverlay = null;
-            ItemListDragHelper.cancelDrag();
         }
     }
 

@@ -1,64 +1,44 @@
 package rocket.giovanniclient.client.features.inventorybuttons.itemlist;
 
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.world.item.ItemStack;
 import rocket.giovanniclient.client.features.inventorybuttons.EditModeState;
+import rocket.giovanniclient.client.features.inventorybuttons.icons.IconStackCodec;
+import rocket.giovanniclient.client.mixin.invbuttons.ScreenInvoker;
 import rocket.giovanniclient.client.features.inventorybuttons.overlay.EditModeOverlay;
 import rocket.giovanniclient.client.features.inventorybuttons.overlay.OverlayManager;
+import rocket.giovanniclient.client.util.Utils;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Set;
 import java.util.Optional;
 
 public final class ItemListDragHelper {
-    private static ItemStack draggingStack = ItemStack.EMPTY;
-
     private ItemListDragHelper() {}
 
-    public static boolean beginDrag(Screen screen, MouseButtonEvent click) {
-        if (!canHandle() || click.button() != 0 || !(OverlayManager.activeOverlay instanceof EditModeOverlay)) {
+    public static boolean handleMiddleClick(Screen screen, MouseButtonEvent click) {
+        if (!canHandle() || click.button() != 2 || !(OverlayManager.activeOverlay instanceof EditModeOverlay editOverlay)) {
             return false;
         }
 
         ItemStack stack = getHoveredStack(screen, click.x(), click.y());
         if (stack.isEmpty()) {
+            Utils.debug("ItemList stack: <empty>");
             return false;
         }
 
-        draggingStack = stack.copy();
+        String encoded = IconStackCodec.encode(stack);
+        Utils.debug("ItemList stack: " + encoded);
+        editOverlay.applyDraggedIcon(stack.copy());
         return true;
-    }
-
-    public static boolean finishDrag(MouseButtonEvent click) {
-        if (draggingStack.isEmpty()) {
-            return false;
-        }
-
-        try {
-            if (OverlayManager.activeOverlay instanceof EditModeOverlay editOverlay
-                    && editOverlay.isMouseOverPanel(click.x(), click.y())) {
-                editOverlay.applyDraggedIcon(draggingStack.copy());
-                return true;
-            }
-
-            return false;
-        } finally {
-            draggingStack = ItemStack.EMPTY;
-        }
-    }
-
-    public static void cancelDrag() {
-        draggingStack = ItemStack.EMPTY;
-    }
-
-    public static void renderDraggedStack(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-        if (!draggingStack.isEmpty()) {
-            graphics.item(draggingStack, mouseX - 8, mouseY - 8);
-        }
     }
 
     public static boolean isMouseOverItemList(Screen screen, double mouseX, double mouseY) {
@@ -74,8 +54,21 @@ public final class ItemListDragHelper {
             return ItemStack.EMPTY;
         }
 
+        Set<Object> visited = Collections.newSetFromMap(new IdentityHashMap<>());
+        ItemStack stack = getHoveredStackFromSkyBlockItemListPanels(mouseX, mouseY, visited);
+        if (!stack.isEmpty()) {
+            return stack;
+        }
+
+        for (Renderable renderable : ((ScreenInvoker) screen).giovanni$getRenderables()) {
+            stack = getHoveredStack(renderable, mouseX, mouseY, visited);
+            if (!stack.isEmpty()) {
+                return stack;
+            }
+        }
+
         for (GuiEventListener child : screen.children()) {
-            ItemStack stack = getHoveredStack(child, mouseX, mouseY);
+            stack = getHoveredStack(child, mouseX, mouseY, visited);
             if (!stack.isEmpty()) {
                 return stack;
             }
@@ -84,22 +77,49 @@ public final class ItemListDragHelper {
         return ItemStack.EMPTY;
     }
 
-    private static ItemStack getHoveredStack(Object widget, double mouseX, double mouseY) {
+    private static ItemStack getHoveredStack(Object widget, double mouseX, double mouseY, Set<Object> visited) {
         if (widget == null || !isItemListClass(widget.getClass())) {
             return ItemStack.EMPTY;
         }
 
-        Object hovered = getChildAt(widget, mouseX, mouseY).orElse(widget);
+        if (!visited.add(widget)) {
+            return ItemStack.EMPTY;
+        }
+
+        if (!isMouseOver(widget, mouseX, mouseY)) {
+            return ItemStack.EMPTY;
+        }
+
+        Optional<?> hoveredChild = getChildAt(widget, mouseX, mouseY);
+        Object hovered = hoveredChild.isPresent() ? hoveredChild.get() : widget;
         ItemStack stack = readHoveredStack(hovered);
         if (!stack.isEmpty()) {
             return stack;
         }
 
         if (hovered != widget) {
-            return getHoveredStack(hovered, mouseX, mouseY);
+            return getHoveredStack(hovered, mouseX, mouseY, visited);
+        }
+
+        for (Object child : getChildren(widget)) {
+            stack = getHoveredStack(child, mouseX, mouseY, visited);
+            if (!stack.isEmpty()) {
+                return stack;
+            }
         }
 
         return ItemStack.EMPTY;
+    }
+
+    private static boolean isMouseOver(Object widget, double mouseX, double mouseY) {
+        try {
+            Method method = findMethod(widget.getClass(), "isMouseOver", double.class, double.class);
+            method.setAccessible(true);
+            Object result = method.invoke(widget, mouseX, mouseY);
+            return Boolean.TRUE.equals(result);
+        } catch (ReflectiveOperationException | RuntimeException ignored) {
+            return true;
+        }
     }
 
     private static Optional<?> getChildAt(Object widget, double mouseX, double mouseY) {
@@ -110,24 +130,68 @@ public final class ItemListDragHelper {
             if (result instanceof Optional<?> optional) {
                 return optional;
             }
-        } catch (Throwable ignored) {
+        } catch (ReflectiveOperationException | RuntimeException ignored) {
         }
 
         return Optional.empty();
     }
 
+    private static List<?> getChildren(Object widget) {
+        try {
+            Method method = findMethod(widget.getClass(), "children");
+            method.setAccessible(true);
+            Object result = method.invoke(widget);
+            if (result instanceof List<?> children) {
+                return children;
+            }
+        } catch (ReflectiveOperationException | RuntimeException ignored) {
+        }
+
+        return List.of();
+    }
+
     private static ItemStack readHoveredStack(Object widget) {
         try {
+            invokeIfPresent(widget, "createStackIfEmpty");
             Method method = findMethod(widget.getClass(), "getHoveredStack");
             method.setAccessible(true);
             Object result = method.invoke(widget);
             if (result instanceof ItemStack stack) {
                 return stack;
             }
-        } catch (Throwable ignored) {
+        } catch (ReflectiveOperationException | RuntimeException ignored) {
         }
 
         return ItemStack.EMPTY;
+    }
+
+    private static ItemStack getHoveredStackFromSkyBlockItemListPanels(double mouseX, double mouseY, Set<Object> visited) {
+        try {
+            Class<?> itemListClass = Class.forName("com.operationpotato.itemlist.SkyBlockItemList");
+            ItemStack stack = getHoveredStack(getStaticField(itemListClass, "instance"), mouseX, mouseY, visited);
+            if (!stack.isEmpty()) {
+                return stack;
+            }
+
+            return getHoveredStack(getStaticField(itemListClass, "favoriteInstance"), mouseX, mouseY, visited);
+        } catch (ReflectiveOperationException | RuntimeException ignored) {
+            return ItemStack.EMPTY;
+        }
+    }
+
+    private static Object getStaticField(Class<?> type, String name) throws NoSuchFieldException, IllegalAccessException {
+        Field field = type.getDeclaredField(name);
+        field.setAccessible(true);
+        return field.get(null);
+    }
+
+    private static void invokeIfPresent(Object target, String name) {
+        try {
+            Method method = findMethod(target.getClass(), name);
+            method.setAccessible(true);
+            method.invoke(target);
+        } catch (ReflectiveOperationException | RuntimeException ignored) {
+        }
     }
 
     private static Method findMethod(Class<?> type, String name, Class<?>... parameterTypes) throws NoSuchMethodException {

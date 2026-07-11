@@ -4,15 +4,12 @@ import net.fabricmc.loader.api.FabricLoader;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
+import rocket.giovanniclient.client.GiovanniVersions;
 
 import java.util.List;
 import java.util.Set;
 
 public class GiovanniMixinPlugin implements IMixinConfigPlugin {
-
-    // Must match the list in your main class exactly!
-    private static final List<String> SUPPORTED_VERSIONS = List.of("26.1.2");
-
     private boolean isSupported;
 
     @Override
@@ -25,7 +22,7 @@ public class GiovanniMixinPlugin implements IMixinConfigPlugin {
                 .getVersion()
                 .getFriendlyString();
 
-        this.isSupported = SUPPORTED_VERSIONS.contains(currentMcVersion);
+        this.isSupported = GiovanniVersions.SUPPORTED_MINECRAFT_VERSIONS.contains(currentMcVersion);
 
         if (!isSupported) {
             System.err.println("[Giovanni] WARNING: Unsupported MC Version (" + currentMcVersion + "). Disabling Mixins to prevent crash.");

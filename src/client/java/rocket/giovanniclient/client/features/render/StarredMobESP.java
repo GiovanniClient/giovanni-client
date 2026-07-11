@@ -34,7 +34,12 @@ public class StarredMobESP extends AbstractFeature {
 
     @Override
     public void onTick(Minecraft client) {
-        if (client == null || client.level == null) return;
+        if (client == null || client.level == null || client.player == null) {
+            clearPreviouslyApplied();
+            desired.clear();
+            previouslyApplied.clear();
+            return;
+        }
 
         var rc = ConfigManager.getConfig().rc.renderEntitiesAccordion;
 
@@ -50,10 +55,8 @@ public class StarredMobESP extends AbstractFeature {
 
         desired.clear();
 
-        /*
-        TODO: FIX THIS FUCK MAPPINGS
         // Find starred armor stands
-        for (Entity e : client.level.getEntities()) {
+        for (Entity e : client.level.entitiesForRendering()) {
             if (!(e instanceof ArmorStand as)) continue;
             if (!as.hasCustomName()) continue;
 
@@ -64,7 +67,6 @@ public class StarredMobESP extends AbstractFeature {
                 desired.add(living.getUUID());
             }
         }
-        */
 
         // Remove no-longer-needed glow
         for (UUID old : new HashSet<>(previouslyApplied)) {
@@ -103,10 +105,7 @@ public class StarredMobESP extends AbstractFeature {
         Entity closest = null;
         double best = Double.MAX_VALUE;
 
-        for (Entity e : client.level.getEntities(stand, box)) {
-            if (!(e instanceof LivingEntity)) continue;
-            if (!(e instanceof Mob) && !(e instanceof Player)) continue;
-
+        for (Entity e : client.level.getEntities(stand, box, StarredMobESP::isValidStarredMobTarget)) {
             double d = stand.distanceToSqr(e);
             if (d < best) {
                 best = d;
@@ -114,6 +113,12 @@ public class StarredMobESP extends AbstractFeature {
             }
         }
         return closest;
+    }
+
+    private static boolean isValidStarredMobTarget(Entity entity) {
+        return entity.isAlive()
+                && entity instanceof LivingEntity
+                && (entity instanceof Mob || entity instanceof Player);
     }
 
     private static boolean containsAnyStar(String s) {
@@ -130,13 +135,11 @@ public class StarredMobESP extends AbstractFeature {
 
     private static Entity findEntityByUuid(Minecraft client, UUID uuid) {
         if (client.level == null) return null;
-        /*
 
-        TODO: FIX THIS FUCK MAPPINGS
-        for (Entity e : client.level.getEntities()) {
+        for (Entity e : client.level.entitiesForRendering()) {
             if (e.getUUID().equals(uuid)) return e;
         }
-        */
+
         return null;
     }
 }

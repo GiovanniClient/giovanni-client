@@ -1,5 +1,6 @@
 package rocket.giovanniclient.client.features.inventorybuttons.overlay;
 
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -60,7 +61,7 @@ public class EditModeOverlay extends AbstractOverlay {
         this.commandField.setTextColorUneditable(0xFFAAAAAA);
         this.iconField.setTextColorUneditable(0xFFAAAAAA);
 
-        this.commandField.setHint(Component.literal("say hello world!"));
+        this.commandField.setHint(Component.literal("ac hello world!"));
         this.iconField.setHint(Component.literal("paper"));
 
         loadDataIntoFields();
@@ -101,7 +102,7 @@ public class EditModeOverlay extends AbstractOverlay {
         ctx.text(screen.getFont(), "Command", this.panelX + 12, this.panelY + 6, 0xFF00FFFF, false);
         ctx.text(screen.getFont(), "/", this.panelX + 12, this.panelY + 22, 0xFFFFFFFF, false);
 
-        ctx.text(screen.getFont(), "Icon §7(drag from REI/ItemList!)", this.panelX + 12, this.panelY + 42, 0xFF00FFFF, false);
+        ctx.text(screen.getFont(), getIconLabel(), this.panelX + 12, this.panelY + 42, 0xFF00FFFF, false);
 
         this.commandField.extractWidgetRenderState(ctx, mouseX, mouseY, 0);
         this.iconField.extractWidgetRenderState(ctx, mouseX, mouseY, 0);
@@ -189,6 +190,19 @@ public class EditModeOverlay extends AbstractOverlay {
 
         iconField.setValue(IconStackCodec.encode(stack));
         saveCurrentSlot();
+    }
+
+    private String getIconLabel() {
+        FabricLoader loader = FabricLoader.getInstance();
+        if (loader.isModLoaded("roughlyenoughitems")) {
+            return "Icon §7(drag from REI)";
+        }
+
+        if (loader.isModLoaded("skyblock-item-list")) {
+            return "Icon §7(middleclick ItemList)";
+        }
+
+        return "Icon";
     }
 
     private void loadDataIntoFields() {

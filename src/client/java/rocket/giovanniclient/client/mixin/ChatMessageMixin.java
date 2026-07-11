@@ -7,6 +7,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import rocket.giovanniclient.client.config.ConfigManager;
 import rocket.giovanniclient.client.features.fun.FunConfig;
+import rocket.giovanniclient.client.util.Utils;
 
 @Mixin(ClientPacketListener.class)
 public class ChatMessageMixin {
@@ -23,8 +24,10 @@ public class ChatMessageMixin {
             return "♲: " + userInput;
         }
 
-        if (fc.TROLL_FEATURES && userInput.equals("Help Wizardman!"))
-            return "Help Giovanni!";
+        if (fc.TROLL_FEATURES && userInput.equals("Help Wizardman!")) {
+            Utils.chat("Help Giovanni!");
+            return "Help Wizardman!";
+        }
 
         return userInput;
     }

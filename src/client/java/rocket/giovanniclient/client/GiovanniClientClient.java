@@ -12,9 +12,6 @@ import net.wimods.freecam.WiFreecam;
 import rocket.giovanniclient.client.bootstrap.*;
 import rocket.giovanniclient.client.config.ConfigManager;
 import rocket.giovanniclient.client.features.updater.UpdateManagerV3;
-import rocket.giovanniclient.client.mixin.GiovanniMixinPlugin;
-
-import java.util.List;
 
 public final class GiovanniClientClient implements ClientModInitializer {
 
@@ -25,11 +22,6 @@ public final class GiovanniClientClient implements ClientModInitializer {
     public static final String RELEASES_URL = "https://github.com/GiovanniClient/giovanni-client/releases/latest";
     private static boolean unsupportedVersionWarningShown;
 
-    /**
-     * ALSO UPDATE {@link GiovanniMixinPlugin}
-     * can't call this list from there because it crashes in safemode
-     */
-    public static final List<String> SUPPORTED_VERSIONS = List.of("26.1.2");
     public static final UpdateManagerV3 UPDATE_MANAGER = new UpdateManagerV3(() -> ConfigManager.getConfig().about);
 
     @Override
@@ -95,6 +87,6 @@ public final class GiovanniClientClient implements ClientModInitializer {
     }
 
     public static boolean isCurrentVersionSupported() {
-        return SUPPORTED_VERSIONS.contains(getMcVersion());
+        return GiovanniVersions.SUPPORTED_MINECRAFT_VERSIONS.contains(getMcVersion());
     }
 }
