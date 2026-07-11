@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import rocket.giovanniclient.client.features.inventorybuttons.EditModeState;
+import rocket.giovanniclient.client.features.inventorybuttons.itemlist.ItemListDragHelper;
 import rocket.giovanniclient.client.features.inventorybuttons.overlay.EditModeOverlay;
 import rocket.giovanniclient.client.features.inventorybuttons.overlay.OverlayManager;
 
@@ -24,10 +25,22 @@ public class AbstractContainerScreenButtonsInputMixin {
             CallbackInfoReturnable<Boolean> cir
     ) {
         if ((Object) this instanceof InventoryScreen) {
+            if (ItemListDragHelper.beginDrag((AbstractContainerScreen<?>) (Object) this, click)) {
+                cir.setReturnValue(true);
+                return;
+            }
+
             if (OverlayManager.activeOverlay != null
                     && OverlayManager.activeOverlay.mouseClicked(click, doubled)) {
                 cir.setReturnValue(true);
             }
+        }
+    }
+
+    @Inject(method = "mouseReleased", at = @At("HEAD"), cancellable = true)
+    private void onMouseReleased(MouseButtonEvent click, CallbackInfoReturnable<Boolean> cir) {
+        if ((Object) this instanceof InventoryScreen && ItemListDragHelper.finishDrag(click)) {
+            cir.setReturnValue(true);
         }
     }
 
@@ -53,6 +66,7 @@ public class AbstractContainerScreenButtonsInputMixin {
         if ((Object) this instanceof InventoryScreen) {
             EditModeState.setEditMode(false);
             OverlayManager.activeOverlay = null;
+            ItemListDragHelper.cancelDrag();
         }
     }
 

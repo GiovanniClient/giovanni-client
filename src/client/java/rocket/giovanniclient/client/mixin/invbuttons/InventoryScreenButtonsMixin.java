@@ -7,6 +7,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import rocket.giovanniclient.client.features.inventorybuttons.EditModeState;
+import rocket.giovanniclient.client.features.inventorybuttons.itemlist.ItemListDragHelper;
 import rocket.giovanniclient.client.features.inventorybuttons.overlay.EditModeOverlay;
 import rocket.giovanniclient.client.features.inventorybuttons.overlay.NormalModeOverlay;
 import rocket.giovanniclient.client.features.inventorybuttons.overlay.OverlayManager;
@@ -31,5 +32,6 @@ public class InventoryScreenButtonsMixin {
         if (OverlayManager.activeOverlay != null) {
             OverlayManager.activeOverlay.render(graphics, mouseX, mouseY);
         }
+        ItemListDragHelper.renderDraggedStack(graphics, mouseX, mouseY);
     }
 }

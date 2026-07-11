@@ -101,7 +101,7 @@ public class EditModeOverlay extends AbstractOverlay {
         ctx.text(screen.getFont(), "Command", this.panelX + 12, this.panelY + 6, 0xFF00FFFF, false);
         ctx.text(screen.getFont(), "/", this.panelX + 12, this.panelY + 22, 0xFFFFFFFF, false);
 
-        ctx.text(screen.getFont(), "Icon §7(drag from REI!)", this.panelX + 12, this.panelY + 42, 0xFF00FFFF, false);
+        ctx.text(screen.getFont(), "Icon §7(drag from REI/ItemList!)", this.panelX + 12, this.panelY + 42, 0xFF00FFFF, false);
 
         this.commandField.extractWidgetRenderState(ctx, mouseX, mouseY, 0);
         this.iconField.extractWidgetRenderState(ctx, mouseX, mouseY, 0);
@@ -155,7 +155,7 @@ public class EditModeOverlay extends AbstractOverlay {
             }
         }
 
-        if (OverlayManager.isHoveringReiEntryList(mx, my)) {
+        if (OverlayManager.isHoveringReiEntryList(mx, my) || OverlayManager.isHoveringItemList(mx, my)) {
             return false;
         }
 

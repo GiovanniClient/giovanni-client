@@ -1,7 +1,9 @@
 package rocket.giovanniclient.client.features.inventorybuttons.overlay;
 
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.Minecraft;
 import rocket.giovanniclient.client.features.inventorybuttons.rei.ReiOverlayHelper;
+import rocket.giovanniclient.client.features.inventorybuttons.itemlist.ItemListDragHelper;
 
 public class OverlayManager {
     public static AbstractOverlay activeOverlay = null;
@@ -19,5 +21,10 @@ public class OverlayManager {
     public static boolean isHoveringReiEntryList(double mx, double my) {
         return FabricLoader.getInstance().isModLoaded("roughlyenoughitems")
                 && ReiOverlayHelper.isMouseOverEntryList(mx, my);
+    }
+
+    public static boolean isHoveringItemList(double mx, double my) {
+        Minecraft client = Minecraft.getInstance();
+        return client.screen != null && ItemListDragHelper.isMouseOverItemList(client.screen, mx, my);
     }
 }
