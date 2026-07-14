@@ -35,6 +35,10 @@ public class GiovanniMixinPlugin implements IMixinConfigPlugin {
             return isSupported && FabricLoader.getInstance().isModLoaded("roughlyenoughitems");
         }
 
+        if (mixinClassName.endsWith(".compat.SodiumFogMixin")) {
+            return isSupported && FabricLoader.getInstance().isModLoaded("sodium");
+        }
+
         // If the version is not supported, we return FALSE to stop the Mixin from loading
         return isSupported;
     }

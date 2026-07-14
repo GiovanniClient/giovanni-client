@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import rocket.giovanniclient.client.config.ConfigManager;
 
-@Mixin(DarknessFogEnvironment.class)
+@Mixin(value = DarknessFogEnvironment.class, priority = 200000)
 public class NoDarknessMixin {
     @Inject(method = "setupFog", at = @At("HEAD"), cancellable = true)
     private void giovanni$skipDarknessFog(FogData fog, Camera camera, ClientLevel level, float renderDistance, DeltaTracker deltaTracker, CallbackInfo ci) {
