@@ -9,14 +9,22 @@ import rocket.giovanniclient.client.features.inventorybuttons.rei.ReiAccessibili
 import rocket.giovanniclient.client.util.Utils;
 
 public final class ClientLifecycle {
+    private static boolean shutdownHookRegistered;
+    private static boolean clientStartedRegistered;
 
     private ClientLifecycle() {}
 
     public static void registerShutdownHook() {
+        if (shutdownHookRegistered) return;
+        shutdownHookRegistered = true;
+
         Runtime.getRuntime().addShutdownHook(new Thread(ConfigManager::shutdown));
     }
 
     public static void registerClientStarted() {
+        if (clientStartedRegistered) return;
+        clientStartedRegistered = true;
+
         ClientLifecycleEvents.CLIENT_STARTED.register(client -> {
             ConfigManager.init();
             Utils.init(ConfigManager.getConfig().debugConfig);

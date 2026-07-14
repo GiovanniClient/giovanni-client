@@ -10,10 +10,6 @@ public class AutoSolversConfig {
     @ConfigEditorBoolean
     public boolean AUTOMELODY_TOGGLE = false;
 
-    @Expose
-    @ConfigOption(name = "Loudmouth Bass", desc = "§cI AM NOT RESPONSABLE FOR YOUR LOSSES")
-    @ConfigEditorBoolean
-    public boolean LOUDMOUTH_BASS = false;
 //
 //    @Expose
 //    @ConfigOption(name = "Click Type", desc = "Changes how to interact with the items in the harp.")
@@ -101,5 +97,9 @@ public class AutoSolversConfig {
         public String NAME_OF_THE_SHARD_TO_CLAIM = "Wobbuffett";
     }
 
+    @Expose
+    @ConfigOption(name = "Auto Loudmouth Bass", desc = "§cI AM NOT RESPONSABLE FOR YOUR LOSSES\nAutomatically accepts lb battles")
+    @ConfigEditorBoolean
+    public boolean LOUDMOUTH_BASS = false;
 
 }

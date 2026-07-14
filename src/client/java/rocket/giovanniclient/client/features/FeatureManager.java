@@ -23,12 +23,16 @@ import java.util.List;
 
 public class FeatureManager {
     private static final List<AbstractFeature> FEATURES = new ArrayList<>();
+    private static boolean registered;
 
     public static void register(AbstractFeature feature) {
         FEATURES.add(feature);
     }
 
     public static void registerAll() {
+        if (registered) return;
+        registered = true;
+
         register(new PlayerLocator());
         register(new SlayerUtils());
 
@@ -61,6 +65,11 @@ public class FeatureManager {
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
             for (AbstractFeature f : FEATURES)
                 f.onWorldLoad(client);
+        });
+
+        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
+            for (AbstractFeature f : FEATURES)
+                f.onWorldUnload(client);
         });
     }
 }

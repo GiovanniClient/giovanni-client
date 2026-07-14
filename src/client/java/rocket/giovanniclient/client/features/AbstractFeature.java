@@ -38,4 +38,14 @@ public abstract class AbstractFeature {
     public void onWorldLoad(Minecraft client) { // Changed method name to match error message
         // Default empty implementation
     }
+
+    /**
+     * Called when the client disconnects from the current world/server.
+     * Features that cache world-scoped data should clear it here.
+     *
+     * @param client The Minecraft instance.
+     */
+    public void onWorldUnload(Minecraft client) {
+        // Default empty implementation
+    }
 }

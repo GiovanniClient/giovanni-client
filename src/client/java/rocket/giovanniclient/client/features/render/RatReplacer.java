@@ -20,12 +20,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class RatReplacer extends AbstractFeature {
     private static final String RAT_TEXTURE_HASH = "a8abb471db0ab78703011979dc8b40798a941f3a4dec3ec61cbeec2af8cffe8";
-    private static final Map<UUID, ArmorStand> RATS = new ConcurrentHashMap<>();
+    private static final Map<UUID, Boolean> RATS = new ConcurrentHashMap<>();
 
     private int tickCounter = 0;
 
@@ -46,10 +47,9 @@ public class RatReplacer extends AbstractFeature {
             }
         }
 
-        RATS.putAll(found);
+        found.keySet().forEach(uuid -> RATS.put(uuid, Boolean.TRUE));
         for (UUID uuid : new HashSet<>(RATS.keySet())) {
-            ArmorStand stand = RATS.get(uuid);
-            if (!found.containsKey(uuid) || stand == null || !stand.isAlive()) {
+            if (!found.containsKey(uuid)) {
                 RATS.remove(uuid);
             }
         }
@@ -60,20 +60,43 @@ public class RatReplacer extends AbstractFeature {
         RATS.clear();
     }
 
+    @Override
+    public void onWorldUnload(Minecraft client) {
+        RATS.clear();
+    }
+
     public static boolean shouldReplace(ArmorStand stand) {
         boolean shouldReplace = isEnabled() && isRatArmorStand(stand);
         if (shouldReplace) {
-            RATS.put(stand.getUUID(), stand);
+            RATS.put(stand.getUUID(), Boolean.TRUE);
         }
         return shouldReplace;
     }
 
     public static List<RatRenderData> getRenderData(float tickProgress) {
-        return RATS.values().stream()
+        Minecraft client = Minecraft.getInstance();
+        if (client.level == null) return List.of();
+
+        return RATS.keySet().stream()
+                .map(uuid -> findRat(client, uuid))
+                .filter(Objects::nonNull)
                 .filter(ArmorStand::isAlive)
                 .filter(RatReplacer::isRatArmorStand)
-                .map(stand -> new RatRenderData(stand.getPosition(tickProgress), Mth.lerp(tickProgress, stand.yRotO, stand.getYRot())))
+                .map(stand -> renderData(stand, tickProgress))
                 .toList();
+    }
+
+    private static RatRenderData renderData(ArmorStand stand, float tickProgress) {
+        return new RatRenderData(stand.getPosition(tickProgress), Mth.lerp(tickProgress, stand.yRotO, stand.getYRot()));
+    }
+
+    private static ArmorStand findRat(Minecraft client, UUID uuid) {
+        for (Entity entity : client.level.entitiesForRendering()) {
+            if (entity instanceof ArmorStand stand && stand.getUUID().equals(uuid)) {
+                return stand;
+            }
+        }
+        return null;
     }
 
     private static boolean isEnabled() {

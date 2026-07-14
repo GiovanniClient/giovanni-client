@@ -20,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.time.Instant;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -40,8 +41,13 @@ public class ConfigManager {
     private static MoulConfigEditor<MainConfig> editor;
 
     private static final ScheduledExecutorService SCHEDULER = Executors.newSingleThreadScheduledExecutor();
+    private static ScheduledFuture<?> autosaveTask;
+    private static boolean initialized;
 
     public static void init() {
+        if (initialized) return;
+        initialized = true;
+
         CONFIG_FILE.getParentFile().mkdirs();
         loadConfig();
         registerClientConfigStateObservers();
@@ -52,7 +58,7 @@ public class ConfigManager {
         driver = new ConfigProcessorDriver(processor);
         driver.processConfig(config);
 
-        SCHEDULER.scheduleAtFixedRate(() -> saveConfig(), 60, 60, TimeUnit.SECONDS);
+        autosaveTask = SCHEDULER.scheduleAtFixedRate(ConfigManager::saveConfig, 60, 60, TimeUnit.SECONDS);
     }
 
     private static void loadConfig() {
@@ -103,6 +109,10 @@ public class ConfigManager {
     }
 
     public static void shutdown() {
+        if (autosaveTask != null) {
+            autosaveTask.cancel(false);
+            autosaveTask = null;
+        }
         SCHEDULER.shutdownNow();
         saveConfig();
     }

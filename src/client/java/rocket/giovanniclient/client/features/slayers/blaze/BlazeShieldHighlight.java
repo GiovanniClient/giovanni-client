@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 public class BlazeShieldHighlight extends AbstractFeature {
     private static final int SCAN_EVERY_TICKS = 5;
     private static final Pattern TIMER_PATTERN = Pattern.compile(".*\\d\\d:\\d\\d.*");
-    private static final Map<UUID, HighlightTarget> HIGHLIGHTS = new ConcurrentHashMap<>();
+    private static final Map<UUID, HighlightColors> HIGHLIGHTS = new ConcurrentHashMap<>();
 
     private int tickCounter = 0;
 
@@ -46,7 +46,7 @@ public class BlazeShieldHighlight extends AbstractFeature {
         tickCounter++;
         if (tickCounter % SCAN_EVERY_TICKS != 0) return;
 
-        Map<UUID, HighlightTarget> desiredHighlights = new HashMap<>();
+        Map<UUID, HighlightColors> desiredHighlights = new HashMap<>();
 
         for (Entity entity : client.level.entitiesForRendering()) {
             if (!(entity instanceof ArmorStand stand) || !stand.hasCustomName()) continue;
@@ -58,7 +58,7 @@ public class BlazeShieldHighlight extends AbstractFeature {
             Entity boss = findNametagOwner(client, stand);
             if (!(boss instanceof LivingEntity living)) continue;
 
-            desiredHighlights.put(living.getUUID(), new HighlightTarget(living, color.outlineArgb(), color.fillArgb()));
+            desiredHighlights.put(living.getUUID(), new HighlightColors(color.outlineArgb(), color.fillArgb()));
         }
 
         HIGHLIGHTS.putAll(desiredHighlights);
@@ -74,14 +74,28 @@ public class BlazeShieldHighlight extends AbstractFeature {
         clearApplied();
     }
 
+    @Override
+    public void onWorldUnload(Minecraft client) {
+        clearApplied();
+    }
+
     private void clearApplied() {
         HIGHLIGHTS.clear();
     }
 
     public static List<RenderedBox> getRenderedBoxes(float tickProgress) {
-        return HIGHLIGHTS.values().stream()
-                .filter(target -> target.entity().isAlive())
-                .map(target -> new RenderedBox(getLerpedBox(target.entity(), tickProgress), target.outlineArgb(), target.fillArgb()))
+        Minecraft client = Minecraft.getInstance();
+        if (client.level == null) return List.of();
+
+        return HIGHLIGHTS.entrySet().stream()
+                .map(entry -> {
+                    Entity entity = findEntityByUuid(client, entry.getKey());
+                    if (!(entity instanceof LivingEntity living) || !living.isAlive()) return null;
+
+                    HighlightColors colors = entry.getValue();
+                    return new RenderedBox(getLerpedBox(living, tickProgress), colors.outlineArgb(), colors.fillArgb());
+                })
+                .filter(Objects::nonNull)
                 .toList();
     }
 
@@ -129,13 +143,23 @@ public class BlazeShieldHighlight extends AbstractFeature {
         return entity.getDimensions(Pose.STANDING).makeBoundingBox(entity.getPosition(tickProgress));
     }
 
+    private static Entity findEntityByUuid(Minecraft client, UUID uuid) {
+        if (client.level == null) return null;
+
+        for (Entity entity : client.level.entitiesForRendering()) {
+            if (entity.getUUID().equals(uuid)) return entity;
+        }
+
+        return null;
+    }
+
     private static String plainName(Component component) {
         return Objects.requireNonNullElse(component, Component.empty()).getString();
     }
 
     private record HighlightColor(int outlineArgb, int fillArgb) {}
 
-    private record HighlightTarget(LivingEntity entity, int outlineArgb, int fillArgb) {}
+    private record HighlightColors(int outlineArgb, int fillArgb) {}
 
     public record RenderedBox(AABB box, int outlineArgb, int fillArgb) {}
 }
