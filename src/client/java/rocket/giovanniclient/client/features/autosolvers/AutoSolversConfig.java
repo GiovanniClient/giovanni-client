@@ -9,6 +9,11 @@ public class AutoSolversConfig {
     @ConfigOption(name = "Auto Melody's Harp", desc = "Automatically plays Melody's Harp songs")
     @ConfigEditorBoolean
     public boolean AUTOMELODY_TOGGLE = false;
+
+    @Expose
+    @ConfigOption(name = "Loudmouth Bass", desc = "§cI AM NOT RESPONSABLE FOR YOUR LOSSES")
+    @ConfigEditorBoolean
+    public boolean LOUDMOUTH_BASS = false;
 //
 //    @Expose
 //    @ConfigOption(name = "Click Type", desc = "Changes how to interact with the items in the harp.")

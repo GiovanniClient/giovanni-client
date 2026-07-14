@@ -35,22 +35,22 @@ public final class ClientCustomCommands {
             "LB %s",
             "lowb %s quick coins",
             "lowball %s, good offers only",
-            "buying items lowballing %s",
+            "buying items lowballing %s quick",
             "lowballing with %s purse",
-            "lf items, lowballing %s",
-            "lowballing %s, fast trades",
+            "l0wballling %s fast coins",
+            "lowballing %s, fast trades o/",
             "LB %s, visit me",
             "lowball %s, no bad items",
-            "buying almost anything, %s",
+            "lb quick trades, %s purse",
             "lowballing %s, quick deals",
-            "lowb %s, selling fast?",
+            "lowb %s, buying fast!!!",
             "lowballer with %s",
-            "need items, lowballing %s",
+            " o/ turboballing %s purse",
             "lowballing %s, clean trades",
             "LB %s best offers",
             "lowball %s, quick coins",
-            "buying items for lowball, %s",
-            "lowballing %s, party me"
+            "fastballing, %s purse",
+            "lowballing %s, visit me"
     };
 
     private ClientCustomCommands() {
@@ -267,9 +267,8 @@ public final class ClientCustomCommands {
     }
 
     private static long varyLowballPurse(long purse, ThreadLocalRandom random) {
-        long variationLimit = Math.min(LOWBALL_VARIATION_COINS, Math.max(purse, 0L));
-        long variation = random.nextLong(-variationLimit, LOWBALL_VARIATION_COINS + 1);
-        return Math.max(0L, purse + variation);
+        long variation = random.nextLong(LOWBALL_VARIATION_COINS + 1);
+        return purse + variation;
     }
 
     private static String formatLowballAmount(long coins, boolean preferBillions) {

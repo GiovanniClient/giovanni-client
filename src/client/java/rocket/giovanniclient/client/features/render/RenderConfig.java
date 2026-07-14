@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import io.github.notenoughupdates.moulconfig.annotations.Accordion;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption;
+import io.github.notenoughupdates.moulconfig.observer.Property;
 
 public class RenderConfig {
 
@@ -53,4 +54,9 @@ public class RenderConfig {
     @ConfigOption(name = "No Hurtcam", desc = "")
     @ConfigEditorBoolean
     public boolean NO_HURT_CAM = false;
+
+    @Expose
+    @ConfigOption(name = "Glass Barrier Blocks", desc = "Renders barrier blocks as normal glass.")
+    @ConfigEditorBoolean
+    public Property<Boolean> GLASS_BARRIER_BLOCKS = Property.of(false);
 }

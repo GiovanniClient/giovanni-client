@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import rocket.giovanniclient.client.features.autosolvers.AutoExperiments;
 import rocket.giovanniclient.client.features.autosolvers.AutoFusion;
+import rocket.giovanniclient.client.features.autosolvers.AutoLoudmouthBass;
 import rocket.giovanniclient.client.features.autosolvers.AutoMelody;
 import rocket.giovanniclient.client.features.autosolvers.AutoShardsClaim;
 import rocket.giovanniclient.client.features.misc.CloseChocolateEggs;
@@ -35,6 +36,7 @@ public class FeatureManager {
         register(new AutoShardsClaim());
         register(new AutoExperiments());
         register(new AutoFusion());
+        register(new AutoLoudmouthBass());
         register(new AutoSoulcry());
         register(new BlazeShieldHighlight());
         register(new CloseChocolateEggs());

@@ -4,6 +4,7 @@ import com.google.gson.*;
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
 import io.github.notenoughupdates.moulconfig.gui.MoulConfigEditor;
 import io.github.notenoughupdates.moulconfig.observer.Property;
+import net.minecraft.client.Minecraft;
 import io.github.notenoughupdates.moulconfig.processor.BuiltinMoulConfigGuis;
 import io.github.notenoughupdates.moulconfig.processor.ConfigProcessorDriver;
 import io.github.notenoughupdates.moulconfig.processor.MoulConfigProcessor;
@@ -147,6 +148,19 @@ public class ConfigManager {
         if (config.debugConfig != null && config.debugConfig.YGGDRASIL != null) {
             config.debugConfig.YGGDRASIL.addObserver((oldValue, newValue) -> syncClientConfigState());
         }
+
+        if (config.rc != null && config.rc.GLASS_BARRIER_BLOCKS != null) {
+            config.rc.GLASS_BARRIER_BLOCKS.addObserver((oldValue, newValue) -> reloadChunks());
+        }
+    }
+
+    private static void reloadChunks() {
+        Minecraft client = Minecraft.getInstance();
+        client.execute(() -> {
+            if (client.level != null) {
+                client.levelRenderer.allChanged();
+            }
+        });
     }
 
     private static class GiovanniConfigEditor extends MoulConfigEditor<MainConfig> {
