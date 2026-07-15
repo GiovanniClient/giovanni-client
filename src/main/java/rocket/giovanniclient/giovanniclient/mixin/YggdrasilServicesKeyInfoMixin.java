@@ -9,39 +9,32 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import rocket.giovanniclient.giovanniclient.config.ClientConfigState;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Signature;
 import java.security.SignatureException;
 import java.util.Base64;
 
 @Mixin(value = YggdrasilServicesKeyInfo.class, remap = false)
 public abstract class YggdrasilServicesKeyInfoMixin {
-
-    @Shadow
-    public abstract Signature signature();
+    @Shadow public abstract Signature signature();
 
     @Inject(method = "validateProperty", at = @At("HEAD"), cancellable = true)
-    private void giovanni$validatePropertySilently(
-            final Property property,
-            final CallbackInfoReturnable<Boolean> cir
-    ) {
-        if (!ClientConfigState.suppressYggdrasilWarnings) {
-            return;
-        }
+    private void giovanni$validatePropertySilently(Property property, CallbackInfoReturnable<Boolean> cir) {
+        if (!ClientConfigState.suppressYggdrasilWarnings) return;
 
-        final Signature signature = this.signature();
-
-        final byte[] expected;
+        byte[] expected;
         try {
             expected = Base64.getDecoder().decode(property.signature());
-        } catch (final IllegalArgumentException e) {
+        } catch (IllegalArgumentException exception) {
             cir.setReturnValue(false);
             return;
         }
 
         try {
-            signature.update(property.value().getBytes());
+            Signature signature = signature();
+            signature.update(property.value().getBytes(StandardCharsets.UTF_8));
             cir.setReturnValue(signature.verify(expected));
-        } catch (final SignatureException e) {
+        } catch (SignatureException exception) {
             cir.setReturnValue(false);
         }
     }

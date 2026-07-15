@@ -40,7 +40,10 @@ public class InventoryUtils {
      */
     public static void clickSlot(Minecraft client, AbstractContainerMenu handler, int slot,
                                  MouseButton button, ContainerInput actionType) {
-        assert client.gameMode != null;
+        if (client == null || client.player == null || client.gameMode == null || handler == null
+                || slot < 0 || slot >= handler.slots.size()) {
+            return;
+        }
         client.gameMode.handleContainerInput(
                 handler.containerId,
                 slot,

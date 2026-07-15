@@ -22,7 +22,7 @@ public class DebugConfig {
     public boolean SEE_INVISIBLE_ARMOR_STANDS = false;
 
     @Expose
-    @ConfigOption(name = "Yggdrasil", desc = "")
+    @ConfigOption(name = "Yggdrasil", desc = "Enable Yggdrasil debug handling.")
     @ConfigEditorBoolean
     public Property<Boolean> YGGDRASIL = Property.of(false);
 }

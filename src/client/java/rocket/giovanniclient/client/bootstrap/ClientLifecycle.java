@@ -21,7 +21,7 @@ public final class ClientLifecycle {
         Runtime.getRuntime().addShutdownHook(new Thread(ConfigManager::shutdown));
     }
 
-    public static void registerClientStarted() {
+    public static void registerClientStarted(boolean enableFeatures) {
         if (clientStartedRegistered) return;
         clientStartedRegistered = true;
 
@@ -29,12 +29,14 @@ public final class ClientLifecycle {
             ConfigManager.init();
             Utils.init(ConfigManager.getConfig().debugConfig);
 
-            if (ConfigManager.getConfig().ibc.INV_BUTTONS_IN_CRAFTING_GRID
-                    && FabricLoader.getInstance().isModLoaded("roughlyenoughitems")) {
-                ReiAccessibilityManager.disableClickableRecipeArrowsIfNeeded();
-            }
+            if (enableFeatures) {
+                if (ConfigManager.getConfig().ibc.INV_BUTTONS_IN_CRAFTING_GRID
+                        && FabricLoader.getInstance().isModLoaded("roughlyenoughitems")) {
+                    ReiAccessibilityManager.disableClickableRecipeArrowsIfNeeded();
+                }
 
-            FeatureManager.registerAll();
+                FeatureManager.registerAll();
+            }
 
             Utils.debug("GiovanniClient initialized successfully! Version: " + GiovanniClientClient.MOD_VERSION);
         });

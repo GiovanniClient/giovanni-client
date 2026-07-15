@@ -24,6 +24,9 @@ public class AutoShardsClaim extends AbstractFeature {
 
     @Override
     public void onScreenOpen(Screen screen) {
+        shouldClaim = false;
+        clickDelay = -1;
+
         if (screen instanceof ContainerScreen && cfg.autoFusionAccordtion.AUTOSHARDSCLAIM) {
             String name = screen.getTitle().getString();
             if (name.contains("Hunting Box")) {
@@ -31,18 +34,21 @@ public class AutoShardsClaim extends AbstractFeature {
                 shouldClaim = true;
                 Utils.debug("Hunting Box detected");
             }
-        } else {
-            shouldClaim = false;
         }
     }
 
     @Override
     public void onTick(Minecraft client) {
-        if (!shouldClaim || !cfg.autoFusionAccordtion.AUTOSHARDSCLAIM || client.player == null)
+        if (!shouldClaim || !cfg.autoFusionAccordtion.AUTOSHARDSCLAIM || client.player == null) {
+            clickDelay = -1;
             return;
+        }
 
-        if (!(client.screen instanceof ContainerScreen))
+        if (!(client.screen instanceof ContainerScreen)) {
+            shouldClaim = false;
+            clickDelay = -1;
             return;
+        }
 
         AbstractContainerMenu handler = client.player.containerMenu;
         int slot = findItemByName(handler, shardToClaim);
@@ -50,8 +56,10 @@ public class AutoShardsClaim extends AbstractFeature {
         if (slot != -1) {
             long now = System.currentTimeMillis();
             if (clickDelay == -1) {
-                clickDelay = now + rng.nextInt(cfg.autoFusionAccordtion.AUTOFUSION_CLICK_DELAY_MAX - cfg.autoFusionAccordtion.AUTOFUSION_CLICK_DELAY_MIN)
-                        + cfg.autoFusionAccordtion.AUTOFUSION_CLICK_DELAY_MIN;
+                clickDelay = now + randomDelay(
+                        cfg.autoFusionAccordtion.AUTOFUSION_CLICK_DELAY_MIN,
+                        cfg.autoFusionAccordtion.AUTOFUSION_CLICK_DELAY_MAX
+                );
                 Utils.debug("Click delay: " + (clickDelay - now) + "ms");
             } else if (now > clickDelay) {
                 Utils.debug(shardToClaim + " found in slot " + slot);
@@ -59,5 +67,11 @@ public class AutoShardsClaim extends AbstractFeature {
                 clickDelay = -1;
             }
         }
+    }
+
+    private int randomDelay(int configuredMin, int configuredMax) {
+        int min = Math.max(0, configuredMin);
+        int max = Math.max(min, configuredMax);
+        return min + rng.nextInt(max - min + 1);
     }
 }

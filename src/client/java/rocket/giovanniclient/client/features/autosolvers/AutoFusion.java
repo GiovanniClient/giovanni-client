@@ -30,11 +30,15 @@ public class AutoFusion extends AbstractFeature {
 
     @Override
     public void onScreenOpen(Screen screen) {
-        if (!cfg.autoFusionAccordtion.AUTOFUSION)
+        if (!cfg.autoFusionAccordtion.AUTOFUSION) {
+            currentState = State.NONE;
+            clickDelay = -1;
             return;
+        }
 
         if (!(screen instanceof ContainerScreen)) {
             currentState = State.NONE;
+            clickDelay = -1;
             return;
         }
 
@@ -47,6 +51,7 @@ public class AutoFusion extends AbstractFeature {
             currentState = State.CONFIRM_FUSION;
         } else {
             currentState = State.NONE;
+            clickDelay = -1;
         }
     }
 
@@ -57,6 +62,7 @@ public class AutoFusion extends AbstractFeature {
                 || client.player == null
                 || !(client.screen instanceof ContainerScreen)) {
             currentState = State.NONE;
+            clickDelay = -1;
             return;
         }
 
@@ -75,16 +81,21 @@ public class AutoFusion extends AbstractFeature {
                           int slot,
                           String expectedItemId,
                           long now) {
+        if (slot < 0 || slot >= handler.slots.size()) {
+            currentState = State.NONE;
+            clickDelay = -1;
+            return;
+        }
 
         Slot s = handler.slots.get(slot);
         String itemId = s.getItem().getItem().toString();
 
         if (itemId.equals(expectedItemId)) {
             if (clickDelay == -1) {
-                clickDelay = now +
-                        rng.nextInt(cfg.autoFusionAccordtion.AUTOFUSION_CLICK_DELAY_MAX -
-                                cfg.autoFusionAccordtion.AUTOFUSION_CLICK_DELAY_MIN) +
-                        cfg.autoFusionAccordtion.AUTOFUSION_CLICK_DELAY_MIN;
+                clickDelay = now + randomDelay(
+                        cfg.autoFusionAccordtion.AUTOFUSION_CLICK_DELAY_MIN,
+                        cfg.autoFusionAccordtion.AUTOFUSION_CLICK_DELAY_MAX
+                );
 
                 Utils.debug("Click delay: " + (clickDelay - now) + "ms");
             }
@@ -94,5 +105,11 @@ public class AutoFusion extends AbstractFeature {
                 clickDelay = -1;
             }
         }
+    }
+
+    private int randomDelay(int configuredMin, int configuredMax) {
+        int min = Math.max(0, configuredMin);
+        int max = Math.max(min, configuredMax);
+        return min + rng.nextInt(max - min + 1);
     }
 }

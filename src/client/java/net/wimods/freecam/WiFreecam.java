@@ -25,7 +25,6 @@ import net.wimods.freecam.clickgui.ClickGui;
 import net.wimods.freecam.mixinterface.IKeyMapping;
 import net.wimods.freecam.settings.SettingsFile;
 import net.wimods.freecam.util.EntityUtils;
-import net.wimods.freecam.util.PlausibleAnalytics;
 import net.wimods.freecam.util.RenderUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +49,6 @@ public enum WiFreecam
 	
 	private FreecamSettings settings;
 	private SettingsFile settingsFile;
-	private PlausibleAnalytics plausible;
 	private ClickGui gui;
 	private boolean guiInitialized;
 	private FreecamKeybinds keybinds;
@@ -65,9 +63,6 @@ public enum WiFreecam
 		settings = new FreecamSettings();
 		settingsFile = new SettingsFile(configDir.resolve("settings.json"));
 		settingsFile.load();
-		
-		plausible = new PlausibleAnalytics();
-		plausible.pageview("/");
 		
 		Path guiFile = configDir.resolve("windows.json");
 		gui = new ClickGui(guiFile);
@@ -285,11 +280,6 @@ public enum WiFreecam
 	public void saveSettings()
 	{
 		settingsFile.save();
-	}
-	
-	public PlausibleAnalytics getPlausible()
-	{
-		return plausible;
 	}
 	
 	public ClickGui getGui()

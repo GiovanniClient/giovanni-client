@@ -64,4 +64,5 @@ public class MainConfig extends Config {
     @Expose
     @Category(name = "Debug", desc = "here be dragons")
     public DebugConfig debugConfig = new DebugConfig();
+
 }

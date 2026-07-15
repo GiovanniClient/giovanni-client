@@ -33,10 +33,10 @@ public class AutoExperiments extends AbstractFeature {
         NONE
     }
 
-    private final int START_DELAY_MIN = 234;
-    private final int START_DELAY_MAX = 678;
-    private final int END_DELAY_MIN = 777;
-    private final int END_DELAY_MAX = 3333;
+    private static final int START_DELAY_MIN = 234;
+    private static final int START_DELAY_MAX = 678;
+    private static final int END_DELAY_MIN = 777;
+    private static final int END_DELAY_MAX = 3333;
 
     private final AutoSolversConfig cfg = ConfigManager.getConfig().asc;
     private final Random rng = new Random();
@@ -92,11 +92,14 @@ public class AutoExperiments extends AbstractFeature {
         }
 
         AbstractContainerMenu handler = client.player.containerMenu;
-        ItemStack center = handler.slots.get(49).getItem();
+        if (!hasRequiredSlots(handler, 49)) {
+            clearAll();
+            return;
+        }
         long now = System.currentTimeMillis();
 
         if (startDelay == -1) {
-            startDelay = now + rng.nextInt(START_DELAY_MAX - START_DELAY_MIN) + START_DELAY_MIN;
+            startDelay = now + randomDelay(START_DELAY_MIN, START_DELAY_MAX);
             Utils.debug("Start delay: " + (startDelay - now));
         }
 
@@ -112,7 +115,7 @@ public class AutoExperiments extends AbstractFeature {
 
     private void tickEnd(Minecraft client, long now) {
         if (endDelay == -1) {
-            endDelay = now + rng.nextInt(END_DELAY_MAX - END_DELAY_MIN) + END_DELAY_MIN;
+            endDelay = now + randomDelay(END_DELAY_MIN, END_DELAY_MAX);
             Utils.debug("End delay: " + (endDelay - now) + "ms");
         }
 
@@ -123,6 +126,10 @@ public class AutoExperiments extends AbstractFeature {
     }
 
     private void tickChrono(Minecraft client, AbstractContainerMenu handler, long now) {
+        if (!hasRequiredSlots(handler, 49)) {
+            clearAll();
+            return;
+        }
         ItemStack flag = handler.slots.get(49).getItem();
         tick_counter++;
         if (tick_counter % 9 == 0) Utils.debug("Flag Slot: " + flag.toString());
@@ -159,14 +166,11 @@ public class AutoExperiments extends AbstractFeature {
                 chronomatronOrder.size() > clicks) {
 
             if (clickDelay == -1) {
-
-                clickDelay = now + rng.nextInt(cfg.autoExperimentsAccordion.delays.MAX - cfg.autoExperimentsAccordion.delays.MIN) + cfg.autoExperimentsAccordion.delays.MIN;
-
-                int min = cfg.autoExperimentsAccordion.delays.MIN;
-                int max = cfg.autoExperimentsAccordion.delays.MAX;
-                int bound = Math.max(1, max - min);
-
-                clickDelay = now + rng.nextInt(bound) + min;                Utils.debug("Chrono Click " + (clicks + 1) + " in " + (clickDelay - now) + "ms");
+                clickDelay = now + randomDelay(
+                        cfg.autoExperimentsAccordion.delays.MIN,
+                        cfg.autoExperimentsAccordion.delays.MAX
+                );
+                Utils.debug("Chrono Click " + (clicks + 1) + " in " + (clickDelay - now) + "ms");
             }
 
             if (now > clickDelay) {
@@ -178,6 +182,10 @@ public class AutoExperiments extends AbstractFeature {
     }
 
     private void tickUltra(Minecraft client, AbstractContainerMenu handler, long now) {
+        if (!hasRequiredSlots(handler, 49)) {
+            clearAll();
+            return;
+        }
         ItemStack flag = handler.slots.get(49).getItem();
         NonNullList<Slot> container = handler.slots;
 
@@ -205,7 +213,10 @@ public class AutoExperiments extends AbstractFeature {
 
         if (flag.is(Items.CLOCK) && ultrasequencerOrder.containsKey(clicks)) {
             if (clickDelay == -1) {
-                clickDelay = now + rng.nextInt(cfg.autoExperimentsAccordion.delays.MAX - cfg.autoExperimentsAccordion.delays.MIN) + cfg.autoExperimentsAccordion.delays.MIN;
+                clickDelay = now + randomDelay(
+                        cfg.autoExperimentsAccordion.delays.MIN,
+                        cfg.autoExperimentsAccordion.delays.MAX
+                );
                 Utils.debug("Ultra Click " + (clicks + 1) + " in " + (clickDelay - now) + "ms");
             }
 
@@ -233,5 +244,15 @@ public class AutoExperiments extends AbstractFeature {
         clickDelay = -1;
         endDelay = -1;
         startDelay = -1;
+    }
+
+    private boolean hasRequiredSlots(AbstractContainerMenu handler, int highestRequiredSlot) {
+        return handler != null && handler.slots.size() > highestRequiredSlot;
+    }
+
+    private int randomDelay(int configuredMin, int configuredMax) {
+        int min = Math.max(0, configuredMin);
+        int max = Math.max(min, configuredMax);
+        return min + rng.nextInt(max - min + 1);
     }
 }

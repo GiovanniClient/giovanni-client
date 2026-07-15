@@ -2,6 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "package": "rocket.giovanniclient.giovanniclient.mixin",
+  "plugin": "rocket.giovanniclient.client.mixin.GiovanniMixinPlugin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "ClientIntentionPacketMixin",

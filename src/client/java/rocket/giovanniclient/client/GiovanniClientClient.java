@@ -40,14 +40,17 @@ public final class GiovanniClientClient implements ClientModInitializer {
     }
 
     private void runFullInit() {
+        // Freecam registers key mappings, which must happen before GameOptions
+        // is initialized. Load configuration now so its initialization remains
+        // safe and telemetry-free.
+        ConfigManager.init();
         ClientLifecycle.registerShutdownHook();
         ClientKeybinds.register();
         ClientTicks.register();
         ClientCustomCommands.register();
         ClientResources.register();
         ClientWorldJoinEvents.register();
-        ClientLifecycle.registerClientStarted();
-
+        ClientLifecycle.registerClientStarted(true);
         WiFreecam.INSTANCE.initialize();
     }
 
@@ -75,7 +78,7 @@ public final class GiovanniClientClient implements ClientModInitializer {
         });
 
         ClientCustomCommands.registerSafemode();
-        ClientLifecycle.registerClientStarted();
+        ClientLifecycle.registerClientStarted(false);
     }
 
     public static String getMcVersion() {

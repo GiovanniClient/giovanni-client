@@ -4,27 +4,31 @@ import com.google.gson.*;
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
 import io.github.notenoughupdates.moulconfig.gui.MoulConfigEditor;
 import io.github.notenoughupdates.moulconfig.observer.Property;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import io.github.notenoughupdates.moulconfig.processor.BuiltinMoulConfigGuis;
 import io.github.notenoughupdates.moulconfig.processor.ConfigProcessorDriver;
 import io.github.notenoughupdates.moulconfig.processor.MoulConfigProcessor;
 import rocket.giovanniclient.giovanniclient.config.ClientConfigState;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.time.Instant;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ConfigManager {
+    private static final Logger LOGGER = LoggerFactory.getLogger("GiovanniClient/Config");
     public static boolean shouldOpenFromCommand = false;
 
     // Add custom TypeAdapter for Property fields
@@ -34,7 +38,8 @@ public class ConfigManager {
             .registerTypeAdapter(Property.class, new PropertyTypeAdapter())
             .create();
 
-    private static final File CONFIG_FILE = new File("config/giovanniclient/config.json");
+    private static final Path CONFIG_FILE = FabricLoader.getInstance()
+            .getConfigDir().resolve("giovanniclient/config.json");
     private static MainConfig config;
     private static MoulConfigProcessor<MainConfig> processor;
     private static ConfigProcessorDriver driver;
@@ -48,7 +53,11 @@ public class ConfigManager {
         if (initialized) return;
         initialized = true;
 
-        CONFIG_FILE.getParentFile().mkdirs();
+        try {
+            Files.createDirectories(CONFIG_FILE.getParent());
+        } catch (IOException exception) {
+            throw new IllegalStateException("Unable to create GiovanniClient config directory", exception);
+        }
         loadConfig();
         registerClientConfigStateObservers();
         syncClientConfigState();
@@ -58,38 +67,41 @@ public class ConfigManager {
         driver = new ConfigProcessorDriver(processor);
         driver.processConfig(config);
 
-        autosaveTask = SCHEDULER.scheduleAtFixedRate(ConfigManager::saveConfig, 60, 60, TimeUnit.SECONDS);
+        autosaveTask = SCHEDULER.scheduleAtFixedRate(
+                () -> Minecraft.getInstance().execute(ConfigManager::saveConfig),
+                60,
+                60,
+                TimeUnit.SECONDS
+        );
     }
 
     private static void loadConfig() {
-        if (!CONFIG_FILE.exists()) {
+        if (!Files.isRegularFile(CONFIG_FILE)) {
             config = new MainConfig();
             saveConfig();
             return;
         }
-        try (FileReader fr = new FileReader(CONFIG_FILE)) {
-            config = GSON.fromJson(fr, MainConfig.class);
+        try (var reader = Files.newBufferedReader(CONFIG_FILE, StandardCharsets.UTF_8)) {
+            config = GSON.fromJson(reader, MainConfig.class);
             if (config == null) throw new IOException("Empty file");
         } catch (Exception e) {
-            e.printStackTrace();
-            try {
-                File backup = new File(CONFIG_FILE.getParentFile(), "config-" + Instant.now().toEpochMilli() + ".bak.json");
-                Files.copy(CONFIG_FILE.toPath(), backup.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                System.err.println("Backed up bad config to " + backup);
-            } catch (IOException ioe) {
-                ioe.printStackTrace();
-            }
+            LOGGER.error("Failed to load config; restoring defaults", e);
+            backupBrokenConfig();
             config = new MainConfig();
+            saveConfig();
         }
     }
 
-    public static void saveConfig() {
+    public static synchronized void saveConfig() {
+        if (config == null) {
+            return;
+        }
         syncClientConfigState();
 
-        try (FileWriter fw = new FileWriter(CONFIG_FILE)) {
-            fw.write(GSON.toJson(config));
+        try {
+            writeAtomically(CONFIG_FILE, GSON.toJson(config));
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("Failed to save config to {}", CONFIG_FILE, e);
         }
     }
 
@@ -115,6 +127,31 @@ public class ConfigManager {
         }
         SCHEDULER.shutdownNow();
         saveConfig();
+    }
+
+    private static void backupBrokenConfig() {
+        try {
+            Path backup = CONFIG_FILE.resolveSibling("config-" + Instant.now().toEpochMilli() + ".bak.json");
+            Files.copy(CONFIG_FILE, backup, StandardCopyOption.REPLACE_EXISTING);
+            LOGGER.warn("Backed up invalid config to {}", backup);
+        } catch (IOException exception) {
+            LOGGER.error("Failed to back up invalid config {}", CONFIG_FILE, exception);
+        }
+    }
+
+    private static void writeAtomically(Path destination, String content) throws IOException {
+        Files.createDirectories(destination.getParent());
+        Path temporary = Files.createTempFile(destination.getParent(), "config-", ".tmp");
+        try {
+            Files.writeString(temporary, content, StandardCharsets.UTF_8);
+            try {
+                Files.move(temporary, destination, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+            } catch (AtomicMoveNotSupportedException ignored) {
+                Files.move(temporary, destination, StandardCopyOption.REPLACE_EXISTING);
+            }
+        } finally {
+            Files.deleteIfExists(temporary);
+        }
     }
 
     // Custom TypeAdapter to properly serialize/deserialize Property fields
