@@ -98,7 +98,7 @@ public class AutoSolversConfig {
     }
 
     @Expose
-    @ConfigOption(name = "Auto Loudmouth Bass", desc = "§cI AM NOT RESPONSABLE FOR YOUR LOSSES\nAutomatically accepts lb battles")
+    @ConfigOption(name = "Auto Loudmouth Bass", desc = "§cI AM NOT RESPONSABLE FOR YOUR LOSSES§r\nAutomatically accepts lb battles")
     @ConfigEditorBoolean
     public boolean LOUDMOUTH_BASS = false;
 

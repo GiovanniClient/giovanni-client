@@ -51,12 +51,24 @@ public class RenderConfig {
     }
 
     @Expose
+    @Accordion
+    @ConfigOption(name = "Kuudra", desc = "Kuudra rendering options.")
+    public KuudraAccordion kuudraAccordion = new KuudraAccordion();
+    public static class KuudraAccordion {
+        @Expose
+        @ConfigOption(name = "Black Glass Barrier Blocks", desc = "Renders Kuudra barrier blocks at Y 75 as black stained glass.")
+        @ConfigEditorBoolean
+        public Property<Boolean> GLASS_BARRIER_BLOCKS = Property.of(false);
+
+        @Expose
+        @ConfigOption(name = "Transparent Lava", desc = "Renders lava with 50% transparency.")
+        @ConfigEditorBoolean
+        public Property<Boolean> TRANSPARENT_LAVA = Property.of(false);
+    }
+
+    @Expose
     @ConfigOption(name = "No Hurtcam", desc = "")
     @ConfigEditorBoolean
     public boolean NO_HURT_CAM = false;
 
-    @Expose
-    @ConfigOption(name = "Glass Barrier Blocks", desc = "Renders barrier blocks as normal glass.")
-    @ConfigEditorBoolean
-    public Property<Boolean> GLASS_BARRIER_BLOCKS = Property.of(false);
 }

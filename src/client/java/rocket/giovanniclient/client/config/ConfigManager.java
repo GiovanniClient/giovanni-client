@@ -196,15 +196,21 @@ public class ConfigManager {
             config.debugConfig.YGGDRASIL.addObserver((oldValue, newValue) -> syncClientConfigState());
         }
 
-        if (config.rc != null && config.rc.GLASS_BARRIER_BLOCKS != null) {
-            config.rc.GLASS_BARRIER_BLOCKS.addObserver((oldValue, newValue) -> reloadChunks());
+        if (config.rc != null && config.rc.kuudraAccordion != null) {
+            if (config.rc.kuudraAccordion.GLASS_BARRIER_BLOCKS != null) {
+                config.rc.kuudraAccordion.GLASS_BARRIER_BLOCKS.addObserver((oldValue, newValue) -> reloadChunks());
+            }
+
+            if (config.rc.kuudraAccordion.TRANSPARENT_LAVA != null) {
+                config.rc.kuudraAccordion.TRANSPARENT_LAVA.addObserver((oldValue, newValue) -> reloadChunks());
+            }
         }
     }
 
-    private static void reloadChunks() {
+    public static void reloadChunks() {
         Minecraft client = Minecraft.getInstance();
         client.execute(() -> {
-            if (client.level != null) {
+            if (client.level != null && client.player != null) {
                 client.levelRenderer.allChanged();
             }
         });
@@ -219,6 +225,7 @@ public class ConfigManager {
         public void onAfterClose() {
             super.onAfterClose();
             saveConfig();
+            reloadChunks();
         }
     }
 }

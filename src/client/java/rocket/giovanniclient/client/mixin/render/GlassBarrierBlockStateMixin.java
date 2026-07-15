@@ -14,7 +14,7 @@ import rocket.giovanniclient.client.config.ConfigManager;
 public class GlassBarrierBlockStateMixin {
     @Inject(method = "getRenderShape", at = @At("HEAD"), cancellable = true)
     private void giovanni$renderBarrierBlocks(CallbackInfoReturnable<RenderShape> cir) {
-        if (Boolean.TRUE.equals(ConfigManager.getConfig().rc.GLASS_BARRIER_BLOCKS.get())
+        if (Boolean.TRUE.equals(ConfigManager.getConfig().rc.kuudraAccordion.GLASS_BARRIER_BLOCKS.get())
                 && ((BlockState) (Object) this).is(Blocks.BARRIER)) {
             cir.setReturnValue(RenderShape.MODEL);
         }
