@@ -110,6 +110,12 @@ public class RatReplacer extends AbstractFeature {
     private static boolean isRatArmorStand(ArmorStand stand) {
         if (stand == null || !stand.isInvisible()) return false;
 
+        // Some rat variants are represented directly by an invisible, marker
+        // armor stand whose custom name contains the level and health.  They
+        // have no player-head item, so detect that representation before
+        // checking the usual textured-head stand.
+        if (isRatNameArmorStand(stand)) return true;
+
         ItemStack head = stand.getItemBySlot(EquipmentSlot.HEAD);
         if (head.isEmpty() || head.getItem() != Items.PLAYER_HEAD) return false;
 

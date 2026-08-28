@@ -48,6 +48,6 @@ public class LavaTransparencyMixin {
 
     @Unique
     private int giovanni$getTransparency() {
-        return 50;
+        return 60;
     }
 }
