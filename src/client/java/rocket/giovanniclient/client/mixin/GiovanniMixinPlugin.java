@@ -39,6 +39,10 @@ public class GiovanniMixinPlugin implements IMixinConfigPlugin {
             return isSupported && FabricLoader.getInstance().isModLoaded("sodium");
         }
 
+        if (mixinClassName.contains(".compat.Sbo")) {
+            return isSupported && FabricLoader.getInstance().isModLoaded("sbo");
+        }
+
         // If the version is not supported, we return FALSE to stop the Mixin from loading
         return isSupported;
     }

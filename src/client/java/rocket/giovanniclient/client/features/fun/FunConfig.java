@@ -19,4 +19,9 @@ public class FunConfig {
     @ConfigOption(name = "3D Rats", desc = "Replaces Hypixel rat armor stand heads with a small 3D rat model.")
     @ConfigEditorBoolean
     public boolean RENDER_3D_RATS = true;
+
+    @Expose
+    @ConfigOption(name = "SBO AFK Timeout patch", desc = "iykyk.")
+    @ConfigEditorBoolean
+    public boolean SBO_ONE_SECOND_AFK_TIMEOUT = false;
 }
