@@ -114,7 +114,7 @@ public final class ClientCustomCommands {
                 client.execute(() -> {
                     if (client.player != null) {
                         EditModeState.setEditMode(true);
-                        client.setScreen(new InventoryScreen(client.player));
+                        client.gui.setScreen(new InventoryScreen(client.player));
                     }
                 });
 

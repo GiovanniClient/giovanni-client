@@ -53,7 +53,7 @@ public class AutoSoulcry extends AbstractFeature {
 
     private boolean canUseSoulcry(Minecraft client) {
         return client.player != null
-                && client.screen == null
+                && client.gui.screen() == null
                 && isKatanaInHand()
                 && StatusBarUtils.getMana() >= sc.eman.soulcry.MINIMAL_MANA
                 && SlayerUtils.getCurrentSlayer() == SlayerUtils.Slayer.VOIDGLOOM_SERAPH

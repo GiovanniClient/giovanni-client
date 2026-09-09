@@ -13,7 +13,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
@@ -36,7 +36,7 @@ public enum RenderUtils
 	
 	public static Vec3 getCameraPos()
 	{
-		Camera camera = WiFreecam.MC.gameRenderer.getMainCamera();
+		Camera camera = WiFreecam.MC.gameRenderer.mainCamera();
 		if(camera == null)
 			return Vec3.ZERO;
 		
@@ -45,7 +45,7 @@ public enum RenderUtils
 	
 	public static Rotation getCameraRotation()
 	{
-		Camera camera = WiFreecam.MC.gameRenderer.getMainCamera();
+		Camera camera = WiFreecam.MC.gameRenderer.mainCamera();
 		if(camera == null)
 			return new Rotation(0, 0);
 		
@@ -54,16 +54,11 @@ public enum RenderUtils
 	
 	public static BlockPos getCameraBlockPos()
 	{
-		Camera camera = WiFreecam.MC.gameRenderer.getMainCamera();
+		Camera camera = WiFreecam.MC.gameRenderer.mainCamera();
 		if(camera == null)
 			return BlockPos.ZERO;
 		
 		return camera.blockPosition();
-	}
-	
-	public static MultiBufferSource.BufferSource getVCP()
-	{
-		return WiFreecam.MC.renderBuffers().bufferSource();
 	}
 	
 	public static int toIntColor(float[] rgb, float opacity)
@@ -75,16 +70,14 @@ public enum RenderUtils
 	}
 	
 	public static void drawLine(PoseStack matrices, Vec3 start, Vec3 end,
-		int color, boolean depthTest)
+		int color, boolean depthTest, SubmitNodeCollector collector)
 	{
-		MultiBufferSource.BufferSource vcp = getVCP();
 		RenderType layer = WurstRenderLayers.getLines(depthTest);
-		VertexConsumer buffer = vcp.getBuffer(layer);
-		
 		Vec3 offset = getCameraPos().reverse();
-		drawLine(matrices, buffer, start.add(offset), end.add(offset), color);
-		
-		vcp.endBatch(layer);
+		Vec3 transformedStart = start.add(offset);
+		Vec3 transformedEnd = end.add(offset);
+		collector.submitCustomGeometry(matrices, layer,
+			(pose, buffer) -> drawLine(pose, buffer, transformedStart, transformedEnd, color));
 	}
 	
 	private static Vec3 getTracerOrigin(float partialTicks)
@@ -93,17 +86,21 @@ public enum RenderUtils
 	}
 	
 	public static void drawTracer(PoseStack matrices, float partialTicks,
-		Vec3 end, int color, boolean depthTest)
+		Vec3 end, int color, boolean depthTest, SubmitNodeCollector collector)
 	{
-		MultiBufferSource.BufferSource vcp = getVCP();
 		RenderType layer = WurstRenderLayers.getLines(depthTest);
-		VertexConsumer buffer = vcp.getBuffer(layer);
-		
 		Vec3 start = getTracerOrigin(partialTicks);
 		Vec3 offset = getCameraPos().reverse();
-		drawLine(matrices, buffer, start, end.add(offset), color);
-		
-		vcp.endBatch(layer);
+		Vec3 transformedEnd = end.add(offset);
+		collector.submitCustomGeometry(matrices, layer,
+			(pose, buffer) -> drawLine(pose, buffer, start, transformedEnd, color));
+	}
+
+	private static void drawLine(Pose pose, VertexConsumer buffer,
+		Vec3 start, Vec3 end, int color)
+	{
+		drawLine(pose, buffer, (float)start.x, (float)start.y, (float)start.z,
+			(float)end.x, (float)end.y, (float)end.z, color);
 	}
 	
 	public static void drawLine(PoseStack matrices, VertexConsumer buffer,
@@ -154,16 +151,12 @@ public enum RenderUtils
 	}
 	
 	public static void drawOutlinedBox(PoseStack matrices, AABB box, int color,
-		boolean depthTest)
+		boolean depthTest, SubmitNodeCollector collector)
 	{
-		MultiBufferSource.BufferSource vcp = getVCP();
 		RenderType layer = WurstRenderLayers.getLines(depthTest);
-		VertexConsumer buffer = vcp.getBuffer(layer);
-		
-		drawOutlinedBox(matrices, buffer, box.move(getCameraPos().reverse()),
-			color);
-		
-		vcp.endBatch(layer);
+		AABB transformedBox = box.move(getCameraPos().reverse());
+		collector.submitCustomGeometry(matrices, layer,
+			(pose, buffer) -> drawOutlinedBox(pose, buffer, transformedBox, color));
 	}
 	
 	public static void drawOutlinedBox(VertexConsumer buffer, AABB box,
@@ -175,7 +168,12 @@ public enum RenderUtils
 	public static void drawOutlinedBox(PoseStack matrices,
 		VertexConsumer buffer, AABB box, int color)
 	{
-		PoseStack.Pose entry = matrices.last();
+		drawOutlinedBox(matrices.last(), buffer, box, color);
+	}
+
+	private static void drawOutlinedBox(PoseStack.Pose entry,
+		VertexConsumer buffer, AABB box, int color)
+	{
 		float x1 = (float)box.minX;
 		float y1 = (float)box.minY;
 		float z1 = (float)box.minZ;

@@ -2,6 +2,7 @@ package rocket.giovanniclient.client.mixin.compat;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
@@ -19,8 +20,8 @@ public class SodiumKuudraBarrierMixin {
                 && y == 75
                 && state.is(Blocks.BARRIER)) {
             return x == -111 && y == 75 && z == -37
-                    ? Blocks.GREEN_STAINED_GLASS.defaultBlockState()
-                    : Blocks.BLACK_STAINED_GLASS.defaultBlockState();
+                    ? Blocks.STAINED_GLASS.pick(DyeColor.GREEN).defaultBlockState()
+                    : Blocks.STAINED_GLASS.pick(DyeColor.BLACK).defaultBlockState();
         }
 
         return state;

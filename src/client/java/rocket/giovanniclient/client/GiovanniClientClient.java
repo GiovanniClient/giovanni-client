@@ -74,7 +74,7 @@ public final class GiovanniClientClient implements ClientModInitializer {
                     .append(Component.literal("\n\n=========================").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD));
 
             assert client.player != null;
-            client.gui.getChat().addClientSystemMessage(warningMessage);
+            client.gui.hud.getChat().addClientSystemMessage(warningMessage);
         });
 
         ClientCustomCommands.registerSafemode();

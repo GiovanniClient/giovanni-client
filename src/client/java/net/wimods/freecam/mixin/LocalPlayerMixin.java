@@ -86,19 +86,6 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer
 		InputFaker.restoreIfNeeded();
 	}
 	
-	@Override
-	public void turn(double deltaYaw, double deltaPitch)
-	{
-		WiFreecam freecam = WiFreecam.INSTANCE;
-		if(freecam.isMovingCamera())
-		{
-			freecam.turn(deltaYaw, deltaPitch);
-			return;
-		}
-		
-		super.turn(deltaYaw, deltaPitch);
-	}
-	
 	@WrapOperation(
 		method = "pick(Lnet/minecraft/world/entity/Entity;DDF)Lnet/minecraft/world/phys/HitResult;",
 		at = @At(value = "INVOKE",
@@ -136,7 +123,7 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer
 		Vec3 camStart = freecam.getCamPos(1F);
 		Vec3 scaledCamDir = freecam.getScaledCamDir(maxDist);
 		Vec3 camEnd = camStart.add(scaledCamDir);
-		AABB camBounds = EntityType.PLAYER.getDimensions()
+		AABB camBounds = instance.getType().getDimensions()
 			.makeBoundingBox(camStart).expandTowards(scaledCamDir).inflate(1);
 		
 		return original.call(instance, camStart, camEnd, camBounds, predicate,

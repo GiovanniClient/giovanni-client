@@ -31,7 +31,7 @@ public final class TabListUtils {
         Minecraft client = Minecraft.getInstance();
         if (client == null || client.player == null || client.getConnection() == null) return List.of();
 
-        PlayerTabOverlay hud = client.gui.getTabList();
+        PlayerTabOverlay hud = client.gui.hud.getTabList();
         List<Component> out = new ArrayList<>();
 
         if (includeHeaderFooter && hud instanceof PlayerListHudAccessor acc) {

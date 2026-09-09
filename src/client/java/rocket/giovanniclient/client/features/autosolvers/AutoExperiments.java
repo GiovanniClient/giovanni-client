@@ -86,7 +86,7 @@ public class AutoExperiments extends AbstractFeature {
             return;
         }
 
-        if (!(client.screen instanceof ContainerScreen)) {
+        if (!(client.gui.screen() instanceof ContainerScreen)) {
             clearAll();
             return;
         }

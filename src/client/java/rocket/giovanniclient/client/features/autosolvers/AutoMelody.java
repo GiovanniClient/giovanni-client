@@ -36,7 +36,7 @@ public class AutoMelody extends AbstractFeature {
         if (!ConfigManager.getConfig().asc.AUTOMELODY_TOGGLE || client.player == null || ++counter % 2 == 0)
             return;
 
-        if (!inHarp || !(client.screen instanceof ContainerScreen gui) ||
+        if (!inHarp || !(client.gui.screen() instanceof ContainerScreen gui) ||
                 !gui.getTitle().getString().startsWith("Harp -")) {
             inHarp = false;
             return;

@@ -211,7 +211,7 @@ public class ConfigManager {
         Minecraft client = Minecraft.getInstance();
         client.execute(() -> {
             if (client.level != null && client.player != null) {
-                client.levelRenderer.allChanged();
+                client.levelExtractor.allChanged();
             }
         });
     }

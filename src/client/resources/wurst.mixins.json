@@ -2,23 +2,24 @@
   "required": true,
   "package": "net.wimods.freecam.mixin",
   "plugin": "rocket.giovanniclient.client.mixin.GiovanniMixinPlugin",
-  "compatibilityLevel": "JAVA_21",
+  "compatibilityLevel": "JAVA_25",
   "injectors": {
     "defaultRequire": 1
   },
   "client": [
     "CameraMixin",
     "GameRendererMixin",
-    "GuiMixin",
+    "HudMixin",
     "ItemInHandRendererMixin",
+    "KeyBindsListMixin",
+    "KeyMappingCategoryMixin",
     "KeyMappingMixin",
+    "LanguageManagerMixin",
     "LevelRendererMixin",
     "LocalPlayerMixin",
-    "MouseHandlerMixin",
-    "SectionOcclusionGraphMixin"
+    "MouseHandlerMixin"
   ],
   "mixins": [
-    "ScreenAccessor",
-    "sodium.RenderSectionManagerMixin"
+    "ScreenAccessor"
   ]
 }

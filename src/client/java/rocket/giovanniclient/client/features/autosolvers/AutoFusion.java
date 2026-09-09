@@ -60,7 +60,7 @@ public class AutoFusion extends AbstractFeature {
         if (!cfg.autoFusionAccordtion.AUTOFUSION
                 || currentState == State.NONE
                 || client.player == null
-                || !(client.screen instanceof ContainerScreen)) {
+                || !(client.gui.screen() instanceof ContainerScreen)) {
             currentState = State.NONE;
             clickDelay = -1;
             return;

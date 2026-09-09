@@ -108,7 +108,7 @@ public final class FreecamTranslator implements ResourceManagerReloadListener
 	 */
 	public String translateMc(String key, Object... args)
 	{
-		if(I18n.exists(key))
+		if(!I18n.get(key).equals(key))
 			return I18n.get(key, args);
 		
 		return key;

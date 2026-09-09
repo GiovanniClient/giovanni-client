@@ -6,7 +6,7 @@ import com.google.gson.JsonParser;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
@@ -37,7 +37,7 @@ public final class GlbRatModel {
         this.vertices = vertices;
     }
 
-    public static void render(PoseStack matrices, MultiBufferSource.BufferSource buffers, RatReplacer.RatRenderData rat, Vec3 cameraPosition) {
+    public static void submit(SubmitNodeCollector collector, PoseStack matrices, RatReplacer.RatRenderData rat, Vec3 cameraPosition) {
         GlbRatModel model = get();
         if (model == null) return;
 
@@ -46,9 +46,13 @@ public final class GlbRatModel {
         matrices.mulPose(new Quaternionf().rotationY((float) Math.toRadians(180.0f - rat.yRot())));
         matrices.scale(MODEL_SCALE, MODEL_SCALE, MODEL_SCALE);
 
-        VertexConsumer consumer = buffers.getBuffer(RenderTypes.entitySolid(TEXTURE_ID));
-        PoseStack.Pose pose = matrices.last();
-        for (Vertex vertex : model.vertices) {
+        collector.submitCustomGeometry(matrices, RenderTypes.entitySolid(TEXTURE_ID), model::render);
+
+        matrices.popPose();
+    }
+
+    private void render(PoseStack.Pose pose, VertexConsumer consumer) {
+        for (Vertex vertex : vertices) {
             consumer.addVertex(pose, vertex.x, vertex.y, vertex.z)
                     .setColor(0xffffffff)
                     .setUv(vertex.u, vertex.v)
@@ -56,8 +60,6 @@ public final class GlbRatModel {
                     .setLight(FULL_BRIGHT)
                     .setNormal(pose, vertex.nx, vertex.ny, vertex.nz);
         }
-
-        matrices.popPose();
     }
 
     private static GlbRatModel get() {

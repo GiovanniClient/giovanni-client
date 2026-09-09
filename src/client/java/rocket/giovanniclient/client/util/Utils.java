@@ -24,14 +24,14 @@ public class Utils {
 
     private static void sendFormattedChatMessage(String prefixComponent, ChatFormatting prefixStyle, String messageComponent) {
         Minecraft client = Minecraft.getInstance();
-        if (client != null && client.gui != null && client.gui.getChat() != null) {
+        if (client != null && client.gui != null && client.gui.hud.getChat() != null) {
             MutableComponent prefix = Component.literal(prefixComponent)
                     .setStyle(Style.EMPTY.withColor(prefixStyle));
 
             MutableComponent message = Component.literal(messageComponent)
                     .setStyle(Style.EMPTY.withColor(ChatFormatting.WHITE));
 
-            client.gui.getChat().addClientSystemMessage(prefix.append(message));
+            client.gui.hud.getChat().addClientSystemMessage(prefix.append(message));
         }
     }
 
@@ -39,7 +39,7 @@ public class Utils {
         Minecraft client = Minecraft.getInstance();
         assert client.gui != null;
 
-        client.gui.getChat().addClientSystemMessage(message);
+        client.gui.hud.getChat().addClientSystemMessage(message);
     }
 
     public static void chat(String message) {

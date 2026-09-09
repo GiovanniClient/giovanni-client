@@ -25,6 +25,6 @@ public class OverlayManager {
 
     public static boolean isHoveringItemList(double mx, double my) {
         Minecraft client = Minecraft.getInstance();
-        return client.screen != null && ItemListDragHelper.isMouseOverItemList(client.screen, mx, my);
+        return client.gui.screen() != null && ItemListDragHelper.isMouseOverItemList(client.gui.screen(), mx, my);
     }
 }

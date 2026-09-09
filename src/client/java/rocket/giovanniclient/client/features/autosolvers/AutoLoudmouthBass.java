@@ -48,7 +48,7 @@ public class AutoLoudmouthBass extends AbstractFeature {
         if (!cfg.LOUDMOUTH_BASS
                 || !loudmouthBassScreen
                 || client.player == null
-                || !(client.screen instanceof ContainerScreen)) {
+                || !(client.gui.screen() instanceof ContainerScreen)) {
             loudmouthBassScreen = false;
             clickDelayTicks = -1;
             return;

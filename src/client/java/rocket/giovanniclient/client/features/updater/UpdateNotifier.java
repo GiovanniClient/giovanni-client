@@ -48,7 +48,7 @@ public class UpdateNotifier {
     private void showToast(Component title, Component message) {
         Minecraft client = Minecraft.getInstance();
         SystemToast.addOrUpdate(
-                client.getToastManager(),
+                client.gui.toastManager(),
                 SystemToast.SystemToastId.PERIODIC_NOTIFICATION,
                 title,
                 message

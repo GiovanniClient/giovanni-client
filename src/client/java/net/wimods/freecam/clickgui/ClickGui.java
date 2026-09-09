@@ -514,8 +514,8 @@ public final class ClickGui
 			if(lw > tw)
 				tw = lw;
 		}
-		int sw = MC.screen.width;
-		int sh = MC.screen.height;
+		int sw = MC.gui.screen().width;
+		int sh = MC.gui.screen().height;
 		
 		int xt1 = mouseX + tw + 11 <= sw ? mouseX + 8 : mouseX - tw - 8;
 		int xt2 = xt1 + tw + 3;
@@ -804,6 +804,6 @@ public final class ClickGui
 
 	public void open()
 	{
-		MC.setScreen(new ClickGuiScreen(this));
+		MC.gui.setScreen(new ClickGuiScreen(this));
 	}
 }

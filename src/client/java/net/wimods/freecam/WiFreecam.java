@@ -14,6 +14,7 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.AABB;
@@ -104,7 +105,7 @@ public enum WiFreecam
 	private void onDisable()
 	{
 		if(settings.reloadChunks.isChecked())
-			MC.levelRenderer.allChanged();
+			MC.levelExtractor.allChanged();
 	}
 	
 	public void onUpdate()
@@ -125,7 +126,7 @@ public enum WiFreecam
 		}
 		lastHealth = currentHealth;
 		
-		if(!isMovingCamera() || MC.screen != null)
+		if(!isMovingCamera() || MC.gui.screen() != null)
 		{
 			prevCamPos = camPos;
 			return;
@@ -135,7 +136,7 @@ public enum WiFreecam
 		Vec2 moveVector = player.input.getMoveVector();
 		
 		// Convert to world coordinates
-		double yawRad = MC.gameRenderer.getMainCamera().yRot() * Mth.DEG_TO_RAD;
+		double yawRad = MC.gameRenderer.mainCamera().yRot() * Mth.DEG_TO_RAD;
 		double sinYaw = Mth.sin(yawRad);
 		double cosYaw = Mth.cos(yawRad);
 		double offsetX = moveVector.x * cosYaw - moveVector.y * sinYaw;
@@ -170,7 +171,7 @@ public enum WiFreecam
 	public boolean isControllingScrollEvents()
 	{
 		return isMovingCamera() && settings.scrollToChangeSpeed.isChecked()
-			&& MC.screen == null;
+			&& MC.gui.screen() == null;
 	}
 	
 	public boolean isMovingCamera()
@@ -185,7 +186,7 @@ public enum WiFreecam
 			&& settings.interactFrom.getSelected() == InteractFrom.CAMERA;
 	}
 	
-	public void onRender(PoseStack matrixStack, float partialTicks)
+	public void onRender(SubmitNodeCollector collector, float partialTicks)
 	{
 		if(!settings.tracer.isChecked())
 			return;
@@ -196,11 +197,11 @@ public enum WiFreecam
 		double extraSize = 0.05;
 		AABB rawBox = EntityUtils.getLerpedBox(MC.player, partialTicks);
 		AABB box = rawBox.move(0, extraSize, 0).inflate(extraSize);
-		RenderUtils.drawOutlinedBox(matrixStack, box, colorI, false);
+		RenderUtils.drawOutlinedBox(new PoseStack(), box, colorI, false, collector);
 		
 		// Line
-		RenderUtils.drawTracer(matrixStack, partialTicks, rawBox.getCenter(),
-			colorI, false);
+		RenderUtils.drawTracer(new PoseStack(), partialTicks, rawBox.getCenter(),
+			colorI, false, collector);
 	}
 	
 	public boolean shouldHideHand()

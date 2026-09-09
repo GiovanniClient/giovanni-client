@@ -44,7 +44,7 @@ public class AutoShardsClaim extends AbstractFeature {
             return;
         }
 
-        if (!(client.screen instanceof ContainerScreen)) {
+        if (!(client.gui.screen() instanceof ContainerScreen)) {
             shouldClaim = false;
             clickDelay = -1;
             return;

@@ -32,7 +32,7 @@ public class ScoreboardUtils {
 
         Team team = scoreboard.getPlayersTeam(client.player.getScoreboardName());
         if (team != null) {
-            DisplaySlot displaySlot = DisplaySlot.teamColorToSlot(team.getColor());
+            DisplaySlot displaySlot = team.getColor().map(TeamColor::displaySlot).orElse(null);
             if (displaySlot != null) {
                 Objective teamObjective = scoreboard.getDisplayObjective(displaySlot);
                 if (teamObjective != null) return teamObjective;

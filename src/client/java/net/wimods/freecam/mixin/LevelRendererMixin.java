@@ -7,16 +7,11 @@
  */
 package net.wimods.freecam.mixin;
 
-import com.mojang.blaze3d.buffers.GpuBufferSlice;
-import com.mojang.blaze3d.resource.GraphicsResourceAllocator;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.chunk.ChunkSectionsToRender;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.state.level.LevelRenderState;
 import net.wimods.freecam.WiFreecam;
-import org.joml.Matrix4fc;
-import org.joml.Vector4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -25,22 +20,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(LevelRenderer.class)
 public class LevelRendererMixin
 {
-	@Inject(
-		method = "renderLevel(Lcom/mojang/blaze3d/resource/GraphicsResourceAllocator;Lnet/minecraft/client/DeltaTracker;ZLnet/minecraft/client/renderer/state/level/CameraRenderState;Lorg/joml/Matrix4fc;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;Lorg/joml/Vector4f;ZLnet/minecraft/client/renderer/chunk/ChunkSectionsToRender;)V",
-		at = @At("RETURN"))
-	private void onRender(GraphicsResourceAllocator allocator,
-		DeltaTracker tickCounter, boolean renderBlockOutline,
-		CameraRenderState cameraState, Matrix4fc positionMatrix,
-		GpuBufferSlice gpuBufferSlice, Vector4f vector4f,
-		boolean shouldRenderSky, ChunkSectionsToRender chunkSectionsToRender,
-		CallbackInfo ci)
+	@Inject(method = "submitFeatures", at = @At("TAIL"))
+	private void onSubmitFeatures(LevelRenderState levelRenderState,
+		SubmitNodeCollector collector, boolean renderOutline, CallbackInfo ci)
 	{
-		PoseStack matrixStack = new PoseStack();
-		matrixStack.mulPose(positionMatrix);
-		float tickProgress = tickCounter.getGameTimeDeltaPartialTick(false);
-		
 		WiFreecam freecam = WiFreecam.INSTANCE;
 		if(freecam.isEnabled())
-			freecam.onRender(matrixStack, tickProgress);
+		{
+			float tickProgress = Minecraft.getInstance().getDeltaTracker()
+				.getGameTimeDeltaPartialTick(false);
+			freecam.onRender(collector, tickProgress);
+		}
 	}
 }

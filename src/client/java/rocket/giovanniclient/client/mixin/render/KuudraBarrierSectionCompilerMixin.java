@@ -4,6 +4,7 @@ import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.minecraft.client.renderer.chunk.RenderSectionRegion;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -18,8 +19,8 @@ public class KuudraBarrierSectionCompilerMixin {
         if (!giovanni$shouldRenderAsGlass(pos, state)) return state;
 
         return pos.getX() == -111 && pos.getY() == 75 && pos.getZ() == -37
-                ? Blocks.GREEN_STAINED_GLASS.defaultBlockState()
-                : Blocks.BLACK_STAINED_GLASS.defaultBlockState();
+                ? Blocks.STAINED_GLASS.pick(DyeColor.GREEN).defaultBlockState()
+                : Blocks.STAINED_GLASS.pick(DyeColor.BLACK).defaultBlockState();
     }
 
     @Unique

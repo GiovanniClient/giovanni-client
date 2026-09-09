@@ -27,7 +27,7 @@ public final class FreecamHud
 			drawHackList(context, partialTicks);
 		
 		// pinned windows
-		if(!(WiFreecam.MC.screen instanceof ClickGuiScreen))
+		if(!(WiFreecam.MC.gui.screen() instanceof ClickGuiScreen))
 			freecam.getGui().renderPinnedWindows(context, partialTicks);
 	}
 	

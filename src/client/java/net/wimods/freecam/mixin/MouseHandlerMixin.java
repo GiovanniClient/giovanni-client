@@ -8,7 +8,10 @@
 package net.wimods.freecam.mixin;
 
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.client.MouseHandler;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.wimods.freecam.WiFreecam;
 import org.spongepowered.asm.mixin.Mixin;
@@ -24,6 +27,22 @@ public abstract class MouseHandlerMixin
 		CallbackInfo ci)
 	{
 		WiFreecam.INSTANCE.onMouseScroll(vertical);
+	}
+
+	@WrapOperation(method = "turnPlayer(D)V",
+		at = @At(value = "INVOKE",
+			target = "Lnet/minecraft/client/player/LocalPlayer;turn(DD)V"))
+	private void wrapTurn(LocalPlayer player, double deltaYaw,
+		double deltaPitch, Operation<Void> original)
+	{
+		WiFreecam freecam = WiFreecam.INSTANCE;
+		if(freecam.isMovingCamera())
+		{
+			freecam.turn(deltaYaw, deltaPitch);
+			return;
+		}
+
+		original.call(player, deltaYaw, deltaPitch);
 	}
 	
 	@WrapWithCondition(method = "onScroll(JDD)V",
