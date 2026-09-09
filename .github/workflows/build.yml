@@ -36,3 +36,24 @@ jobs:
         with:
           name: giovanniclient-jars
           path: build/libs/*.jar
+
+      - name: Send release JAR to Discord
+        if: github.event_name == 'push' && github.ref == 'refs/heads/26.2'
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          if [ -z "$DISCORD_WEBHOOK_URL" ]; then
+            echo "DISCORD_WEBHOOK_URL is not configured; skipping Discord upload."
+            exit 0
+          fi
+
+          JAR_PATH="$(find build/libs -maxdepth 1 -type f -name '*.jar' ! -name '*-sources.jar' -print -quit)"
+          if [ -z "$JAR_PATH" ]; then
+            echo "No distributable JAR was produced."
+            exit 1
+          fi
+
+          curl --fail --show-error --silent \
+            -F "payload_json={\"content\":\"New GiovanniClient 26.2 build: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}" \
+            -F "files[0]=@${JAR_PATH}" \
+            "$DISCORD_WEBHOOK_URL"
