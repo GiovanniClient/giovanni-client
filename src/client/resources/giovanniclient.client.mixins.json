@@ -12,6 +12,7 @@
     "ClientPlayNetworkHandlerMixin",
     "PlayerListHudAccessor",
     "render.ArmorStandRenderStateMixin",
+    "render.ItemDisplayRenderStateMixin",
     "compat.ArchitecturyDelegateScreenInitMixin",
     "compat.ReiDraggingStackOrderMixin",
     "compat.SboDianaAfkTimeoutMixin",
@@ -43,6 +44,7 @@
     "render.NoNauseaMixin",
     "render.NoPumpkinMixin",
     "render.RatArmorStandRendererMixin",
+    "render.RatItemDisplayRendererMixin",
     "render.SmolderingTombParticleMixin",
     "render.UndoInvisibilityMixin"
   ],

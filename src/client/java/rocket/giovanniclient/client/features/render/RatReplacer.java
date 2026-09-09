@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.item.ItemStack;
@@ -40,10 +41,10 @@ public class RatReplacer extends AbstractFeature {
         tickCounter++;
         if (tickCounter % 20 != 0) return;
 
-        Map<UUID, ArmorStand> found = new HashMap<>();
+        Map<UUID, Entity> found = new HashMap<>();
         for (var entity : client.level.entitiesForRendering()) {
-            if (entity instanceof ArmorStand stand && isRatArmorStand(stand)) {
-                found.put(stand.getUUID(), stand);
+            if (isRatEntity(entity)) {
+                found.put(entity.getUUID(), entity);
             }
         }
 
@@ -73,6 +74,14 @@ public class RatReplacer extends AbstractFeature {
         return shouldReplace;
     }
 
+    public static boolean shouldReplace(Display.ItemDisplay display) {
+        boolean shouldReplace = isEnabled() && isRatItemDisplay(display);
+        if (shouldReplace) {
+            RATS.put(display.getUUID(), Boolean.TRUE);
+        }
+        return shouldReplace;
+    }
+
     public static List<RatRenderData> getRenderData(float tickProgress) {
         Minecraft client = Minecraft.getInstance();
         if (client.level == null) return List.of();
@@ -80,20 +89,25 @@ public class RatReplacer extends AbstractFeature {
         return RATS.keySet().stream()
                 .map(uuid -> findRat(client, uuid))
                 .filter(Objects::nonNull)
-                .filter(ArmorStand::isAlive)
-                .filter(RatReplacer::isRatArmorStand)
-                .map(stand -> renderData(stand, tickProgress))
+                .filter(Entity::isAlive)
+                .filter(RatReplacer::isRatEntity)
+                .map(entity -> renderData(entity, tickProgress))
                 .toList();
     }
 
-    private static RatRenderData renderData(ArmorStand stand, float tickProgress) {
-        return new RatRenderData(stand.getPosition(tickProgress), Mth.lerp(tickProgress, stand.yRotO, stand.getYRot()));
+    private static RatRenderData renderData(Entity entity, float tickProgress) {
+        float yOffset = entity instanceof Display.ItemDisplay ? 0.0f : 1.38f;
+        return new RatRenderData(
+                entity.getPosition(tickProgress),
+                Mth.lerp(tickProgress, entity.yRotO, entity.getYRot()),
+                yOffset
+        );
     }
 
-    private static ArmorStand findRat(Minecraft client, UUID uuid) {
+    private static Entity findRat(Minecraft client, UUID uuid) {
         for (Entity entity : client.level.entitiesForRendering()) {
-            if (entity instanceof ArmorStand stand && stand.getUUID().equals(uuid)) {
-                return stand;
+            if (entity.getUUID().equals(uuid)) {
+                return entity;
             }
         }
         return null;
@@ -114,7 +128,11 @@ public class RatReplacer extends AbstractFeature {
         // armor stand whose custom name contains the level and health.  They
         // have no player-head item, so detect that representation before
         // checking the usual textured-head stand.
-        if (isRatNameArmorStand(stand)) return true;
+        // A normal Hypixel rat is represented by two armor stands: one carries
+        // the player head and the other carries the name/health label. Render
+        // the label stand only for variants that genuinely have no head stand,
+        // otherwise the same rat would be submitted twice at two heights.
+        if (isRatNameArmorStand(stand)) return !hasNearbyRatHead(stand);
 
         ItemStack head = stand.getItemBySlot(EquipmentSlot.HEAD);
         if (head.isEmpty() || head.getItem() != Items.PLAYER_HEAD) return false;
@@ -126,6 +144,27 @@ public class RatReplacer extends AbstractFeature {
             if (isRatTexture(property.value())) return true;
         }
         return hasNearbyRatNametag(stand);
+    }
+
+    private static boolean isRatEntity(Entity entity) {
+        if (entity instanceof ArmorStand stand) return isRatArmorStand(stand);
+        return entity instanceof Display.ItemDisplay display && isRatItemDisplay(display);
+    }
+
+    private static boolean isRatItemDisplay(Display.ItemDisplay display) {
+        if (display == null) return false;
+        return hasRatTexture(display.getItemStack());
+    }
+
+    private static boolean hasRatTexture(ItemStack head) {
+        if (head.isEmpty() || head.getItem() != Items.PLAYER_HEAD) return false;
+
+        ResolvableProfile profile = head.get(DataComponents.PROFILE);
+        if (profile == null) return false;
+        for (Property property : profile.partialProfile().properties().get("textures")) {
+            if (isRatTexture(property.value())) return true;
+        }
+        return false;
     }
 
     private static boolean isRatTexture(String value) {
@@ -148,11 +187,29 @@ public class RatReplacer extends AbstractFeature {
                 .isEmpty();
     }
 
+    private static boolean hasNearbyRatHead(ArmorStand nameStand) {
+        if (nameStand.level() == null) return false;
+
+        return !nameStand.level()
+                .getEntities(nameStand, nameStand.getBoundingBox().inflate(0.35, 2.4, 0.35), RatReplacer::isRatHeadCarrier)
+                .isEmpty();
+    }
+
+    private static boolean isRatHeadCarrier(Entity entity) {
+        if (entity instanceof Display.ItemDisplay display) return isRatItemDisplay(display);
+        if (!(entity instanceof ArmorStand armorStand) || !armorStand.isInvisible()) return false;
+        ItemStack head = armorStand.getItemBySlot(EquipmentSlot.HEAD);
+        // Pet rats can use a profile that does not expose the known wild-rat
+        // texture hash. The nearby rat nametag already identifies the pair, so
+        // any player head on its companion armor stand is enough to dedupe it.
+        return !head.isEmpty() && head.getItem() == Items.PLAYER_HEAD;
+    }
+
     private static boolean isRatNameArmorStand(Entity entity) {
         if (!(entity instanceof ArmorStand armorStand) || !armorStand.hasCustomName()) return false;
         String name = armorStand.getName().getString();
         return name.contains("Rat") && name.contains("Lv");
     }
 
-    public record RatRenderData(Vec3 position, float yRot) {}
+    public record RatRenderData(Vec3 position, float yRot, float yOffset) {}
 }

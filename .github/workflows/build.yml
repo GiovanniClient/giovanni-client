@@ -54,6 +54,6 @@ jobs:
           fi
 
           curl --fail --show-error --silent \
-            -F "payload_json={\"content\":\"New GiovanniClient 26.2 build: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}" \
+            -F "payload_json={\"content\":\"New GiovanniClient build\"}" \
             -F "files[0]=@${JAR_PATH}" \
             "$DISCORD_WEBHOOK_URL"

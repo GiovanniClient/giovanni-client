@@ -42,7 +42,7 @@ public final class GlbRatModel {
         if (model == null) return;
 
         matrices.pushPose();
-        matrices.translate(rat.position().x() - cameraPosition.x(), rat.position().y() - cameraPosition.y() + 1.38, rat.position().z() - cameraPosition.z());
+        matrices.translate(rat.position().x() - cameraPosition.x(), rat.position().y() - cameraPosition.y() + rat.yOffset(), rat.position().z() - cameraPosition.z());
         matrices.mulPose(new Quaternionf().rotationY((float) Math.toRadians(180.0f - rat.yRot())));
         matrices.scale(MODEL_SCALE, MODEL_SCALE, MODEL_SCALE);
 
