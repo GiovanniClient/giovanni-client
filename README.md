@@ -1,4 +1,9 @@
 > [!IMPORTANT]
+> 11 sep 2026
+> ratterscanner mods are completely ignoring me so for now i've made a Github Action that builds .jar(s) \
+> every time i push new code and makes a [prerelease](https://github.com/GiovanniClient/giovanni-client/releases)
+> eventually i'll just abandon the idea of getting my code verified if they don't collaborate and make normal releases
+> 
 > 11 aug 2026 giovanniclient is ready for 26.1.2 \
 > i am waiting on ratterscanner to verify my new release (it's been a month now) \
 > i am on vacation and i'm not actively playing skyblock so i'm not releasing yet
