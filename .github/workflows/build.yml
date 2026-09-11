@@ -5,7 +5,7 @@ on:
   pull_request:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -36,6 +36,19 @@ jobs:
         with:
           name: giovanniclient-jars
           path: build/libs/*.jar
+
+      - name: Create GitHub prerelease
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "pre-${GITHUB_RUN_NUMBER}" \
+            build/libs/*.jar \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --prerelease \
+            --title "Prerelease ${GITHUB_SHA:0:7}" \
+            --notes "Automatic prerelease generated from commit ${GITHUB_SHA}."
 
       - name: Send release JAR to Discord
         if: github.event_name == 'push' && github.ref == 'refs/heads/26.2'
