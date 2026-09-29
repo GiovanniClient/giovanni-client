@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import rocket.giovanniclient.client.config.ConfigManager;
+import rocket.giovanniclient.client.features.render.NamedEntityHide;
 import rocket.giovanniclient.client.util.PlayerLocator;
 
 @Mixin(Entity.class)
@@ -20,6 +21,10 @@ public abstract class UndoInvisibilityMixin {
         String currentLocation = PlayerLocator.getPlayerLocation();
 
         Entity entity = (Entity) (Object) this;
+        if (NamedEntityHide.isHiddenMob(entity)) {
+            cir.setReturnValue(true);
+            return;
+        }
         var rc = ConfigManager.getConfig().rc.renderEntitiesAccordion;
         var dc = ConfigManager.getConfig().debugConfig;
         var riftconfig = ConfigManager.getConfig().riftconfig;
@@ -44,6 +49,13 @@ public abstract class UndoInvisibilityMixin {
             if (!currentLocation.contains("Catacombs")) return;
             cir.setReturnValue(false);
             return;
+        }
+    }
+
+    @Inject(method = "isInvisibleTo", at = @At("HEAD"), cancellable = true)
+    private void giovanni$showHiddenMobAsTeammate(Player player, CallbackInfoReturnable<Boolean> cir) {
+        if (NamedEntityHide.isHiddenMob((Entity) (Object) this)) {
+            cir.setReturnValue(false);
         }
     }
 }

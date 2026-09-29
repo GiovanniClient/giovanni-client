@@ -15,6 +15,8 @@ import net.minecraft.world.level.storage.TagValueOutput;
 import rocket.giovanniclient.client.config.ConfigManager;
 import rocket.giovanniclient.client.features.inventorybuttons.EditModeState;
 import rocket.giovanniclient.client.features.render.PlayerTracer;
+import rocket.giovanniclient.client.features.render.NamedMobGlow;
+import rocket.giovanniclient.client.features.render.NamedEntityHide;
 import rocket.giovanniclient.client.features.updater.RatterScannerChecker;
 import rocket.giovanniclient.client.util.ScoreboardUtils;
 import rocket.giovanniclient.client.util.TabListUtils;
@@ -83,7 +85,106 @@ public final class ClientCustomCommands {
             dispatcher.register(ClientCommands.literal(alias).executes(context -> {
                 ConfigManager.openConfigScreenFromCommand();
                 return 1;
-            }));
+            }).then(ClientCommands.literal("glow")
+                    .executes(context -> {
+                        context.getSource().sendFeedback(Component.literal("Usage: /gio glow <name|remove <name>|list|clear>"));
+                        return 0;
+                    })
+                    .then(ClientCommands.literal("list").executes(context -> {
+                        List<NamedMobGlow.NameColor> names = NamedMobGlow.names();
+                        if (names.isEmpty()) {
+                            context.getSource().sendFeedback(Component.literal("§eGlow list is empty."));
+                        } else {
+                            context.getSource().sendFeedback(Component.literal("§eGlow names:"));
+                            for (NamedMobGlow.NameColor entry : names) {
+                                context.getSource().sendFeedback(Component.literal(" • " + entry.name())
+                                        .withStyle(style -> style.withColor(entry.color())));
+                            }
+                        }
+                        return 1;
+                    }))
+                    .then(ClientCommands.literal("clear").executes(context -> {
+                        NamedMobGlow.clearNames();
+                        context.getSource().sendFeedback(Component.literal("§cGlow list cleared."));
+                        return 1;
+                    }))
+                    .then(ClientCommands.literal("off").executes(context -> {
+                        NamedMobGlow.clearNames();
+                        context.getSource().sendFeedback(Component.literal("§cGlow list cleared."));
+                        return 1;
+                    }))
+                    .then(ClientCommands.literal("remove")
+                            .then(ClientCommands.argument("name", StringArgumentType.greedyString())
+                                    .executes(context -> {
+                                        String name = StringArgumentType.getString(context, "name").trim();
+                                        boolean removed = NamedMobGlow.removeName(name);
+                                        context.getSource().sendFeedback(Component.literal(removed
+                                                ? "§aRemoved glow name: §f" + name
+                                                : "§cGlow name not found: §f" + name));
+                                        return removed ? 1 : 0;
+                                    })))
+                    .then(ClientCommands.argument("name", StringArgumentType.greedyString())
+                            .executes(context -> {
+                                String name = StringArgumentType.getString(context, "name").trim();
+                                if (name.isEmpty()) {
+                                    context.getSource().sendFeedback(Component.literal("§cEnter a mob name."));
+                                    return 0;
+                                }
+                                NamedMobGlow.AddResult result = NamedMobGlow.addName(name);
+                                switch (result) {
+                                    case ADDED -> context.getSource().sendFeedback(Component.literal("§aAdded glow name: §f" + name));
+                                    case ALREADY_PRESENT -> context.getSource().sendFeedback(Component.literal("§eAlready in glow list: §f" + name));
+                                    case FULL -> context.getSource().sendFeedback(Component.literal("§cGlow list is full (6 names)."));
+                                }
+                                return result == NamedMobGlow.AddResult.FULL ? 0 : 1;
+                            })))
+                    .then(ClientCommands.literal("hide")
+                            .executes(context -> {
+                                context.getSource().sendFeedback(Component.literal("Usage: /gio hide <name|remove <name>|list|clear>"));
+                                return 0;
+                            })
+                            .then(ClientCommands.literal("list").executes(context -> {
+                                List<String> names = NamedEntityHide.names();
+                                if (names.isEmpty()) {
+                                    context.getSource().sendFeedback(Component.literal("§eHide list is empty."));
+                                } else {
+                                    context.getSource().sendFeedback(Component.literal("§eHidden entity names: §f" + String.join(", ", names)));
+                                }
+                                return 1;
+                            }))
+                            .then(ClientCommands.literal("clear").executes(context -> {
+                                NamedEntityHide.clearNames();
+                                context.getSource().sendFeedback(Component.literal("§cHide list cleared."));
+                                return 1;
+                            }))
+                            .then(ClientCommands.literal("off").executes(context -> {
+                                NamedEntityHide.clearNames();
+                                context.getSource().sendFeedback(Component.literal("§cHide list cleared."));
+                                return 1;
+                            }))
+                            .then(ClientCommands.literal("remove")
+                                    .then(ClientCommands.argument("name", StringArgumentType.greedyString())
+                                            .executes(context -> {
+                                                String name = StringArgumentType.getString(context, "name").trim();
+                                                boolean removed = NamedEntityHide.removeName(name);
+                                                context.getSource().sendFeedback(Component.literal(removed
+                                                        ? "§aRemoved hide name: §f" + name
+                                                        : "§cHide name not found: §f" + name));
+                                                return removed ? 1 : 0;
+                                            })))
+                            .then(ClientCommands.argument("name", StringArgumentType.greedyString())
+                                    .executes(context -> {
+                                        String name = StringArgumentType.getString(context, "name").trim();
+                                        if (name.isEmpty()) {
+                                            context.getSource().sendFeedback(Component.literal("§cEnter an entity name."));
+                                            return 0;
+                                        }
+                                        boolean added = NamedEntityHide.addName(name);
+                                        context.getSource().sendFeedback(Component.literal(added
+                                                ? "§aAdded persistent hide name: §f" + name
+                                                : "§eAlready in hide list: §f" + name));
+                                        return added ? 1 : 0;
+                                    }))));
         }
     }
 

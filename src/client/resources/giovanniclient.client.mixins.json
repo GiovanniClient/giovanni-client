@@ -30,6 +30,8 @@
     "invbuttons.SlotAccessor",
     "render.EntityGlowColorOverrideMixin",
     "render.EntityGlowOverrideMixin",
+    "render.HiddenArmorStandRendererMixin",
+    "render.HiddenEntityNameTagMixin",
     "render.KuudraBarrierSectionCompilerMixin",
     "render.LavaFluidModelMixin",
     "render.LavaTransparencyMixin",

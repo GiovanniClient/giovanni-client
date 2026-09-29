@@ -6,7 +6,13 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption;
 import io.github.notenoughupdates.moulconfig.observer.Property;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class RenderConfig {
+
+    @Expose
+    public List<String> hiddenEntityNames = new ArrayList<>();
 
     @Expose
     @Accordion
