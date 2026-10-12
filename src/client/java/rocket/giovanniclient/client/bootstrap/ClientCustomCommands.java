@@ -85,7 +85,7 @@ public final class ClientCustomCommands {
             dispatcher.register(ClientCommands.literal(alias).executes(context -> {
                 ConfigManager.openConfigScreenFromCommand();
                 return 1;
-            }).then(ClientCommands.literal("glow")
+            }).then(BlockReplacementCommands.create()).then(ClientCommands.literal("glow")
                     .executes(context -> {
                         context.getSource().sendFeedback(Component.literal("Usage: /gio glow <name|remove <name>|list|clear>"));
                         return 0;

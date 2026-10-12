@@ -10,12 +10,15 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import rocket.giovanniclient.client.config.ConfigManager;
+import rocket.giovanniclient.client.features.render.BlockReplacements;
 import rocket.giovanniclient.client.util.PlayerLocator;
 
 @Mixin(RenderSectionRegion.class)
 public class KuudraBarrierSectionCompilerMixin {
     @ModifyReturnValue(method = "getBlockState", at = @At("RETURN"))
     private BlockState giovanni$replaceKuudraBarrierState(BlockState state, BlockPos pos) {
+        BlockState replacement = BlockReplacements.renderState(state);
+        if (replacement != state) return replacement;
         if (!giovanni$shouldRenderAsGlass(pos, state)) return state;
 
         return pos.getX() == -111 && pos.getY() == 75 && pos.getZ() == -37

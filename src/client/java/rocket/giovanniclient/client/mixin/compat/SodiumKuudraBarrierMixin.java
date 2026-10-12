@@ -8,6 +8,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
 import rocket.giovanniclient.client.config.ConfigManager;
+import rocket.giovanniclient.client.features.render.BlockReplacements;
 import rocket.giovanniclient.client.util.PlayerLocator;
 
 @Pseudo
@@ -15,6 +16,8 @@ import rocket.giovanniclient.client.util.PlayerLocator;
 public class SodiumKuudraBarrierMixin {
     @ModifyReturnValue(method = "getBlockState(III)Lnet/minecraft/world/level/block/state/BlockState;", at = @At("RETURN"))
     private BlockState giovanni$replaceKuudraBarrierState(BlockState state, int x, int y, int z) {
+        BlockState replacement = BlockReplacements.renderState(state);
+        if (replacement != state) return replacement;
         if (Boolean.TRUE.equals(ConfigManager.getConfig().rc.kuudraAccordion.GLASS_BARRIER_BLOCKS.get())
                 && PlayerLocator.isPlayerInKuudra()
                 && y == 75

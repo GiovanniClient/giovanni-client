@@ -8,11 +8,16 @@ import io.github.notenoughupdates.moulconfig.observer.Property;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class RenderConfig {
 
     @Expose
     public List<String> hiddenEntityNames = new ArrayList<>();
+
+    @Expose
+    public Map<String, String> blockReplacements = new LinkedHashMap<>();
 
     @Expose
     @Accordion

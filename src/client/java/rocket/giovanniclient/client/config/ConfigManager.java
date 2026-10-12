@@ -10,6 +10,7 @@ import io.github.notenoughupdates.moulconfig.processor.BuiltinMoulConfigGuis;
 import io.github.notenoughupdates.moulconfig.processor.ConfigProcessorDriver;
 import io.github.notenoughupdates.moulconfig.processor.MoulConfigProcessor;
 import rocket.giovanniclient.giovanniclient.config.ClientConfigState;
+import rocket.giovanniclient.client.features.render.BlockReplacements;
 
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
@@ -59,6 +60,7 @@ public class ConfigManager {
             throw new IllegalStateException("Unable to create GiovanniClient config directory", exception);
         }
         loadConfig();
+        BlockReplacements.refresh();
         registerClientConfigStateObservers();
         syncClientConfigState();
 
