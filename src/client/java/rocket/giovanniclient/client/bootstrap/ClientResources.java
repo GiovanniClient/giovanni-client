@@ -6,6 +6,7 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import rocket.giovanniclient.client.GiovanniClientClient;
 import rocket.giovanniclient.client.features.inventorybuttons.InventoryBackgroundColor;
+import rocket.giovanniclient.client.features.render.GlbRatModel;
 
 public final class ClientResources {
     private ClientResources() {}
@@ -19,6 +20,10 @@ public final class ClientResources {
         ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloadListener(
                 RELOAD_ID,
                 (ResourceManagerReloadListener) manager -> InventoryBackgroundColor.invalidate()
+        );
+        ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloadListener(
+                Identifier.fromNamespaceAndPath(GiovanniClientClient.MOD_ID, "rat_model_reload"),
+                GlbRatModel.reloadListener()
         );
     }
 }

@@ -33,7 +33,7 @@ public class RatReplacer extends AbstractFeature {
 
     @Override
     public void onTick(Minecraft client) {
-        if (client == null || client.level == null || !isEnabled()) {
+        if (client == null || client.level == null || !isEnabled() || !GlbRatModel.isAvailable()) {
             RATS.clear();
             return;
         }
@@ -67,7 +67,7 @@ public class RatReplacer extends AbstractFeature {
     }
 
     public static boolean shouldReplace(ArmorStand stand) {
-        boolean shouldReplace = isEnabled() && isRatArmorStand(stand);
+        boolean shouldReplace = isEnabled() && GlbRatModel.isAvailable() && isRatArmorStand(stand);
         if (shouldReplace) {
             RATS.put(stand.getUUID(), Boolean.TRUE);
         }
@@ -75,7 +75,7 @@ public class RatReplacer extends AbstractFeature {
     }
 
     public static boolean shouldReplace(Display.ItemDisplay display) {
-        boolean shouldReplace = isEnabled() && isRatItemDisplay(display);
+        boolean shouldReplace = isEnabled() && GlbRatModel.isAvailable() && isRatItemDisplay(display);
         if (shouldReplace) {
             RATS.put(display.getUUID(), Boolean.TRUE);
         }
@@ -84,7 +84,7 @@ public class RatReplacer extends AbstractFeature {
 
     public static List<RatRenderData> getRenderData(float tickProgress) {
         Minecraft client = Minecraft.getInstance();
-        if (client.level == null) return List.of();
+        if (client.level == null || !isEnabled() || !GlbRatModel.isAvailable()) return List.of();
 
         return RATS.keySet().stream()
                 .map(uuid -> findRat(client, uuid))

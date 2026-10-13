@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import rocket.giovanniclient.client.features.render.RatRenderStateAccess;
 import rocket.giovanniclient.client.features.render.RatReplacer;
+import rocket.giovanniclient.client.features.render.GlbRatModel;
 
 @Mixin(DisplayRenderer.ItemDisplayRenderer.class)
 public class RatItemDisplayRendererMixin {
@@ -21,7 +22,7 @@ public class RatItemDisplayRendererMixin {
 
     @Inject(method = "submitInner(Lnet/minecraft/client/renderer/entity/state/ItemDisplayEntityRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;IF)V", at = @At("HEAD"), cancellable = true)
     private void giovanni$hideRatItemDisplay(ItemDisplayEntityRenderState state, PoseStack poseStack, SubmitNodeCollector collector, int lightCoords, float interpolationProgress, CallbackInfo ci) {
-        if (((RatRenderStateAccess) state).giovanni$isRatReplacement()) {
+        if (((RatRenderStateAccess) state).giovanni$isRatReplacement() && GlbRatModel.isAvailable()) {
             ci.cancel();
         }
     }

@@ -5,11 +5,13 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.resources.PreparableReloadListener;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
+import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionf;
 
@@ -22,23 +24,44 @@ import java.util.List;
 
 public final class GlbRatModel {
     private static final Identifier MODEL_ID = Identifier.fromNamespaceAndPath("giovanniclient", "models/entity/big_rat.glb");
-    private static final Identifier TEXTURE_ID = Identifier.fromNamespaceAndPath("giovanniclient", "textures/entity/big_rat.png");
     private static final int CHUNK_JSON = 0x4E4F534A;
     private static final int CHUNK_BIN = 0x004E4942;
     private static final int FULL_BRIGHT = 15728880;
     private static final float MODEL_SCALE = 1.9f;
 
-    private static GlbRatModel instance;
-    private static boolean loadAttempted;
+    private static volatile GlbRatModel instance;
 
     private final List<Vertex> vertices;
 
     private GlbRatModel(List<Vertex> vertices) {
-        this.vertices = vertices;
+        this.vertices = List.copyOf(vertices);
+    }
+
+    public static PreparableReloadListener reloadListener() {
+        return new SimplePreparableReloadListener<GlbRatModel>() {
+            @Override
+            protected GlbRatModel prepare(ResourceManager manager, ProfilerFiller profiler) {
+                try {
+                    return load(manager);
+                } catch (Exception exception) {
+                    rocket.giovanniclient.client.util.Utils.error("Failed to load Giovanni rat GLB model", exception);
+                    return null;
+                }
+            }
+
+            @Override
+            protected void apply(GlbRatModel model, ResourceManager manager, ProfilerFiller profiler) {
+                instance = model;
+            }
+        };
+    }
+
+    public static boolean isAvailable() {
+        return instance != null;
     }
 
     public static void submit(SubmitNodeCollector collector, PoseStack matrices, RatReplacer.RatRenderData rat, Vec3 cameraPosition) {
-        GlbRatModel model = get();
+        GlbRatModel model = instance;
         if (model == null) return;
 
         matrices.pushPose();
@@ -46,7 +69,7 @@ public final class GlbRatModel {
         matrices.mulPose(new Quaternionf().rotationY((float) Math.toRadians(180.0f - rat.yRot())));
         matrices.scale(MODEL_SCALE, MODEL_SCALE, MODEL_SCALE);
 
-        collector.submitCustomGeometry(matrices, RenderTypes.entitySolid(TEXTURE_ID), model::render);
+        collector.submitCustomGeometry(matrices, GiovanniRenderLayers.RAT_MODEL, model::render);
 
         matrices.popPose();
     }
@@ -62,36 +85,26 @@ public final class GlbRatModel {
         }
     }
 
-    private static GlbRatModel get() {
-        if (!loadAttempted) {
-            loadAttempted = true;
-            try {
-                instance = load();
-            } catch (Exception e) {
-                rocket.giovanniclient.client.util.Utils.error("Failed to load Giovanni rat GLB model", e);
-            }
-        }
-        return instance;
-    }
-
-    private static GlbRatModel load() throws IOException {
+    private static GlbRatModel load(ResourceManager manager) throws IOException {
         byte[] data;
-        try (var stream = Minecraft.getInstance().getResourceManager().open(MODEL_ID)) {
+        try (var stream = manager.open(MODEL_ID)) {
             data = stream.readAllBytes();
         }
+        if (data.length < 12) throw new IOException("Truncated GLB header");
         ByteBuffer glb = ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN);
         if (glb.getInt() != 0x46546C67) {
             throw new IOException("Invalid GLB magic");
         }
 
-        glb.getInt();
-        glb.getInt();
+        if (glb.getInt() != 2) throw new IOException("Unsupported GLB version");
+        if (glb.getInt() != data.length) throw new IOException("Invalid GLB length");
 
         JsonObject json = null;
         byte[] binary = null;
         while (glb.remaining() >= 8) {
             int chunkLength = glb.getInt();
             int chunkType = glb.getInt();
+            if (chunkLength < 0 || chunkLength > glb.remaining()) throw new IOException("Invalid GLB chunk length");
             byte[] chunk = new byte[chunkLength];
             glb.get(chunk);
 
@@ -115,6 +128,7 @@ public final class GlbRatModel {
             loadNode(modelData, rootNodes.get(i).getAsInt(), identity(), vertices);
         }
 
+        if (vertices.isEmpty()) throw new IOException("GLB contains no supported triangles");
         normalize(vertices);
         return new GlbRatModel(vertices);
     }
@@ -147,6 +161,7 @@ public final class GlbRatModel {
             Accessor normals = modelData.accessor(attributes.get("NORMAL").getAsInt());
             Accessor uvs = modelData.accessor(attributes.get("TEXCOORD_0").getAsInt());
             Accessor indices = modelData.accessor(primitive.get("indices").getAsInt());
+            if (indices.count() % 3 != 0) throw new IllegalArgumentException("Incomplete GLB triangle");
 
             for (int index = 0; index < indices.count(); index++) {
                 int vertexIndex = indices.readInt(index);
