@@ -28,17 +28,25 @@ public class NamedMobGlow extends AbstractFeature {
             0xFF33FF, // magenta
             0x33FFFF  // cyan
     };
-    private static final int SCAN_EVERY_TICKS = 5;
+    private static final int SCAN_EVERY_TICKS = 10;
+    private static final int MISSING_NAMETAG_GRACE_TICKS = 20;
 
     private static final Map<String, NameColor> NAMES = new LinkedHashMap<>();
     private static final Map<UUID, TrackedMob> TRACKED = new HashMap<>();
-    private int tickCounter;
+    private static final Map<UUID, TrackedNametag> NAMETAGS = new HashMap<>();
+    private long tickCounter;
 
     public enum AddResult { ADDED, ALREADY_PRESENT, FULL }
 
     public record NameColor(String name, int color) {}
 
     private record TrackedMob(int entityId, String nameKey) {}
+
+    private record TrackedNametag(int standId, int mobId, UUID mobUuid, String nameKey, long lastSeenTick) {
+        private TrackedNametag seenAt(long tick) {
+            return new TrackedNametag(standId, mobId, mobUuid, nameKey, tick);
+        }
+    }
 
     public static AddResult addName(String name) {
         String key = name.toLowerCase(Locale.ROOT);
@@ -58,6 +66,7 @@ public class NamedMobGlow extends AbstractFeature {
     public static boolean removeName(String name) {
         String key = name.toLowerCase(Locale.ROOT);
         if (NAMES.remove(key) == null) return false;
+        NAMETAGS.values().removeIf(nametag -> nametag.nameKey().equals(key));
         for (UUID uuid : new HashSet<>(TRACKED.keySet())) {
             if (TRACKED.get(uuid).nameKey().equals(key)) {
                 GlowOverrideManager.clear(OWNER, uuid);
@@ -84,43 +93,71 @@ public class NamedMobGlow extends AbstractFeature {
         }
         if (++tickCounter % SCAN_EVERY_TICKS != 0) return;
 
-        // Keep a known mob highlighted while it remains loaded, even if its
-        // separate SkyBlock nametag armor stand has left rendering range.
-        for (UUID uuid : new HashSet<>(TRACKED.keySet())) {
-            TrackedMob tracked = TRACKED.get(uuid);
-            Entity entity = client.level.getEntity(tracked.entityId());
-            NameColor entry = NAMES.get(tracked.nameKey());
-            if (!(entity instanceof LivingEntity living) || !living.isAlive()
-                    || !entity.getUUID().equals(uuid) || entry == null) {
-                GlowOverrideManager.clear(OWNER, uuid);
-                TRACKED.remove(uuid);
-                continue;
-            }
-            GlowOverrideManager.set(OWNER, living, entry.color());
-        }
-
         if (NAMES.isEmpty()) return;
         for (Entity entity : client.level.entitiesForRendering()) {
-            if (!(entity instanceof ArmorStand stand) || !stand.hasCustomName()) continue;
-            String nametag = stand.getCustomName().getString().toLowerCase(Locale.ROOT);
-            for (Map.Entry<String, NameColor> match : NAMES.entrySet()) {
-                if (!nametag.contains(match.getKey())) continue;
-                LivingEntity target = findMobUnderNametag(client, stand);
-                if (target != null && !TRACKED.containsKey(target.getUUID())) {
-                    TRACKED.put(target.getUUID(), new TrackedMob(target.getId(), match.getKey()));
-                    GlowOverrideManager.set(OWNER, target, match.getValue().color());
-                }
-                break;
+            if (!(entity instanceof ArmorStand stand) || !stand.isAlive()) continue;
+            String nameKey = matchingNameKey(stand);
+            if (nameKey == null) continue;
+
+            TrackedNametag tracked = NAMETAGS.get(stand.getUUID());
+            if (tracked == null || tracked.standId() != stand.getId() || !tracked.nameKey().equals(nameKey)) {
+                // Include dying mobs when binding: a lingering nametag must not
+                // skip its dead owner and select a nearby living entity instead.
+                LivingEntity target = findMobUnderNametag(client, stand, true);
+                if (target == null) continue;
+                tracked = new TrackedNametag(stand.getId(), target.getId(), target.getUUID(), nameKey, tickCounter);
             }
+            NAMETAGS.put(stand.getUUID(), tracked.seenAt(tickCounter));
+        }
+
+        Map<UUID, TrackedMob> desired = new HashMap<>();
+        var iterator = NAMETAGS.entrySet().iterator();
+        while (iterator.hasNext()) {
+            var association = iterator.next();
+            TrackedNametag tracked = association.getValue();
+            if (!NAMES.containsKey(tracked.nameKey()) || tickCounter - tracked.lastSeenTick() >= MISSING_NAMETAG_GRACE_TICKS) {
+                iterator.remove();
+                continue;
+            }
+
+            Entity tagEntity = client.level.getEntity(tracked.standId());
+            ArmorStand stand = tagEntity instanceof ArmorStand tag && tag.getUUID().equals(association.getKey()) ? tag : null;
+            if (stand != null && (!stand.isAlive() || !tracked.nameKey().equals(matchingNameKey(stand)))) {
+                iterator.remove();
+                continue;
+            }
+
+            Entity target = client.level.getEntity(tracked.mobId());
+            if (!(target instanceof LivingEntity living) || !living.isAlive() || !target.getUUID().equals(tracked.mobUuid())) {
+                // Keep the association until its nametag disappears. Rebinding
+                // this same stand after death/despawn would transfer its glow.
+                continue;
+            }
+            if (stand != null && !nametagSearchBox(stand).intersects(living.getBoundingBox())) continue;
+            desired.putIfAbsent(target.getUUID(), new TrackedMob(target.getId(), tracked.nameKey()));
+        }
+
+        for (UUID uuid : TRACKED.keySet()) {
+            if (!desired.containsKey(uuid)) GlowOverrideManager.clear(OWNER, uuid);
+        }
+        TRACKED.clear();
+        TRACKED.putAll(desired);
+        for (var entry : desired.entrySet()) {
+            Entity target = client.level.getEntity(entry.getValue().entityId());
+            GlowOverrideManager.set(OWNER, target, NAMES.get(entry.getValue().nameKey()).color());
         }
     }
 
     static LivingEntity findMobUnderNametag(Minecraft client, ArmorStand stand) {
-        AABB box = stand.getBoundingBox().inflate(1.0, 3.0, 1.0).move(0.0, -1.2, 0.0);
+        return findMobUnderNametag(client, stand, false);
+    }
+
+    private static LivingEntity findMobUnderNametag(Minecraft client, ArmorStand stand, boolean includeDying) {
+        AABB box = nametagSearchBox(stand);
         LivingEntity closest = null;
         double bestDistance = Double.MAX_VALUE;
         for (Entity entity : client.level.getEntities(stand, box,
-                candidate -> candidate.isAlive() && candidate instanceof LivingEntity
+                candidate -> candidate instanceof LivingEntity && (includeDying || candidate.isAlive())
                         && !(candidate instanceof ArmorStand) && candidate != client.player)) {
             double distance = stand.distanceToSqr(entity);
             if (distance < bestDistance) {
@@ -131,18 +168,34 @@ public class NamedMobGlow extends AbstractFeature {
         return closest;
     }
 
+    private static AABB nametagSearchBox(ArmorStand stand) {
+        return stand.getBoundingBox().inflate(1.0, 3.0, 1.0).move(0.0, -1.2, 0.0);
+    }
+
+    private static String matchingNameKey(ArmorStand stand) {
+        if (!stand.hasCustomName()) return null;
+        String nametag = stand.getCustomName().getString().toLowerCase(Locale.ROOT);
+        for (String key : NAMES.keySet()) {
+            if (nametag.contains(key)) return key;
+        }
+        return null;
+    }
+
     @Override
     public void onWorldLoad(Minecraft client) {
         clearTracked();
+        tickCounter = 0;
     }
 
     @Override
     public void onWorldUnload(Minecraft client) {
         clearTracked();
+        tickCounter = 0;
     }
 
     private static void clearTracked() {
         for (UUID uuid : TRACKED.keySet()) GlowOverrideManager.clear(OWNER, uuid);
         TRACKED.clear();
+        NAMETAGS.clear();
     }
 }
