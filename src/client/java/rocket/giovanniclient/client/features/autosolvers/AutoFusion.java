@@ -26,21 +26,21 @@ public class AutoFusion extends AbstractFeature {
     }
 
     private State currentState = State.NONE;
+    private AbstractContainerMenu activeMenu;
     private long clickDelay = -1;
 
     @Override
     public void onScreenOpen(Screen screen) {
         if (!cfg.autoFusionAccordtion.AUTOFUSION) {
-            currentState = State.NONE;
-            clickDelay = -1;
+            reset();
             return;
         }
 
-        if (!(screen instanceof ContainerScreen)) {
-            currentState = State.NONE;
-            clickDelay = -1;
+        if (!(screen instanceof ContainerScreen containerScreen)) {
+            reset();
             return;
         }
+        if (activeMenu != containerScreen.getMenu()) reset();
 
         String name = screen.getTitle().getString();
         if (name.contains("Fusion Box")) {
@@ -50,9 +50,9 @@ public class AutoFusion extends AbstractFeature {
             Utils.debug("Confirm Fusion detected");
             currentState = State.CONFIRM_FUSION;
         } else {
-            currentState = State.NONE;
-            clickDelay = -1;
+            reset();
         }
+        if (currentState != State.NONE) activeMenu = containerScreen.getMenu();
     }
 
     @Override
@@ -60,9 +60,9 @@ public class AutoFusion extends AbstractFeature {
         if (!cfg.autoFusionAccordtion.AUTOFUSION
                 || currentState == State.NONE
                 || client.player == null
-                || !(client.gui.screen() instanceof ContainerScreen)) {
-            currentState = State.NONE;
-            clickDelay = -1;
+                || !(client.gui.screen() instanceof ContainerScreen screen)
+                || screen.getMenu() != activeMenu || client.player.containerMenu != activeMenu) {
+            reset();
             return;
         }
 
@@ -81,9 +81,8 @@ public class AutoFusion extends AbstractFeature {
                           int slot,
                           String expectedItemId,
                           long now) {
-        if (slot < 0 || slot >= handler.slots.size()) {
-            currentState = State.NONE;
-            clickDelay = -1;
+        if (handler == null || slot < 0 || slot >= handler.slots.size()) {
+            reset();
             return;
         }
 
@@ -104,7 +103,20 @@ public class AutoFusion extends AbstractFeature {
                 clickSlot(client, handler, slot, InventoryUtils.MouseButton.LEFT, ContainerInput.CLONE);
                 clickDelay = -1;
             }
+        } else {
+            clickDelay = -1;
         }
+    }
+
+    private void reset() {
+        currentState = State.NONE;
+        activeMenu = null;
+        clickDelay = -1;
+    }
+
+    @Override
+    public void onWorldUnload(Minecraft client) {
+        reset();
     }
 
     private int randomDelay(int configuredMin, int configuredMax) {

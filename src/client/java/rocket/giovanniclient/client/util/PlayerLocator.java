@@ -22,9 +22,15 @@ public class PlayerLocator extends AbstractFeature {
         if (tick % 60 == 0) {
             setPlayerLocation(findPlayerLocation());
 
-            if (TabListUtils.tabContainsRaw("Area")) {
-                setPlayerArea(stripLeadingSymbols(TabListUtils.getCleanLineContaining("Area")).substring(6));
-            } else setPlayerArea("None");
+            String area = "None";
+            for (String line : TabListUtils.getCleanedLines(true, true)) {
+                String cleaned = stripLeadingSymbols(line);
+                if (cleaned.startsWith("Area: ") && cleaned.length() > 6) {
+                    area = cleaned.substring(6);
+                    break;
+                }
+            }
+            setPlayerArea(area);
 
         }
 
@@ -36,6 +42,22 @@ public class PlayerLocator extends AbstractFeature {
 
     public static String getPlayerLocation() {
         return CURRENT_PLAYER_LOCATION;
+    }
+
+    @Override
+    public void onWorldLoad(Minecraft client) {
+        resetLocation();
+    }
+
+    @Override
+    public void onWorldUnload(Minecraft client) {
+        resetLocation();
+    }
+
+    private void resetLocation() {
+        CURRENT_PLAYER_LOCATION = "None";
+        CURRENT_PLAYER_AREA = "None";
+        tick = 0;
     }
 
     private void setPlayerLocation(String location) {

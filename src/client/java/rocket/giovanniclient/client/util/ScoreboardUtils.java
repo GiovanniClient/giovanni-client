@@ -26,7 +26,7 @@ public class ScoreboardUtils {
      * @return The sidebar ScoreboardObjective, or null if unavailable
      */
     public static Objective getSidebarObjective(Minecraft client) {
-        if (client.level == null || client.player == null) return null;
+        if (client == null || client.level == null || client.player == null) return null;
 
         Scoreboard scoreboard = client.level.getScoreboard();
 
@@ -119,9 +119,7 @@ public class ScoreboardUtils {
      * @return -1 if not found, otherwise a non-negative integer
      */
     public static int getLineIndexOfString(String searchString) {
-        if (scoreboardContainsRaw(searchString)) return getCleanedSidebarLines().indexOf(searchString);
-
-        return -1;
+        return getCleanedSidebarLines().indexOf(searchString);
     }
 
     /**
@@ -132,7 +130,8 @@ public class ScoreboardUtils {
     public static String getStringAtIndex(int index) {
         if (index > 15 || index < 0) return "";
 
-        return getCleanedSidebarLines().get(index);
+        List<String> lines = getCleanedSidebarLines();
+        return index < lines.size() ? lines.get(index) : "";
     }
 
     /**

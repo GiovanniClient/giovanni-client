@@ -1,6 +1,7 @@
 package rocket.giovanniclient.client.util;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -41,6 +42,9 @@ public class InventoryUtils {
     public static void clickSlot(Minecraft client, AbstractContainerMenu handler, int slot,
                                  MouseButton button, ContainerInput actionType) {
         if (client == null || client.player == null || client.gameMode == null || handler == null
+                || client.player.containerMenu != handler
+                || !(client.gui.screen() instanceof AbstractContainerScreen<?> screen)
+                || screen.getMenu() != handler
                 || slot < 0 || slot >= handler.slots.size()) {
             return;
         }

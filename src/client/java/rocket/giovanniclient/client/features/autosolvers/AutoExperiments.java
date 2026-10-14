@@ -42,6 +42,7 @@ public class AutoExperiments extends AbstractFeature {
     private final Random rng = new Random();
 
     private ExperimentType currentExperiment = ExperimentType.NONE;
+    private AbstractContainerMenu activeMenu;
     private final ArrayList<Integer> chronomatronOrder = new ArrayList<>(28);
     private final Map<Integer, Integer> ultrasequencerOrder = new HashMap<>();
 
@@ -58,10 +59,11 @@ public class AutoExperiments extends AbstractFeature {
             return;
         }
 
-        if (!(screen instanceof ContainerScreen)) {
+        if (!(screen instanceof ContainerScreen containerScreen)) {
             clearAll();
             return;
         }
+        if (activeMenu != containerScreen.getMenu()) clearAll();
 
         String title = screen.getTitle().getString();
         if (title.startsWith("Chronomatron (")) {
@@ -76,6 +78,7 @@ public class AutoExperiments extends AbstractFeature {
         } else {
             clearAll();
         }
+        if (currentExperiment != ExperimentType.NONE) activeMenu = containerScreen.getMenu();
     }
 
     @Override
@@ -83,10 +86,12 @@ public class AutoExperiments extends AbstractFeature {
         if (!cfg.autoExperimentsAccordion.AUTOEXPERIMENTS_TOGGLE ||
                 currentExperiment == ExperimentType.NONE ||
                 client.player == null) {
+            clearAll();
             return;
         }
 
-        if (!(client.gui.screen() instanceof ContainerScreen)) {
+        if (!(client.gui.screen() instanceof ContainerScreen screen)
+                || screen.getMenu() != activeMenu || client.player.containerMenu != activeMenu) {
             clearAll();
             return;
         }
@@ -140,6 +145,8 @@ public class AutoExperiments extends AbstractFeature {
             sequenceAdded = false;
             if (chronomatronOrder.size() > (11 - cfg.autoExperimentsAccordion.METAPHYSICAL_SERUM.toInt())) {
                 client.player.closeContainer();
+                clearAll();
+                return;
             }
         }
 
@@ -223,6 +230,8 @@ public class AutoExperiments extends AbstractFeature {
             if (now > clickDelay) {
                 if (ultrasequencerOrder.size() > (9 - cfg.autoExperimentsAccordion.METAPHYSICAL_SERUM.toInt())) {
                     client.player.closeContainer();
+                    clearAll();
+                    return;
                 }
 
                 Integer slot = ultrasequencerOrder.get(clicks);
@@ -237,13 +246,20 @@ public class AutoExperiments extends AbstractFeature {
 
     private void clearAll() {
         currentExperiment = ExperimentType.NONE;
+        activeMenu = null;
         chronomatronOrder.clear();
         ultrasequencerOrder.clear();
         sequenceAdded = false;
         lastAdded = 0;
+        clicks = 0;
         clickDelay = -1;
         endDelay = -1;
         startDelay = -1;
+    }
+
+    @Override
+    public void onWorldUnload(Minecraft client) {
+        clearAll();
     }
 
     private boolean hasRequiredSlots(AbstractContainerMenu handler, int highestRequiredSlot) {
