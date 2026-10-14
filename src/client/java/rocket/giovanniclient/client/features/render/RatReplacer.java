@@ -2,6 +2,7 @@ package rocket.giovanniclient.client.features.render;
 
 import com.mojang.authlib.properties.Property;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -27,7 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class RatReplacer extends AbstractFeature {
     private static final String RAT_TEXTURE_HASH = "a8abb471db0ab78703011979dc8b40798a941f3a4dec3ec61cbeec2af8cffe8";
-    private static final Map<UUID, Boolean> RATS = new ConcurrentHashMap<>();
+    private static final Map<UUID, Integer> RATS = new ConcurrentHashMap<>();
 
     private int tickCounter = 0;
 
@@ -48,7 +49,7 @@ public class RatReplacer extends AbstractFeature {
             }
         }
 
-        found.keySet().forEach(uuid -> RATS.put(uuid, Boolean.TRUE));
+        found.forEach((uuid, entity) -> RATS.put(uuid, entity.getId()));
         for (UUID uuid : new HashSet<>(RATS.keySet())) {
             if (!found.containsKey(uuid)) {
                 RATS.remove(uuid);
@@ -69,7 +70,7 @@ public class RatReplacer extends AbstractFeature {
     public static boolean shouldReplace(ArmorStand stand) {
         boolean shouldReplace = isEnabled() && GlbRatModel.isAvailable() && isRatArmorStand(stand);
         if (shouldReplace) {
-            RATS.put(stand.getUUID(), Boolean.TRUE);
+            RATS.put(stand.getUUID(), stand.getId());
         }
         return shouldReplace;
     }
@@ -77,17 +78,19 @@ public class RatReplacer extends AbstractFeature {
     public static boolean shouldReplace(Display.ItemDisplay display) {
         boolean shouldReplace = isEnabled() && GlbRatModel.isAvailable() && isRatItemDisplay(display);
         if (shouldReplace) {
-            RATS.put(display.getUUID(), Boolean.TRUE);
+            RATS.put(display.getUUID(), display.getId());
         }
         return shouldReplace;
     }
 
-    public static List<RatRenderData> getRenderData(float tickProgress) {
-        Minecraft client = Minecraft.getInstance();
-        if (client.level == null || !isEnabled() || !GlbRatModel.isAvailable()) return List.of();
+    public static List<RatRenderData> extractRenderData(ClientLevel level, float tickProgress) {
+        if (level == null || !isEnabled() || !GlbRatModel.isAvailable()) return List.of();
 
-        return RATS.keySet().stream()
-                .map(uuid -> findRat(client, uuid))
+        return RATS.entrySet().stream()
+                .map(entry -> {
+                    Entity entity = level.getEntity(entry.getValue());
+                    return entity != null && entity.getUUID().equals(entry.getKey()) ? entity : null;
+                })
                 .filter(Objects::nonNull)
                 .filter(Entity::isAlive)
                 .filter(RatReplacer::isRatEntity)
@@ -102,15 +105,6 @@ public class RatReplacer extends AbstractFeature {
                 Mth.lerp(tickProgress, entity.yRotO, entity.getYRot()),
                 yOffset
         );
-    }
-
-    private static Entity findRat(Minecraft client, UUID uuid) {
-        for (Entity entity : client.level.entitiesForRendering()) {
-            if (entity.getUUID().equals(uuid)) {
-                return entity;
-            }
-        }
-        return null;
     }
 
     private static boolean isEnabled() {

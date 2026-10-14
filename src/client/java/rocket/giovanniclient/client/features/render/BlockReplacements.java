@@ -3,6 +3,8 @@ package rocket.giovanniclient.client.features.render;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import rocket.giovanniclient.client.config.ConfigManager;
@@ -28,6 +30,8 @@ public final class BlockReplacements {
     }
 
     public static void put(Identifier oldBlock, Identifier newBlock) {
+        String error = validationError(oldBlock, newBlock);
+        if (error != null) throw new IllegalArgumentException(error);
         Map<String, String> configured = new LinkedHashMap<>(entries());
         configured.put(oldBlock.toString(), newBlock.toString());
         ConfigManager.getConfig().rc.blockReplacements = configured;
@@ -55,18 +59,46 @@ public final class BlockReplacements {
             if (oldId == null || newId == null
                     || !BuiltInRegistries.BLOCK.containsKey(oldId)
                     || !BuiltInRegistries.BLOCK.containsKey(newId)) continue;
+            if (validationError(oldId, newId) != null) continue;
 
             Block oldBlock = BuiltInRegistries.BLOCK.getValue(oldId);
             Block newBlock = BuiltInRegistries.BLOCK.getValue(newId);
             for (BlockState original : oldBlock.getStateDefinition().getPossibleStates()) {
-                BlockState replacement = newBlock.defaultBlockState();
-                for (Property<?> property : original.getProperties()) {
-                    replacement = copyProperty(original, replacement, property);
-                }
+                BlockState replacement = replacementState(original, newBlock);
+                // The render region's fluid lookup still reads the real world.
+                // Keep incompatible wet states unchanged instead of hiding water.
+                if (!original.getFluidState().equals(replacement.getFluidState())) continue;
                 states.put(original, replacement);
             }
         }
         renderStates = Map.copyOf(states);
+    }
+
+    public static String validationError(Identifier oldId, Identifier newId) {
+        for (Identifier id : new Identifier[]{oldId, newId}) {
+            if (id == null || !BuiltInRegistries.BLOCK.containsKey(id)) return "Unknown block: " + id;
+            Block block = BuiltInRegistries.BLOCK.getValue(id);
+            if (block instanceof LiquidBlock) return "Fluid blocks are not supported: " + id;
+            if (block.defaultBlockState().hasBlockEntity()) return "Blocks with a dedicated block entity renderer are not supported: " + id;
+        }
+        Block newBlock = BuiltInRegistries.BLOCK.getValue(newId);
+        if (!newBlock.defaultBlockState().isAir() && newBlock.defaultBlockState().getRenderShape() != RenderShape.MODEL) {
+            return "The replacement block has no regular block model: " + newId;
+        }
+        return null;
+    }
+
+    public static boolean hasUnchangedFluidStates(Identifier oldId, Identifier newId) {
+        Block oldBlock = BuiltInRegistries.BLOCK.getValue(oldId);
+        Block newBlock = BuiltInRegistries.BLOCK.getValue(newId);
+        return oldBlock.getStateDefinition().getPossibleStates().stream()
+                .anyMatch(original -> !original.getFluidState().equals(replacementState(original, newBlock).getFluidState()));
+    }
+
+    private static BlockState replacementState(BlockState original, Block newBlock) {
+        BlockState replacement = newBlock.defaultBlockState();
+        for (Property<?> property : original.getProperties()) replacement = copyProperty(original, replacement, property);
+        return replacement;
     }
 
     private static <T extends Comparable<T>> BlockState copyProperty(

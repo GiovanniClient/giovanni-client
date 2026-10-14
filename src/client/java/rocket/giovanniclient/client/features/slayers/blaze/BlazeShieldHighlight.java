@@ -1,6 +1,7 @@
 package rocket.giovanniclient.client.features.slayers.blaze;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -58,7 +59,7 @@ public class BlazeShieldHighlight extends AbstractFeature {
             Entity boss = findNametagOwner(client, stand);
             if (!(boss instanceof LivingEntity living)) continue;
 
-            desiredHighlights.put(living.getUUID(), new HighlightColors(color.outlineArgb(), color.fillArgb()));
+            desiredHighlights.put(living.getUUID(), new HighlightColors(living.getId(), color.outlineArgb(), color.fillArgb()));
         }
 
         HIGHLIGHTS.putAll(desiredHighlights);
@@ -83,14 +84,13 @@ public class BlazeShieldHighlight extends AbstractFeature {
         HIGHLIGHTS.clear();
     }
 
-    public static List<RenderedBox> getRenderedBoxes(float tickProgress) {
-        Minecraft client = Minecraft.getInstance();
-        if (client.level == null) return List.of();
+    public static List<RenderedBox> extractRenderedBoxes(ClientLevel level, float tickProgress) {
+        if (level == null) return List.of();
 
         return HIGHLIGHTS.entrySet().stream()
                 .map(entry -> {
-                    Entity entity = findEntityByUuid(client, entry.getKey());
-                    if (!(entity instanceof LivingEntity living) || !living.isAlive()) return null;
+                    Entity entity = level.getEntity(entry.getValue().entityId());
+                    if (!(entity instanceof LivingEntity living) || !living.isAlive() || !entity.getUUID().equals(entry.getKey())) return null;
 
                     HighlightColors colors = entry.getValue();
                     return new RenderedBox(getLerpedBox(living, tickProgress), colors.outlineArgb(), colors.fillArgb());
@@ -143,23 +143,13 @@ public class BlazeShieldHighlight extends AbstractFeature {
         return entity.getDimensions(Pose.STANDING).makeBoundingBox(entity.getPosition(tickProgress));
     }
 
-    private static Entity findEntityByUuid(Minecraft client, UUID uuid) {
-        if (client.level == null) return null;
-
-        for (Entity entity : client.level.entitiesForRendering()) {
-            if (entity.getUUID().equals(uuid)) return entity;
-        }
-
-        return null;
-    }
-
     private static String plainName(Component component) {
         return Objects.requireNonNullElse(component, Component.empty()).getString();
     }
 
     private record HighlightColor(int outlineArgb, int fillArgb) {}
 
-    private record HighlightColors(int outlineArgb, int fillArgb) {}
+    private record HighlightColors(int entityId, int outlineArgb, int fillArgb) {}
 
     public record RenderedBox(AABB box, int outlineArgb, int fillArgb) {}
 }

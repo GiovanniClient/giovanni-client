@@ -28,8 +28,13 @@ final class BlockReplacementCommands {
                     Map<String, String> entries = BlockReplacements.entries();
                     context.getSource().sendFeedback(Component.literal(entries.isEmpty()
                             ? "§eBlock replacement list is empty." : "§eBlock replacements:"));
-                    entries.forEach((oldBlock, newBlock) -> context.getSource().sendFeedback(
-                            Component.literal(" §f" + oldBlock + " §7-> §f" + newBlock)));
+                    entries.forEach((oldBlock, newBlock) -> {
+                        String error = BlockReplacements.validationError(
+                                oldBlock == null ? null : Identifier.tryParse(oldBlock),
+                                newBlock == null ? null : Identifier.tryParse(newBlock));
+                        context.getSource().sendFeedback(Component.literal(" §f" + oldBlock + " §7-> §f" + newBlock
+                                + (error == null ? "" : " §c(inactive: " + error + ")")));
+                    });
                     return 1;
                 }))
                 .then(ClientCommands.literal("clear").executes(context -> {
@@ -62,14 +67,16 @@ final class BlockReplacementCommands {
     private static int replace(CommandContext<FabricClientCommandSource> context) {
         Identifier oldBlock = context.getArgument("oldblock", Identifier.class);
         Identifier newBlock = context.getArgument("newblock", Identifier.class);
-        for (Identifier id : new Identifier[]{oldBlock, newBlock}) {
-            if (!BuiltInRegistries.BLOCK.containsKey(id)) {
-                context.getSource().sendError(Component.literal("Unknown block: " + id));
-                return 0;
-            }
+        String error = BlockReplacements.validationError(oldBlock, newBlock);
+        if (error != null) {
+            context.getSource().sendError(Component.literal(error));
+            return 0;
         }
         BlockReplacements.put(oldBlock, newBlock);
         context.getSource().sendFeedback(Component.literal("§aBlock rendering: §f" + oldBlock + " §7-> §f" + newBlock));
+        if (BlockReplacements.hasUnchangedFluidStates(oldBlock, newBlock)) {
+            context.getSource().sendFeedback(Component.literal("§eWaterlogged states with incompatible fluid data keep their original appearance."));
+        }
         return 1;
     }
 }

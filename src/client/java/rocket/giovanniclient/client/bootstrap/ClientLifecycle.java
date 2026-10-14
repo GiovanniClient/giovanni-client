@@ -5,6 +5,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import rocket.giovanniclient.client.GiovanniClientClient;
 import rocket.giovanniclient.client.config.ConfigManager;
 import rocket.giovanniclient.client.features.FeatureManager;
+import rocket.giovanniclient.client.events.GiovanniWorldRenderEvent;
 import rocket.giovanniclient.client.features.inventorybuttons.rei.ReiAccessibilityManager;
 import rocket.giovanniclient.client.util.Utils;
 
@@ -18,7 +19,8 @@ public final class ClientLifecycle {
         if (shutdownHookRegistered) return;
         shutdownHookRegistered = true;
 
-        Runtime.getRuntime().addShutdownHook(new Thread(ConfigManager::shutdown));
+        ClientLifecycleEvents.CLIENT_STOPPING.register(client -> ConfigManager.shutdown());
+        Runtime.getRuntime().addShutdownHook(new Thread(ConfigManager::shutdown, "GiovanniClient-config-shutdown"));
     }
 
     public static void registerClientStarted(boolean enableFeatures) {
@@ -36,6 +38,7 @@ public final class ClientLifecycle {
                 }
 
                 FeatureManager.registerAll();
+                GiovanniWorldRenderEvent.register();
             }
 
             Utils.debug("GiovanniClient initialized successfully! Version: " + GiovanniClientClient.MOD_VERSION);

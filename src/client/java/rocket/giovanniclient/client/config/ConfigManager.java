@@ -25,6 +25,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +47,9 @@ public class ConfigManager {
     private static ConfigProcessorDriver driver;
     private static MoulConfigEditor<MainConfig> editor;
 
-    private static final ScheduledExecutorService SCHEDULER = Executors.newSingleThreadScheduledExecutor();
+    private static final ScheduledExecutorService SCHEDULER = Executors.newSingleThreadScheduledExecutor(
+            Thread.ofPlatform().daemon(true).name("GiovanniClient-config-autosave").factory());
+    private static final AtomicBoolean STOPPING = new AtomicBoolean();
     private static ScheduledFuture<?> autosaveTask;
     private static boolean initialized;
 
@@ -70,7 +73,9 @@ public class ConfigManager {
         driver.processConfig(config);
 
         autosaveTask = SCHEDULER.scheduleAtFixedRate(
-                () -> Minecraft.getInstance().execute(ConfigManager::saveConfig),
+                () -> Minecraft.getInstance().execute(() -> {
+                    if (!STOPPING.get()) saveConfig();
+                }),
                 60,
                 60,
                 TimeUnit.SECONDS
@@ -91,6 +96,7 @@ public class ConfigManager {
             backupBrokenConfig();
             config = new MainConfig();
             saveConfig();
+            return;
         }
     }
 
@@ -123,6 +129,7 @@ public class ConfigManager {
     }
 
     public static void shutdown() {
+        if (!STOPPING.compareAndSet(false, true)) return;
         if (autosaveTask != null) {
             autosaveTask.cancel(false);
             autosaveTask = null;

@@ -1,7 +1,5 @@
 package rocket.giovanniclient.client.mixin.render;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.state.level.LevelRenderState;
@@ -18,11 +16,6 @@ public abstract class GiovanniLevelRendererMixin {
                                                SubmitNodeCollector collector,
                                                boolean renderOutline,
                                                CallbackInfo ci) {
-        new GiovanniWorldRenderEvent(
-                levelRenderState.cameraRenderState,
-                new PoseStack(),
-                Minecraft.getInstance().getDeltaTracker(),
-                collector
-        ).render();
+        new GiovanniWorldRenderEvent(GiovanniWorldRenderEvent.frame(levelRenderState), collector).render();
     }
 }
