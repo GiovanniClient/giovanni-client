@@ -6,15 +6,17 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public final class ClientKeybinds {
 
     private ClientKeybinds() {}
 
     private static KeyMapping openConfig;
     private static KeyMapping openInvButtonEditor;
-    public static KeyMapping toggleFreecam;
-    public static KeyMapping switchFreecamControlKey;
-    public static KeyMapping[] ALL_KEYS = {null, null, null};
+    private static KeyMapping cycleGuiScale;
+    private static final Map<String, String> KEY_NAMES = new HashMap<>();
 
     public static final KeyMapping.Category GIOVANNI = KeyMapping.Category.register(Identifier.parse("giovanni"));
     //public static final String GIOVANNI = "key.categories.giovanni";
@@ -23,20 +25,30 @@ public final class ClientKeybinds {
     //public static final String CATEGORY = "key.categories.wi_freecam";
 
     public static void register() {
-        openConfig = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-                "Open Config",
-                InputConstants.Type.KEYSYM,
-                GLFW.GLFW_KEY_K,
-                GIOVANNI
-        ));
+        openConfig = key("Open Config", "Open Config", GLFW.GLFW_KEY_K);
+        openInvButtonEditor = key("key.giovanniclient.open_inv_button_editor", "Open Inventory Button Editor", GLFW.GLFW_KEY_O);
+        // The main keyboard's '+' key on the Italian layout (GLFW uses US key positions).
+        cycleGuiScale = key("key.giovanniclient.cycle_gui_scale", "Cycle GUI Scale", GLFW.GLFW_KEY_RIGHT_BRACKET);
+    }
 
-        openInvButtonEditor = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-                "key.giovanniclient.open_inv_button_editor",
-                InputConstants.Type.KEYSYM,
-                GLFW.GLFW_KEY_O,
-                GIOVANNI
-        ));
-        ALL_KEYS = new KeyMapping[]{toggleFreecam, switchFreecamControlKey, openInvButtonEditor, openConfig};
+    private static KeyMapping key(String name, String displayName, int defaultKey) {
+        KeyMapping key = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+                name, InputConstants.Type.KEYSYM, defaultKey, GIOVANNI));
+        KEY_NAMES.put(name, displayName);
+        return key;
+    }
+
+    public static boolean isOwnKeybind(String name) {
+        return KEY_NAMES.containsKey(name);
+    }
+
+    public static String getDisplayName(String name) {
+        // Keep these labels out of Minecraft's server-accessible translation table.
+        return KEY_NAMES.get(name);
+    }
+
+    public static KeyMapping cycleGuiScale() {
+        return cycleGuiScale;
     }
 
     public static KeyMapping openConfig() {
