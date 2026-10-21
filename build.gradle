@@ -1,3 +1,6 @@
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+
 plugins {
     id 'net.fabricmc.fabric-loom' version "${loom_version}"
     id 'maven-publish'
@@ -5,6 +8,9 @@ plugins {
 
 version = project.mod_version
 group = project.maven_group
+
+def buildDay = LocalDate.now()
+        .format(DateTimeFormatter.ofPattern('DDD'))
 
 repositories {
     mavenCentral()
@@ -76,7 +82,7 @@ java {
 jar {
     def projectName = project.name
     inputs.property "projectName", projectName
-    archiveFileName = "${project.archives_base_name}-${project.version}-mc${project.minecraft_version}.jar"
+    archiveFileName = "${project.archives_base_name}-${project.version}-mc${project.minecraft_version}-${buildDay}.jar"
 
     from("LICENSE") {
         rename { "${it}_$projectName"}
