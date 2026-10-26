@@ -9,6 +9,7 @@ import rocket.giovanniclient.client.features.autosolvers.AutoLoudmouthBass;
 import rocket.giovanniclient.client.features.autosolvers.AutoMelody;
 import rocket.giovanniclient.client.features.autosolvers.AutoShardsClaim;
 import rocket.giovanniclient.client.features.misc.CloseChocolateEggs;
+import rocket.giovanniclient.client.features.pokedex.MobPokedex;
 import rocket.giovanniclient.client.features.render.MineshaftArmorStandESP;
 import rocket.giovanniclient.client.features.render.NamedMobGlow;
 import rocket.giovanniclient.client.features.render.NamedEntityHide;
@@ -50,6 +51,7 @@ public class FeatureManager {
         register(new AutoAgaricusCap());
 
         register(new StarredMobESP());
+        register(new MobPokedex());
         register(new NamedMobGlow());
         register(new NamedEntityHide());
         register(new MineshaftArmorStandESP());

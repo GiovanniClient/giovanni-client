@@ -8,6 +8,7 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.entity.Entity;
@@ -16,7 +17,10 @@ import rocket.giovanniclient.client.config.ConfigManager;
 import rocket.giovanniclient.client.features.inventorybuttons.EditModeState;
 import rocket.giovanniclient.client.features.render.PlayerTracer;
 import rocket.giovanniclient.client.features.render.NamedMobGlow;
+import rocket.giovanniclient.client.features.render.IslandGlowLists;
 import rocket.giovanniclient.client.features.render.NamedEntityHide;
+import rocket.giovanniclient.client.features.pokedex.MobPokedex;
+import rocket.giovanniclient.client.features.pokedex.DexStore;
 import rocket.giovanniclient.client.features.updater.RatterScannerChecker;
 import rocket.giovanniclient.client.util.ScoreboardUtils;
 import rocket.giovanniclient.client.util.TabListUtils;
@@ -79,24 +83,33 @@ public final class ClientCustomCommands {
     }
 
     private static void slash_giovanniclient(CommandDispatcher<FabricClientCommandSource> dispatcher) {
-        String[] aliases = {"giovanni", "giovanniclient", "gio", "zoo"};
-
-        for (String alias : aliases) {
+        for (String alias : LocalCommandPolicy.ROOTS) {
             dispatcher.register(ClientCommands.literal(alias).executes(context -> {
                 ConfigManager.openConfigScreenFromCommand();
                 return 1;
-            }).then(BlockReplacementCommands.create()).then(ClientCommands.literal("glow")
+            }).then(ClientCommands.literal("help").executes(context -> {
+                        context.getSource().sendFeedback(Component.literal("§e/gio§7: apre la configurazione. §e/gio dex help§7: tutti i comandi del Pokédex."));
+                        context.getSource().sendFeedback(Component.literal("§e/gio glow <nome|list|remove <nome>|clear|off>§7: lista permanente, massimo 10 nomi per isola."));
+                        context.getSource().sendFeedback(Component.literal("§e/gio hide <nome|list|remove <nome>|clear|off>§7: nasconde i mob."));
+                        context.getSource().sendFeedback(Component.literal("§e/gio replaceblock <blocco> <nuovo blocco>§7, list, remove <blocco>, clear."));
+                        context.getSource().sendFeedback(Component.literal("§7/gio, /giovanni, /giovanniclient e /zoo restano sempre locali, anche in caso di errore."));
+                        return 1;
+                    })).then(BlockReplacementCommands.create())
+                    .then(PokedexCommands.create("pokedex")).then(PokedexCommands.create("dex"))
+                    .then(ClientCommands.literal("glow")
                     .executes(context -> {
                         context.getSource().sendFeedback(Component.literal("Usage: /gio glow <name|remove <name>|list|clear>"));
                         return 0;
                     })
                     .then(ClientCommands.literal("list").executes(context -> {
-                        List<NamedMobGlow.NameColor> names = NamedMobGlow.names();
+                        if (!requireGlowIsland(context)) return 0;
+                        List<IslandGlowLists.NameColor> names = NamedMobGlow.names();
+                        context.getSource().sendFeedback(Component.literal("§eGlow — " + NamedMobGlow.island()
+                                + " (" + names.size() + "/" + IslandGlowLists.MAX_NAMES + "):"));
                         if (names.isEmpty()) {
                             context.getSource().sendFeedback(Component.literal("§eGlow list is empty."));
                         } else {
-                            context.getSource().sendFeedback(Component.literal("§eGlow names:"));
-                            for (NamedMobGlow.NameColor entry : names) {
+                            for (IslandGlowLists.NameColor entry : names) {
                                 context.getSource().sendFeedback(Component.literal(" • " + entry.name())
                                         .withStyle(style -> style.withColor(entry.color())));
                             }
@@ -104,39 +117,45 @@ public final class ClientCustomCommands {
                         return 1;
                     }))
                     .then(ClientCommands.literal("clear").executes(context -> {
+                        if (!requireGlowIsland(context)) return 0;
                         NamedMobGlow.clearNames();
-                        context.getSource().sendFeedback(Component.literal("§cGlow list cleared."));
+                        context.getSource().sendFeedback(Component.literal("§cGlow list cleared for " + NamedMobGlow.island() + "."));
                         return 1;
                     }))
                     .then(ClientCommands.literal("off").executes(context -> {
+                        if (!requireGlowIsland(context)) return 0;
                         NamedMobGlow.clearNames();
-                        context.getSource().sendFeedback(Component.literal("§cGlow list cleared."));
+                        context.getSource().sendFeedback(Component.literal("§cGlow list cleared for " + NamedMobGlow.island() + "."));
                         return 1;
                     }))
                     .then(ClientCommands.literal("remove")
                             .then(ClientCommands.argument("name", StringArgumentType.greedyString())
                                     .executes(context -> {
+                                        if (!requireGlowIsland(context)) return 0;
                                         String name = StringArgumentType.getString(context, "name").trim();
                                         boolean removed = NamedMobGlow.removeName(name);
                                         context.getSource().sendFeedback(Component.literal(removed
-                                                ? "§aRemoved glow name: §f" + name
+                                                ? "§aRemoved glow name from " + NamedMobGlow.island() + ": §f" + name
                                                 : "§cGlow name not found: §f" + name));
                                         return removed ? 1 : 0;
                                     })))
                     .then(ClientCommands.argument("name", StringArgumentType.greedyString())
+                            .suggests((context, builder) -> SharedSuggestionProvider.suggest(
+                                    MobPokedex.entries().stream().map(DexStore.Entry::name), builder))
                             .executes(context -> {
+                                if (!requireGlowIsland(context)) return 0;
                                 String name = StringArgumentType.getString(context, "name").trim();
                                 if (name.isEmpty()) {
                                     context.getSource().sendFeedback(Component.literal("§cEnter a mob name."));
                                     return 0;
                                 }
-                                NamedMobGlow.AddResult result = NamedMobGlow.addName(name);
+                                IslandGlowLists.AddResult result = NamedMobGlow.addName(name);
                                 switch (result) {
-                                    case ADDED -> context.getSource().sendFeedback(Component.literal("§aAdded glow name: §f" + name));
+                                    case ADDED -> context.getSource().sendFeedback(Component.literal("§aSaved glow name for " + NamedMobGlow.island() + ": §f" + name));
                                     case ALREADY_PRESENT -> context.getSource().sendFeedback(Component.literal("§eAlready in glow list: §f" + name));
-                                    case FULL -> context.getSource().sendFeedback(Component.literal("§cGlow list is full (6 names)."));
+                                    case FULL -> context.getSource().sendFeedback(Component.literal("§cGlow list is full (" + IslandGlowLists.MAX_NAMES + " names per island)."));
                                 }
-                                return result == NamedMobGlow.AddResult.FULL ? 0 : 1;
+                                return result == IslandGlowLists.AddResult.FULL ? 0 : 1;
                             })))
                     .then(ClientCommands.literal("hide")
                             .executes(context -> {
@@ -173,6 +192,8 @@ public final class ClientCustomCommands {
                                                 return removed ? 1 : 0;
                                             })))
                             .then(ClientCommands.argument("name", StringArgumentType.greedyString())
+                                    .suggests((context, builder) -> SharedSuggestionProvider.suggest(
+                                            MobPokedex.entries().stream().map(DexStore.Entry::name), builder))
                                     .executes(context -> {
                                         String name = StringArgumentType.getString(context, "name").trim();
                                         if (name.isEmpty()) {
@@ -186,6 +207,12 @@ public final class ClientCustomCommands {
                                         return added ? 1 : 0;
                                     }))));
         }
+    }
+
+    private static boolean requireGlowIsland(CommandContext<FabricClientCommandSource> context) {
+        if (NamedMobGlow.island() != null) return true;
+        context.getSource().sendError(Component.literal("Glow: isola sconosciuta. Attendi che compaia Area nel TAB di SkyBlock."));
+        return false;
     }
 
     private static void slash_dumpsidebar(CommandDispatcher<FabricClientCommandSource> dispatcher) {

@@ -15,4 +15,9 @@ public class MiscConfig {
     @ConfigOption(name = "No Text Shadows", desc = "Thanks Sciophobia!")
     @ConfigEditorBoolean
     public boolean NO_TEXT_SHADOWS = false;
+
+    @Expose
+    @ConfigOption(name = "zsh chat mode", desc = "Use Up/Down to browse sent messages and commands starting with your typed text. Tab still completes commands.")
+    @ConfigEditorBoolean
+    public boolean CHAT_HISTORY_PREFIX = false;
 }

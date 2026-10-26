@@ -7,6 +7,8 @@ import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.phys.AABB;
 import rocket.giovanniclient.client.config.ConfigManager;
 import rocket.giovanniclient.client.features.AbstractFeature;
+import rocket.giovanniclient.client.features.pokedex.DexProfile;
+import rocket.giovanniclient.client.features.pokedex.MobPokedex;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -22,6 +24,8 @@ public class NamedEntityHide extends AbstractFeature {
     private static final int SCAN_EVERY_TICKS = 5;
     private static final Map<UUID, Tracked> MOBS = new ConcurrentHashMap<>();
     private static final Map<UUID, Tracked> STANDS = new ConcurrentHashMap<>();
+    private static final Map<UUID, Tracked> DECORATIONS = new ConcurrentHashMap<>();
+    private static final Map<UUID, Tracked> DEX_MOBS = new ConcurrentHashMap<>();
     private static volatile Set<String> ACTIVE_NAME_KEYS = Set.of();
     private int tickCounter;
 
@@ -50,6 +54,8 @@ public class NamedEntityHide extends AbstractFeature {
         if (configured == null || !configured.removeIf(existing -> normalize(existing).equals(key))) return false;
         MOBS.entrySet().removeIf(entry -> entry.getValue().nameKey().equals(key));
         STANDS.entrySet().removeIf(entry -> entry.getValue().nameKey().equals(key));
+        DECORATIONS.entrySet().removeIf(entry -> entry.getValue().nameKey().equals(key));
+        DEX_MOBS.entrySet().removeIf(entry -> entry.getValue().nameKey().equals(key));
         refreshNameKeys();
         ConfigManager.saveConfig();
         return true;
@@ -65,11 +71,13 @@ public class NamedEntityHide extends AbstractFeature {
     public static boolean isHiddenMob(Entity entity) {
         if (entity == null) return false;
         Tracked tracked = MOBS.get(entity.getUUID());
-        return tracked != null && tracked.entityId() == entity.getId();
+        Tracked dex = DEX_MOBS.get(entity.getUUID());
+        return (tracked != null && tracked.entityId() == entity.getId()) || (dex != null && dex.entityId() == entity.getId());
     }
 
     public static boolean isHiddenStand(ArmorStand stand) {
         if (stand == null) return false;
+        if (isHiddenDecoration(stand)) return true;
         Tracked tracked = STANDS.get(stand.getUUID());
         if (tracked != null && tracked.entityId() == stand.getId()) return true;
         if (!stand.hasCustomName() || ACTIVE_NAME_KEYS.isEmpty()) return false;
@@ -85,6 +93,13 @@ public class NamedEntityHide extends AbstractFeature {
         return isHiddenMob(nearest);
     }
 
+    /** Display entities and other model parts must be culled; invisibility alone does not hide them. */
+    public static boolean isHiddenDecoration(Entity entity) {
+        if (entity == null) return false;
+        Tracked tracked = DECORATIONS.get(entity.getUUID());
+        return tracked != null && tracked.entityId() == entity.getId();
+    }
+
     @Override
     public void onTick(Minecraft client) {
         if (client.level == null || client.player == null) {
@@ -95,24 +110,45 @@ public class NamedEntityHide extends AbstractFeature {
 
         List<String> filters = names();
         refreshNameKeys();
+        // Rebuild dex associations from the single shared resolver, including parts that despawned.
+        DECORATIONS.clear();
+        DEX_MOBS.clear();
         MOBS.entrySet().removeIf(entry -> {
             Entity entity = client.level.getEntity(entry.getValue().entityId());
             return !(entity instanceof LivingEntity living) || !living.isAlive()
                     || !entity.getUUID().equals(entry.getKey())
+                    || MobPokedex.hasEntry(entry.getValue().nameKey())
                     || filters.stream().noneMatch(name -> normalize(name).equals(entry.getValue().nameKey()));
         });
         STANDS.entrySet().removeIf(entry -> {
             Entity entity = client.level.getEntity(entry.getValue().entityId());
             return !(entity instanceof ArmorStand) || !entity.getUUID().equals(entry.getKey())
+                    || MobPokedex.hasEntry(entry.getValue().nameKey())
                     || filters.stream().noneMatch(name -> normalize(name).equals(entry.getValue().nameKey()));
         });
 
         if (filters.isEmpty()) return;
+        for (String filter : filters) {
+            String key = normalize(filter);
+            for (MobPokedex.Mob mob : MobPokedex.mobs(filter)) {
+                for (MobPokedex.Part part : mob.parts()) {
+                    Entity entity = part.entity();
+                    if (!entity.isAlive()) continue;
+                    if (part.role() == DexProfile.Role.BODY) {
+                        DEX_MOBS.put(entity.getUUID(), new Tracked(entity.getId(), key));
+                    } else {
+                        DECORATIONS.put(entity.getUUID(), new Tracked(entity.getId(), key));
+                    }
+                }
+            }
+        }
+        if (ACTIVE_NAME_KEYS.isEmpty()) return;
         for (Entity entity : client.level.entitiesForRendering()) {
             if (!(entity instanceof ArmorStand stand) || !stand.hasCustomName()) continue;
             String nametag = normalize(stand.getCustomName().getString());
             for (String name : filters) {
                 String key = normalize(name);
+                if (MobPokedex.hasEntry(key)) continue;
                 if (key.isEmpty() || !nametag.contains(key)) continue;
 
                 STANDS.put(stand.getUUID(), new Tracked(stand.getId(), key));
@@ -153,7 +189,7 @@ public class NamedEntityHide extends AbstractFeature {
         Set<String> keys = new HashSet<>();
         for (String name : names()) {
             String key = normalize(name);
-            if (!key.isEmpty()) keys.add(key);
+            if (!key.isEmpty() && !MobPokedex.hasEntry(key)) keys.add(key);
         }
         ACTIVE_NAME_KEYS = Set.copyOf(keys);
     }
@@ -161,5 +197,7 @@ public class NamedEntityHide extends AbstractFeature {
     private static void clearTracked() {
         MOBS.clear();
         STANDS.clear();
+        DECORATIONS.clear();
+        DEX_MOBS.clear();
     }
 }

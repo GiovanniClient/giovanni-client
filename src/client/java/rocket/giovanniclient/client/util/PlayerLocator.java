@@ -1,6 +1,7 @@
 package rocket.giovanniclient.client.util;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import rocket.giovanniclient.client.config.ConfigManager;
 import rocket.giovanniclient.client.features.AbstractFeature;
 
@@ -14,12 +15,18 @@ public class PlayerLocator extends AbstractFeature {
     private static volatile String CURRENT_PLAYER_LOCATION = "None";
     private static volatile String CURRENT_PLAYER_AREA = "None";
     private int tick = 0;
+    private ClientLevel world;
 
     @Override
     public void onTick(Minecraft client) {
+        if (world != client.level) {
+            resetLocation();
+            world = client.level;
+        }
+        if (client.level == null) return;
         tick++;
 
-        if (tick % 60 == 0) {
+        if (tick == 1 || tick % 20 == 0) {
             setPlayerLocation(findPlayerLocation());
 
             String area = "None";
@@ -66,7 +73,7 @@ public class PlayerLocator extends AbstractFeature {
         if (wasInKuudra != isPlayerInKuudra()) ConfigManager.reloadChunks();
     }
 
-    private static String getPlayerArea() { return CURRENT_PLAYER_AREA; }
+    public static String getPlayerArea() { return CURRENT_PLAYER_AREA; }
 
     private void setPlayerArea(String area) {
         boolean wasInKuudra = isPlayerInKuudra();

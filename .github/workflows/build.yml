@@ -31,11 +31,24 @@ jobs:
       - name: Build
         run: ./gradlew build
 
+      - name: Prepare artifact jars
+        run: |
+          BUILD_DAY="$(date +%j)"
+          mkdir -p build/artifacts
+          for jar in build/libs/*.jar; do
+            filename="$(basename "$jar")"
+            if [[ "$filename" == *-sources.jar ]]; then
+              cp "$jar" "build/artifacts/${filename%-sources.jar}-${BUILD_DAY}-sources.jar"
+            else
+              cp "$jar" "build/artifacts/${filename%.jar}-${BUILD_DAY}.jar"
+            fi
+          done
+
       - name: Upload jars
         uses: actions/upload-artifact@v4
         with:
           name: giovanniclient-jars
-          path: build/libs/*.jar
+          path: build/artifacts/*.jar
 
       - name: Create GitHub prerelease
         if: github.event_name == 'push'

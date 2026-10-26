@@ -31,6 +31,9 @@ public class GiovanniMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
+        // Privacy guard stays active in safe mode too: an unavailable command is still local.
+        if (mixinClassName.endsWith(".LocalCommandPacketGuardMixin")) return true;
+
         if (mixinClassName.endsWith(".compat.ReiDraggingStackOrderMixin")) {
             return isSupported && FabricLoader.getInstance().isModLoaded("roughlyenoughitems");
         }

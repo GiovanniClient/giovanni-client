@@ -1,11 +1,18 @@
 package rocket.giovanniclient.client.features.render;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.phys.AABB;
+import rocket.giovanniclient.client.config.ConfigManager;
 import rocket.giovanniclient.client.features.AbstractFeature;
+import rocket.giovanniclient.client.features.pokedex.DexProfile;
+import rocket.giovanniclient.client.features.pokedex.MobPokedex;
+import rocket.giovanniclient.client.features.render.IslandGlowLists.AddResult;
+import rocket.giovanniclient.client.features.render.IslandGlowLists.NameColor;
+import rocket.giovanniclient.client.util.PlayerLocator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,31 +21,21 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
+import java.util.Objects;
 import java.util.UUID;
 
 /** Highlights mobs whose nearby SkyBlock nametag contains a chosen name. */
 public class NamedMobGlow extends AbstractFeature {
     private static final String OWNER = "named-mob-glow";
-    private static final int[] COLORS = {
-            0xFF3333, // red
-            0x33FF33, // green
-            0x3333FF, // blue
-            0xFFFF33, // yellow
-            0xFF33FF, // magenta
-            0x33FFFF  // cyan
-    };
     private static final int SCAN_EVERY_TICKS = 10;
     private static final int MISSING_NAMETAG_GRACE_TICKS = 20;
 
     private static final Map<String, NameColor> NAMES = new LinkedHashMap<>();
     private static final Map<UUID, TrackedMob> TRACKED = new HashMap<>();
     private static final Map<UUID, TrackedNametag> NAMETAGS = new HashMap<>();
+    private static String activeIsland;
+    private static ClientLevel world;
     private long tickCounter;
-
-    public enum AddResult { ADDED, ALREADY_PRESENT, FULL }
-
-    public record NameColor(String name, int color) {}
 
     private record TrackedMob(int entityId, String nameKey) {}
 
@@ -49,23 +46,20 @@ public class NamedMobGlow extends AbstractFeature {
     }
 
     public static AddResult addName(String name) {
-        String key = name.toLowerCase(Locale.ROOT);
-        if (NAMES.containsKey(key)) return AddResult.ALREADY_PRESENT;
-        if (NAMES.size() == COLORS.length) return AddResult.FULL;
-
-        Set<Integer> usedColors = new HashSet<>();
-        for (NameColor entry : NAMES.values()) usedColors.add(entry.color());
-        for (int color : COLORS) {
-            if (usedColors.contains(color)) continue;
-            NAMES.put(key, new NameColor(name, color));
-            return AddResult.ADDED;
+        syncIsland(Minecraft.getInstance());
+        AddResult result = configuredLists().addName(activeIsland, name);
+        if (result == AddResult.ADDED) {
+            refreshNames();
+            ConfigManager.saveConfig();
         }
-        return AddResult.FULL;
+        return result;
     }
 
     public static boolean removeName(String name) {
-        String key = name.toLowerCase(Locale.ROOT);
-        if (NAMES.remove(key) == null) return false;
+        syncIsland(Minecraft.getInstance());
+        if (!configuredLists().removeName(activeIsland, name)) return false;
+        String key = IslandGlowLists.nameKey(name);
+        refreshNames();
         NAMETAGS.values().removeIf(nametag -> nametag.nameKey().equals(key));
         for (UUID uuid : new HashSet<>(TRACKED.keySet())) {
             if (TRACKED.get(uuid).nameKey().equals(key)) {
@@ -73,49 +67,93 @@ public class NamedMobGlow extends AbstractFeature {
                 TRACKED.remove(uuid);
             }
         }
+        ConfigManager.saveConfig();
         return true;
     }
 
     public static List<NameColor> names() {
+        syncIsland(Minecraft.getInstance());
         return new ArrayList<>(NAMES.values());
     }
 
     public static void clearNames() {
+        syncIsland(Minecraft.getInstance());
+        configuredLists().clearNames(activeIsland);
         NAMES.clear();
         clearTracked();
+        ConfigManager.saveConfig();
+    }
+
+    public static String island() {
+        syncIsland(Minecraft.getInstance());
+        return activeIsland;
+    }
+
+    private static IslandGlowLists configuredLists() {
+        RenderConfig config = ConfigManager.getConfig().rc;
+        if (config.glowLists == null) config.glowLists = new IslandGlowLists();
+        return config.glowLists;
+    }
+
+    private static void syncIsland(Minecraft client) {
+        String area = PlayerLocator.getPlayerArea();
+        String island = client.level == null || client.player == null || area.isBlank() || area.equals("None")
+                ? null : area.trim();
+        if (world == client.level && Objects.equals(activeIsland, island)) return;
+        clearTracked();
+        world = client.level;
+        activeIsland = island;
+        refreshNames();
+    }
+
+    private static void refreshNames() {
+        NAMES.clear();
+        for (NameColor entry : configuredLists().names(activeIsland)) {
+            NAMES.put(IslandGlowLists.nameKey(entry.name()), entry);
+        }
     }
 
     @Override
     public void onTick(Minecraft client) {
-        if (client.level == null || client.player == null) {
-            clearTracked();
-            return;
-        }
+        syncIsland(client);
+        if (activeIsland == null) return;
         if (++tickCounter % SCAN_EVERY_TICKS != 0) return;
 
         if (NAMES.isEmpty()) return;
-        for (Entity entity : client.level.entitiesForRendering()) {
-            if (!(entity instanceof ArmorStand stand) || !stand.isAlive()) continue;
-            String nameKey = matchingNameKey(stand);
-            if (nameKey == null) continue;
+        if (NAMES.keySet().stream().anyMatch(key -> !MobPokedex.hasEntry(key))) {
+            for (Entity entity : client.level.entitiesForRendering()) {
+                if (!(entity instanceof ArmorStand stand) || !stand.isAlive()) continue;
+                String nameKey = matchingNameKey(stand);
+                if (nameKey == null) continue;
 
-            TrackedNametag tracked = NAMETAGS.get(stand.getUUID());
-            if (tracked == null || tracked.standId() != stand.getId() || !tracked.nameKey().equals(nameKey)) {
-                // Include dying mobs when binding: a lingering nametag must not
-                // skip its dead owner and select a nearby living entity instead.
-                LivingEntity target = findMobUnderNametag(client, stand, true);
-                if (target == null) continue;
-                tracked = new TrackedNametag(stand.getId(), target.getId(), target.getUUID(), nameKey, tickCounter);
+                TrackedNametag tracked = NAMETAGS.get(stand.getUUID());
+                if (tracked == null || tracked.standId() != stand.getId() || !tracked.nameKey().equals(nameKey)) {
+                    // Include dying mobs when binding: a lingering nametag must not
+                    // skip its dead owner and select a nearby living entity instead.
+                    LivingEntity target = findMobUnderNametag(client, stand, true);
+                    if (target == null) continue;
+                    tracked = new TrackedNametag(stand.getId(), target.getId(), target.getUUID(), nameKey, tickCounter);
+                }
+                NAMETAGS.put(stand.getUUID(), tracked.seenAt(tickCounter));
             }
-            NAMETAGS.put(stand.getUUID(), tracked.seenAt(tickCounter));
         }
 
         Map<UUID, TrackedMob> desired = new HashMap<>();
+        for (var entry : NAMES.entrySet()) {
+            for (MobPokedex.Mob mob : MobPokedex.mobs(entry.getKey())) {
+                for (MobPokedex.Part part : mob.parts()) {
+                    Entity entity = part.entity();
+                    if (part.role() == DexProfile.Role.LABEL || !entity.isAlive()) continue;
+                    desired.put(entity.getUUID(), new TrackedMob(entity.getId(), entry.getKey()));
+                }
+            }
+        }
         var iterator = NAMETAGS.entrySet().iterator();
         while (iterator.hasNext()) {
             var association = iterator.next();
             TrackedNametag tracked = association.getValue();
-            if (!NAMES.containsKey(tracked.nameKey()) || tickCounter - tracked.lastSeenTick() >= MISSING_NAMETAG_GRACE_TICKS) {
+            if (!NAMES.containsKey(tracked.nameKey()) || MobPokedex.hasEntry(tracked.nameKey())
+                    || tickCounter - tracked.lastSeenTick() >= MISSING_NAMETAG_GRACE_TICKS) {
                 iterator.remove();
                 continue;
             }
@@ -176,6 +214,7 @@ public class NamedMobGlow extends AbstractFeature {
         if (!stand.hasCustomName()) return null;
         String nametag = stand.getCustomName().getString().toLowerCase(Locale.ROOT);
         for (String key : NAMES.keySet()) {
+            if (MobPokedex.hasEntry(key)) continue;
             if (nametag.contains(key)) return key;
         }
         return null;
@@ -183,14 +222,21 @@ public class NamedMobGlow extends AbstractFeature {
 
     @Override
     public void onWorldLoad(Minecraft client) {
-        clearTracked();
+        resetWorld();
         tickCounter = 0;
     }
 
     @Override
     public void onWorldUnload(Minecraft client) {
-        clearTracked();
+        resetWorld();
         tickCounter = 0;
+    }
+
+    private static void resetWorld() {
+        clearTracked();
+        NAMES.clear();
+        activeIsland = null;
+        world = null;
     }
 
     private static void clearTracked() {

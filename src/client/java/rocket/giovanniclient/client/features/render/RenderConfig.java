@@ -17,6 +17,9 @@ public class RenderConfig {
     public List<String> hiddenEntityNames = new ArrayList<>();
 
     @Expose
+    public IslandGlowLists glowLists = new IslandGlowLists();
+
+    @Expose
     public Map<String, String> blockReplacements = new LinkedHashMap<>();
 
     @Expose
