@@ -92,9 +92,10 @@ public final class ClientCustomCommands {
                         context.getSource().sendFeedback(Component.literal("§e/gio glow <nome|list|remove <nome>|clear|off>§7: lista permanente, massimo 10 nomi per isola."));
                         context.getSource().sendFeedback(Component.literal("§e/gio hide <nome|list|remove <nome>|clear|off>§7: nasconde i mob."));
                         context.getSource().sendFeedback(Component.literal("§e/gio replaceblock <blocco> <nuovo blocco>§7, list, remove <blocco>, clear."));
+                        context.getSource().sendFeedback(Component.literal("§e/gio weather <clear|rain|thunder|snow|off>§7: forza il meteo fino alla chiusura del gioco, in tutti i mondi e dimensioni."));
                         context.getSource().sendFeedback(Component.literal("§7/gio, /giovanni, /giovanniclient e /zoo restano sempre locali, anche in caso di errore."));
                         return 1;
-                    })).then(BlockReplacementCommands.create())
+                    })).then(BlockReplacementCommands.create()).then(WeatherCommands.create())
                     .then(PokedexCommands.create("pokedex")).then(PokedexCommands.create("dex"))
                     .then(ClientCommands.literal("glow")
                     .executes(context -> {
