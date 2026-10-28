@@ -36,7 +36,8 @@ public abstract class LocalCommandPacketGuardMixin {
         ci.cancel();
         Minecraft client = Minecraft.getInstance();
         client.execute(() -> client.gui.hud.getChat().addClientSystemMessage(Component.literal(
-                "§cGiovanni: comando locale non valido o non disponibile. Non è stato inviato al server."
-                        + " §e/gio help §7oppure §e/gio dex help")));
+                "§cGiovanni: invalid or unavailable local command. It was not sent to the server."
+                        + " §e/gio help §7or §e/gio dex help")));
     }
+
 }

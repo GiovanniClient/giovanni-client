@@ -23,13 +23,18 @@ public class Utils {
     }
 
     private static void sendFormattedChatMessage(String prefixComponent, ChatFormatting prefixStyle, String messageComponent) {
+        sendFormattedChatMessage(prefixComponent, prefixStyle, messageComponent, ChatFormatting.WHITE);
+    }
+
+    private static void sendFormattedChatMessage(String prefixComponent, ChatFormatting prefixStyle, String messageComponent,
+                                                 ChatFormatting messageStyle) {
         Minecraft client = Minecraft.getInstance();
         if (client != null && client.gui != null && client.gui.hud.getChat() != null) {
             MutableComponent prefix = Component.literal(prefixComponent)
                     .setStyle(Style.EMPTY.withColor(prefixStyle));
 
             MutableComponent message = Component.literal(messageComponent)
-                    .setStyle(Style.EMPTY.withColor(ChatFormatting.WHITE));
+                    .setStyle(Style.EMPTY.withColor(messageStyle));
 
             client.gui.hud.getChat().addClientSystemMessage(prefix.append(message));
         }
@@ -47,9 +52,17 @@ public class Utils {
     }
 
     public static void debug(String message) {
+        debug(message, ChatFormatting.RED, ChatFormatting.WHITE);
+    }
+
+    public static void debug(String message, ChatFormatting color) {
+        debug(message, color, color);
+    }
+
+    private static void debug(String message, ChatFormatting prefixColor, ChatFormatting messageColor) {
         LOGGER.debug("DEBUG (Giovanni): {}", message);
         if (debugConfig != null && debugConfig.DEBUG) {
-            sendFormattedChatMessage("DEBUG (Giovanni): ", ChatFormatting.RED, message);
+            sendFormattedChatMessage("DEBUG (Giovanni): ", prefixColor, message, messageColor);
         } else if (debugConfig == null) {
             LOGGER.warn("Utils.debug() called before initialization of DebugConfig: {}", message);
         }

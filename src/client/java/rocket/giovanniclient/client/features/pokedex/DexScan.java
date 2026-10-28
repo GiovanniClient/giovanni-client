@@ -38,9 +38,9 @@ public record DexScan(String island, double radius, List<Part> entities, Set<Int
         for (String token : rawIds.trim().split("[ ,]+")) {
             int id;
             try { id = Integer.parseInt(token); }
-            catch (NumberFormatException ignored) { throw new IllegalArgumentException("Usa gli ID dell'ultima /gio dex scan, separati da spazi."); }
+            catch (NumberFormatException ignored) { throw new IllegalArgumentException("Use IDs from the latest /gio dex scan, separated by spaces."); }
             Part part = entities.stream().filter(candidate -> candidate.id() == id).findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException("ID " + id + " non presente nell'ultima scan. Esegui /gio dex scan [raggio] per aggiornarla."));
+                    .orElseThrow(() -> new IllegalArgumentException("ID " + id + " was not found in the latest scan. Run /gio dex scan [radius] to refresh it."));
             selected.putIfAbsent(id, part);
         }
         return capture(new ArrayList<>(selected.values()));
@@ -69,7 +69,7 @@ public record DexScan(String island, double radius, List<Part> entities, Set<Int
 
     public static void validateRadius(double radius) {
         if (!Double.isFinite(radius) || radius < 1 || radius > MAX_RADIUS) {
-            throw new IllegalArgumentException("Il raggio della scan deve essere tra 1 e 128 blocchi.");
+            throw new IllegalArgumentException("The scan radius must be between 1 and 128 blocks.");
         }
     }
 

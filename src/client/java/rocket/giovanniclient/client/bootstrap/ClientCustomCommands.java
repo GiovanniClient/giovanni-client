@@ -14,6 +14,7 @@ import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.storage.TagValueOutput;
 import rocket.giovanniclient.client.config.ConfigManager;
+import rocket.giovanniclient.client.features.farming.AutoPestCycle;
 import rocket.giovanniclient.client.features.inventorybuttons.EditModeState;
 import rocket.giovanniclient.client.features.render.PlayerTracer;
 import rocket.giovanniclient.client.features.render.NamedMobGlow;
@@ -88,14 +89,16 @@ public final class ClientCustomCommands {
                 ConfigManager.openConfigScreenFromCommand();
                 return 1;
             }).then(ClientCommands.literal("help").executes(context -> {
-                        context.getSource().sendFeedback(Component.literal("§e/gio§7: apre la configurazione. §e/gio dex help§7: tutti i comandi del Pokédex."));
-                        context.getSource().sendFeedback(Component.literal("§e/gio glow <nome|list|remove <nome>|clear|off>§7: lista permanente, massimo 10 nomi per isola."));
-                        context.getSource().sendFeedback(Component.literal("§e/gio hide <nome|list|remove <nome>|clear|off>§7: nasconde i mob."));
-                        context.getSource().sendFeedback(Component.literal("§e/gio replaceblock <blocco> <nuovo blocco>§7, list, remove <blocco>, clear."));
-                        context.getSource().sendFeedback(Component.literal("§e/gio weather <clear|rain|thunder|snow|off>§7: forza il meteo fino alla chiusura del gioco, in tutti i mondi e dimensioni."));
-                        context.getSource().sendFeedback(Component.literal("§7/gio, /giovanni, /giovanniclient e /zoo restano sempre locali, anche in caso di errore."));
+                        context.getSource().sendFeedback(Component.literal("§e/gio§7: open the configuration. §e/gio dex help§7: show all Pokédex commands."));
+                        context.getSource().sendFeedback(Component.literal("§e/gio farming§7: toggle Farming for this Garden visit. Turns off when you leave."));
+                        context.getSource().sendFeedback(Component.literal("§e/gio glow <name|list|remove <name>|clear|off>§7: saved list, up to 10 names per island."));
+                        context.getSource().sendFeedback(Component.literal("§e/gio hide <name|list|remove <name>|clear|off>§7: hide mobs."));
+                        context.getSource().sendFeedback(Component.literal("§e/gio replaceblock <block> <replacement block>§7, list, remove <block>, clear."));
+                        context.getSource().sendFeedback(Component.literal("§e/gio weather <clear|rain|thunder|snow|off>§7: override the weather until you close the game, in all worlds and dimensions."));
+                        context.getSource().sendFeedback(Component.literal("§7/gio, /giovanni, /giovanniclient and /zoo always stay local, including on errors."));
                         return 1;
-                    })).then(BlockReplacementCommands.create()).then(WeatherCommands.create())
+                    })).then(ClientCommands.literal("farming").executes(context -> AutoPestCycle.toggle()))
+                    .then(BlockReplacementCommands.create()).then(WeatherCommands.create())
                     .then(PokedexCommands.create("pokedex")).then(PokedexCommands.create("dex"))
                     .then(ClientCommands.literal("glow")
                     .executes(context -> {
@@ -212,7 +215,7 @@ public final class ClientCustomCommands {
 
     private static boolean requireGlowIsland(CommandContext<FabricClientCommandSource> context) {
         if (NamedMobGlow.island() != null) return true;
-        context.getSource().sendError(Component.literal("Glow: isola sconosciuta. Attendi che compaia Area nel TAB di SkyBlock."));
+        context.getSource().sendError(Component.literal("Glow: island unknown. Wait for the SkyBlock TAB Area to appear."));
         return false;
     }
 

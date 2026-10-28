@@ -82,8 +82,8 @@ public final class DexStore {
     /** Explicit variant capture must not silently create another species after a mistyped name. */
     public static Island withExistingVariant(Island data, String name, DexProfile profile) {
         if (data.entries().stream().noneMatch(entry -> DexProfile.key(entry.name()).equals(DexProfile.key(name)))) {
-            throw new IllegalArgumentException("Mob non presente nel Pokédex di quest'isola: " + name
-                    + ". Registra prima il mob con /gio dex add oppure /gio dex capture.");
+            throw new IllegalArgumentException("Mob not in this island's Pokédex: " + name
+                    + ". Register it first with /gio dex add or /gio dex capture.");
         }
         return withVariant(data, name, profile);
     }

@@ -258,7 +258,7 @@ public final class MobPokedex extends AbstractFeature {
     public static DexScan.Capture captureIds(String rawIds) {
         requireIsland();
         DexScan scan = SCANS.get(world, active.island());
-        if (scan == null) throw new IllegalStateException("Nessuna scan salvata per quest'isola e mondo. Esegui prima /gio dex scan [raggio].");
+        if (scan == null) throw new IllegalStateException("No saved scan for this island and world. Run /gio dex scan [radius] first.");
         return scan.captureIds(rawIds);
     }
 
