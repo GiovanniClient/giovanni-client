@@ -16,6 +16,7 @@
     "keybinds.KeyMappingPrivacyMixin",
     "keybinds.KeyBindsListMixin",
     "keybinds.KeyMappingCategoryMixin",
+    "render.AlfonsoNameTagMixin",
     "render.ArmorStandRenderStateMixin",
     "render.ArmorStandGlowMixin",
     "render.ItemDisplayRenderStateMixin",
