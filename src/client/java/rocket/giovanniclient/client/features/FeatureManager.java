@@ -9,6 +9,7 @@ import rocket.giovanniclient.client.features.autosolvers.AutoLoudmouthBass;
 import rocket.giovanniclient.client.features.autosolvers.AutoMelody;
 import rocket.giovanniclient.client.features.autosolvers.AutoShardsClaim;
 import rocket.giovanniclient.client.features.farming.AutoPestCycle;
+import rocket.giovanniclient.client.features.fun.FakeMotesLoss;
 import rocket.giovanniclient.client.features.misc.CloseChocolateEggs;
 import rocket.giovanniclient.client.features.pokedex.MobPokedex;
 import rocket.giovanniclient.client.features.render.MineshaftArmorStandESP;
@@ -51,6 +52,7 @@ public class FeatureManager {
         register(new CloseChocolateEggs());
 
         register(new AutoAgaricusCap());
+        register(new FakeMotesLoss());
 
         register(new StarredMobESP());
         register(new MobPokedex());

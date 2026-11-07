@@ -16,6 +16,11 @@ public class FunConfig {
     public boolean TROLL_FEATURES = true;
 
     @Expose
+    @ConfigOption(name = "Loose motes on death", desc = "oh no...")
+    @ConfigEditorBoolean
+    public boolean FAKE_MOTES_LOSS = true;
+
+    @Expose
     @ConfigOption(name = "Alfonso", desc = "the most robbed guy in hypixel skyblock")
     @ConfigEditorBoolean
     public boolean ALFONSO = true;
