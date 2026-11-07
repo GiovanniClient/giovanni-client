@@ -6,6 +6,7 @@ import io.github.notenoughupdates.moulconfig.annotations.Category;
 import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
 import net.wimods.freecam.FreecamConfig;
 import rocket.giovanniclient.client.features.autosolvers.AutoSolversConfig;
+import rocket.giovanniclient.client.features.farming.FarmingConfig;
 import rocket.giovanniclient.client.features.fun.FunConfig;
 import rocket.giovanniclient.client.features.inventorybuttons.InventoryButtonsConfig;
 import rocket.giovanniclient.client.features.misc.MiscConfig;
@@ -28,6 +29,10 @@ public class MainConfig extends Config {
     @Expose
     @Category(name = "Auto Solvers", desc = "Various auto solvers for GUIs")
     public AutoSolversConfig asc = new AutoSolversConfig();
+
+    @Expose
+    @Category(name = "Farming", desc = "Garden pest commands and loadout switching while you farm manually.")
+    public FarmingConfig farming = new FarmingConfig();
 
     @Expose
     @Category(name = "Slayers", desc = "QOL mods for different slayers")

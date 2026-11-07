@@ -8,6 +8,7 @@ import rocket.giovanniclient.client.features.autosolvers.AutoFusion;
 import rocket.giovanniclient.client.features.autosolvers.AutoLoudmouthBass;
 import rocket.giovanniclient.client.features.autosolvers.AutoMelody;
 import rocket.giovanniclient.client.features.autosolvers.AutoShardsClaim;
+import rocket.giovanniclient.client.features.farming.AutoPestCycle;
 import rocket.giovanniclient.client.features.misc.CloseChocolateEggs;
 import rocket.giovanniclient.client.features.pokedex.MobPokedex;
 import rocket.giovanniclient.client.features.render.MineshaftArmorStandESP;
@@ -44,6 +45,7 @@ public class FeatureManager {
         register(new AutoExperiments());
         register(new AutoFusion());
         register(new AutoLoudmouthBass());
+        register(new AutoPestCycle());
         register(new AutoSoulcry());
         register(new BlazeShieldHighlight());
         register(new CloseChocolateEggs());
