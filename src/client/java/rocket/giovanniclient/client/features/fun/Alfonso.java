@@ -17,7 +17,9 @@ public final class Alfonso {
     private Alfonso() {}
 
     public static Component getNameTag(ArmorStand stand, Component original) {
-        if (original == null || !ConfigManager.getConfig().fc.ALFONSO) return original;
+        if (original == null) return null;
+        var config = ConfigManager.getConfig().fc;
+        if (!config.TROLL_FEATURES || !config.ALFONSO) return original;
         if (!PlayerLocator.isPlayerIn("The Rift") || !stand.hasCustomName()) return original;
         if (Math.abs(stand.getX() - NPC_X) > 0.5 || Math.abs(stand.getZ() - NPC_Z) > 0.5) return original;
         // The hologram stands are vertically offset from the NPC's feet.

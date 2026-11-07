@@ -13,14 +13,16 @@ import rocket.giovanniclient.client.util.Utils;
 import java.util.regex.Pattern;
 
 public final class FakeMotesLoss extends AbstractFeature {
-    private static final Pattern MOTES = Pattern.compile("Motes:\\s+([0-9]+(?:,[0-9]{3})*)(?:\\s+.*)?");
+    private static final Pattern MOTES = Pattern.compile("Motes:\\s+([0-9]+(?:,[0-9]{3})*(?:\\.[0-9]+)?)(?:\\s+.*)?");
 
     public FakeMotesLoss() {
         ClientReceiveMessageEvents.GAME.register(FakeMotesLoss::onGameMessage);
     }
 
     private static void onGameMessage(Component message, boolean overlay) {
-        if (overlay || !ConfigManager.getConfig().fc.FAKE_MOTES_LOSS) return;
+        if (overlay) return;
+        var config = ConfigManager.getConfig().fc;
+        if (!config.TROLL_FEATURES || !config.FAKE_MOTES_LOSS) return;
         if (!"The Rift".equals(PlayerLocator.getPlayerArea())) return;
         if (!ScoreboardUtils.stripMinecraftFormatting(message.getString()).stripLeading().startsWith("\u2620 You ")) return;
 
