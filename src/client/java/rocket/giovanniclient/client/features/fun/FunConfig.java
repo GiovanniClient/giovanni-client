@@ -16,16 +16,6 @@ public class FunConfig {
     public boolean TROLL_FEATURES = true;
 
     @Expose
-    @ConfigOption(name = "Loose motes on death", desc = "oh no...")
-    @ConfigEditorBoolean
-    public boolean FAKE_MOTES_LOSS = true;
-
-    @Expose
-    @ConfigOption(name = "Alfonso", desc = "the most robbed guy in hypixel skyblock")
-    @ConfigEditorBoolean
-    public boolean ALFONSO = true;
-
-    @Expose
     @ConfigOption(name = "3D Rats", desc = "Replaces Hypixel rat armor stand heads with a small 3D rat model.")
     @ConfigEditorBoolean
     public boolean RENDER_3D_RATS = true;

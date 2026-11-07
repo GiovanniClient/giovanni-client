@@ -10,6 +10,7 @@
     "ActionBarMixin",
     "ChatHistoryMixin",
     "ChatMessageMixin",
+    "ClientDisconnectMixin",
     "ClientPlayNetworkHandlerMixin",
     "LocalCommandPacketGuardMixin",
     "PlayerListHudAccessor",

@@ -2,6 +2,7 @@ package rocket.giovanniclient.client.bootstrap;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import rocket.giovanniclient.client.config.ConfigManager;
+import rocket.giovanniclient.client.features.misc.AutoReconnect;
 import rocket.giovanniclient.client.features.misc.GuiScaleCycler;
 
 public final class ClientTicks {
@@ -28,6 +29,8 @@ public final class ClientTicks {
                 ConfigManager.shouldOpenFromCommand = false;
                 client.execute(ConfigManager::openConfigScreen);
             }
+
+            AutoReconnect.tick(client);
         });
     }
 }

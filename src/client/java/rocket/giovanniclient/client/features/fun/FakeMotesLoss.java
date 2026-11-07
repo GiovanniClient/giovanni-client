@@ -22,7 +22,7 @@ public final class FakeMotesLoss extends AbstractFeature {
     private static void onGameMessage(Component message, boolean overlay) {
         if (overlay) return;
         var config = ConfigManager.getConfig().fc;
-        if (!config.TROLL_FEATURES || !config.FAKE_MOTES_LOSS) return;
+        if (!config.TROLL_FEATURES) return;
         if (!"The Rift".equals(PlayerLocator.getPlayerArea())) return;
         if (!ScoreboardUtils.stripMinecraftFormatting(message.getString()).stripLeading().startsWith("\u2620 You ")) return;
 
