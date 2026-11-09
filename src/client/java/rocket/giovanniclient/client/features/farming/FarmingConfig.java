@@ -10,6 +10,24 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorSlider;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption;
 
 public class FarmingConfig {
+    @Expose
+    @ConfigOption(name = "Magic Jellybean Hider", desc = "Hide Magic Jellybean armor stands and change the appearance of their sugar cane in the Garden.")
+    @ConfigEditorDropdown
+    public JellybeanHiderMode MAGIC_JELLYBEAN_HIDER = JellybeanHiderMode.DISABLED;
+
+    public enum JellybeanHiderMode {
+        DISABLED("Disabled"),
+        COPPER_CHAIN("Copper Chain"),
+        SEMI_HIDDEN("Semi-Hidden");
+
+        private final String label;
+
+        JellybeanHiderMode(String label) { this.label = label; }
+
+        @Override
+        public String toString() { return label; }
+    }
+
     @ConfigOption(name = "Auto Pest Cycle", desc = "Toggle with /gio farming for this Garden visit. Always starts disabled. Farming and killing pests remain manual.")
     @ConfigEditorButton(buttonText = "§lToggle!")
     public Runnable toggle = AutoPestCycle::toggle;

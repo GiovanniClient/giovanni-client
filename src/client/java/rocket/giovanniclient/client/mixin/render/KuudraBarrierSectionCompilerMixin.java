@@ -1,23 +1,31 @@
 package rocket.giovanniclient.client.mixin.render;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.chunk.RenderSectionRegion;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.state.BlockState;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import rocket.giovanniclient.client.config.ConfigManager;
+import rocket.giovanniclient.client.features.farming.MagicJellybeanHider;
 import rocket.giovanniclient.client.features.render.BlockReplacements;
 import rocket.giovanniclient.client.util.PlayerLocator;
 
 @Mixin(RenderSectionRegion.class)
 public class KuudraBarrierSectionCompilerMixin {
+    @Shadow @Final private ClientLevel level;
+
     @ModifyReturnValue(method = "getBlockState", at = @At("RETURN"))
     private BlockState giovanni$replaceKuudraBarrierState(BlockState state, BlockPos pos) {
-        BlockState replacement = BlockReplacements.renderState(state);
+        BlockState replacement = MagicJellybeanHider.renderCane(level, state, pos.getX(), pos.getY(), pos.getZ());
+        if (replacement != state) return replacement;
+        replacement = BlockReplacements.renderState(state);
         if (replacement != state) return replacement;
         if (!giovanni$shouldRenderAsGlass(pos, state)) return state;
 

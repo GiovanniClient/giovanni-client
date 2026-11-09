@@ -45,6 +45,7 @@
     "render.KuudraBarrierSectionCompilerMixin",
     "render.LavaFluidModelMixin",
     "render.LavaTransparencyMixin",
+    "render.MagicJellybeanEntityMixin",
     "render.GiovanniLevelRendererMixin",
     "render.LevelWeatherMixin",
     "render.NoBlindnessEffectsMixin",
