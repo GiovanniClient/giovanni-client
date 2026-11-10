@@ -66,7 +66,7 @@ public final class ClientCustomCommands {
     public static void register() {
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
             slash_giovanniclient(dispatcher);
-            slash_giovanniUpdates(dispatcher);
+            registerUpdateCheck(dispatcher);
             inventorybuttons(dispatcher);
             slash_dumpsidebar(dispatcher);
             slash_dumptab(dispatcher);
@@ -79,7 +79,7 @@ public final class ClientCustomCommands {
 
     public static void registerSafemode() {
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
-            slash_giovanniUpdates(dispatcher);
+            registerUpdateCheck(dispatcher);
         });
     }
 
@@ -90,6 +90,7 @@ public final class ClientCustomCommands {
                 return 1;
             }).then(ClientCommands.literal("help").executes(context -> {
                         context.getSource().sendFeedback(Component.literal("§e/gio§7: open the configuration. §e/gio dex help§7: show all Pokédex commands."));
+                        context.getSource().sendFeedback(Component.literal("§e/gio update-check§7: check for GiovanniClient updates."));
                         context.getSource().sendFeedback(Component.literal("§e/gio farming§7: toggle Farming for this Garden visit. Turns off when you leave."));
                         context.getSource().sendFeedback(Component.literal("§e/gio glow <name|list|remove <name>|clear|off>§7: saved list, up to 10 names per island."));
                         context.getSource().sendFeedback(Component.literal("§e/gio hide <name|list|remove <name>|clear|off>§7: hide mobs."));
@@ -424,13 +425,12 @@ public final class ClientCustomCommands {
         return formatted.endsWith(".0") ? formatted.substring(0, formatted.length() - 2) : formatted;
     }
 
-    private static void slash_giovanniUpdates(CommandDispatcher<FabricClientCommandSource> dispatcher) {
-        dispatcher.register(ClientCommands.literal("giovanni-check-update")
-                .executes(context -> {
+    private static void registerUpdateCheck(CommandDispatcher<FabricClientCommandSource> dispatcher) {
+        dispatcher.register(ClientCommands.literal("gio")
+                .then(ClientCommands.literal("update-check").executes(context -> {
                     UPDATE_MANAGER.runUpdateFlow();
                     return 1;
-                })
-        );
+                })));
     }
 
     private static void slash_ratterscannertestsha256(CommandDispatcher<FabricClientCommandSource> dispatcher) {

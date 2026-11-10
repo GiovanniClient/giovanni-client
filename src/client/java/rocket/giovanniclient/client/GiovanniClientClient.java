@@ -1,6 +1,7 @@
 package rocket.giovanniclient.client;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.ChatFormatting;
@@ -13,6 +14,8 @@ import rocket.giovanniclient.client.bootstrap.*;
 import rocket.giovanniclient.client.config.ConfigManager;
 import rocket.giovanniclient.client.features.updater.UpdateManagerV3;
 
+import java.util.concurrent.TimeUnit;
+
 public final class GiovanniClientClient implements ClientModInitializer {
 
     public static final Minecraft mc = Minecraft.getInstance();
@@ -22,7 +25,7 @@ public final class GiovanniClientClient implements ClientModInitializer {
     public static final String RELEASES_URL = "https://github.com/GiovanniClient/giovanni-client/releases/latest";
     private static boolean unsupportedVersionWarningShown;
 
-    public static final UpdateManagerV3 UPDATE_MANAGER = new UpdateManagerV3(() -> ConfigManager.getConfig().about);
+    public static final UpdateManagerV3 UPDATE_MANAGER = new UpdateManagerV3(ConfigManager::getConfig);
 
     @Override
     public void onInitializeClient() {
@@ -70,15 +73,45 @@ public final class GiovanniClientClient implements ClientModInitializer {
                     .append(Component.literal(" =====\n").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD))
                     .append(Component.literal("\nUNSUPPORTED MC VERSION: ").withStyle(ChatFormatting.RED, ChatFormatting.BOLD)).append(Component.literal(getMcVersion()).withStyle(ChatFormatting.WHITE))
                     .append(Component.literal("\nFeatures are disabled to prevent crashing.\n").withStyle(ChatFormatting.GRAY))
-                    .append(Component.literal("\n[CLICK TO CHECK FOR UPDATES]").withStyle(ChatFormatting.AQUA, ChatFormatting.BOLD, ChatFormatting.UNDERLINE).withStyle(s -> s.withClickEvent(new ClickEvent.SuggestCommand("/giovanni-check-update"))))
+                    .append(Component.literal("\n[CLICK TO CHECK FOR UPDATES]").withStyle(ChatFormatting.AQUA, ChatFormatting.BOLD, ChatFormatting.UNDERLINE).withStyle(s -> s.withClickEvent(new ClickEvent.SuggestCommand("/gio update-check"))))
                     .append(Component.literal("\n\n=========================").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD));
 
             assert client.player != null;
             client.gui.hud.getChat().addClientSystemMessage(warningMessage);
+            ClientTickEvents.END_CLIENT_TICK.register(new UnsupportedVersionReminder(warningMessage));
         });
 
         ClientCustomCommands.registerSafemode();
         ClientLifecycle.registerClientStarted(false);
+    }
+
+    private static final class UnsupportedVersionReminder implements ClientTickEvents.EndTick {
+        private static final long DELAY_NANOS = TimeUnit.MINUTES.toNanos(1);
+        private Component message;
+        private Object player;
+        private long joinedAt;
+
+        private UnsupportedVersionReminder(Component message) {
+            this.message = message;
+        }
+
+        @Override
+        public void onEndTick(Minecraft client) {
+            if (message == null) return;
+
+            long now = System.nanoTime();
+            // A new player instance restarts the wait after a warp or reconnect.
+            if (player != client.player) {
+                player = client.player;
+                joinedAt = now;
+            }
+            if (player == null || now - joinedAt < DELAY_NANOS) return;
+
+            Component reminder = message;
+            message = null;
+            player = null;
+            client.gui.hud.getChat().addClientSystemMessage(reminder);
+        }
     }
 
     public static String getMcVersion() {

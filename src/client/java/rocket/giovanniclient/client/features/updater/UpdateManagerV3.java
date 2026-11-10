@@ -5,10 +5,11 @@ import moe.nea.libautoupdate.UpdateCheckResult;
 import moe.nea.libautoupdate.UpdateData;
 import net.minecraft.client.Minecraft;
 import rocket.giovanniclient.client.GiovanniClientClient;
-import rocket.giovanniclient.client.config.AboutConfig;
+import rocket.giovanniclient.client.config.MainConfig;
 import rocket.giovanniclient.client.util.Utils;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
@@ -24,7 +25,7 @@ public class UpdateManagerV3 {
 
     private final AtomicReference<State> state =
             new AtomicReference<>(State.IDLE);
-    private final Supplier<AboutConfig> config;
+    private final Supplier<MainConfig> config;
 
     private final UpdateChecker checker;
     private final UpdateNotifier notifier;
@@ -34,7 +35,7 @@ public class UpdateManagerV3 {
     private volatile RatterScannerChecker.SafetyStatus safetyStatus =
             RatterScannerChecker.SafetyStatus.UNCHECKED;
 
-    public UpdateManagerV3(Supplier<AboutConfig> config) {
+    public UpdateManagerV3(Supplier<MainConfig> config) {
         this.config = config;
         this.checker = new UpdateChecker(
                 GiovanniClientClient.MOD_ID,
@@ -50,12 +51,17 @@ public class UpdateManagerV3 {
     // -------------------------
 
     public void runUpdateFlow() {
+        runUpdateFlow(Minecraft.getInstance()::execute);
+    }
+
+    public void runUpdateFlow(Executor notificationExecutor) {
         // Get current state
         State currentState = state.get();
 
         // Prevent concurrent checks if already in progress
         if (currentState == State.CHECKING || currentState == State.SAFETY_CHECKING) {
             Utils.log("Update check already in progress. Current state: " + currentState);
+            debugOnClient("Update check already in progress.");
             return;
         }
 
@@ -71,22 +77,35 @@ public class UpdateManagerV3 {
         pendingUpdateData = null;
         safetyStatus = RatterScannerChecker.SafetyStatus.UNCHECKED;
 
-        checker.checkSafely()
+        MainConfig currentConfig = config.get();
+        boolean useTestRepository = currentConfig != null && currentConfig.debugConfig.USE_TEST_UPDATE_REPOSITORY;
+        boolean checkSafety = currentConfig != null && currentConfig.about.RATTER_SCANNER_CHECK;
+
+        checker.checkSafely(useTestRepository)
                 .thenCompose(this::handleCheckOutcome)
                 .thenCompose(this::handleCheckResult)
-                .thenCompose(this::handleSafetyResult)
-                .thenCompose(this::handleNotify)
+                .thenCompose(result -> handleSafetyResult(result, checkSafety))
+                .thenAccept(result -> {
+                    handleNotify(result, notificationExecutor);
+                    state.set(switch (result) {
+                        case null -> State.IDLE;
+                        case UpdateCheckResult.UpToDate ignored -> State.UP_TO_DATE;
+                        case UpdateCheckResult.UpdateAvailable ignored -> State.UPDATE_AVAILABLE;
+                        case UpdateCheckResult.DifferentMcVersionOnly ignored -> State.UPDATE_AVAILABLE;
+                    });
+                })
                 .exceptionally(ex -> {
                     state.set(State.IDLE);
                     Utils.log("Update flow failed: " + ex.getMessage());
+                    debugOnClient("Update check failed. See latest.log for details.");
                     return null;
                 });
     }
 
     private CompletableFuture<UpdateCheckResult> handleCheckOutcome(UpdateChecker.UpdateCheckOutcome outcome) {
         if (outcome.failed()) {
-            state.set(State.IDLE);
             Utils.log("Update check skipped: GitHub releases could not be reached.");
+            debugOnClient("GitHub release check failed: " + outcome.error().getMessage());
             return CompletableFuture.completedFuture(null);
         }
 
@@ -106,7 +125,6 @@ public class UpdateManagerV3 {
                 var update = u.update();
                 pendingUpdate = update;
                 pendingUpdateData = update.getUpdate();
-                state.set(State.UPDATE_AVAILABLE);
                 yield result;
             }
 
@@ -115,19 +133,17 @@ public class UpdateManagerV3 {
                 pendingUpdate = update;
                 pendingUpdateData = update.getUpdate();
                 Utils.log("Update available for different MC version: " + update.getUpdate().getVersionName());
-                // Don't set UP_TO_DATE here - let safety check run
                 yield result;
             }
 
             case UpdateCheckResult.UpToDate() -> {
                 Utils.log("No updates found.");
-                state.set(State.UP_TO_DATE);
                 yield result;
             }
         });
     }
 
-    private CompletableFuture<UpdateCheckResult> handleSafetyResult(UpdateCheckResult result) {
+    private CompletableFuture<UpdateCheckResult> handleSafetyResult(UpdateCheckResult result, boolean checkSafety) {
         if (result == null) {
             return CompletableFuture.completedFuture(null);
         }
@@ -145,7 +161,7 @@ public class UpdateManagerV3 {
             return CompletableFuture.completedFuture(result);
         }
 
-        if (!config.get().RATTER_SCANNER_CHECK) {
+        if (!checkSafety) {
             Utils.log("Safety check skipped: RatterScanner check disabled in config.");
             safetyStatus = RatterScannerChecker.SafetyStatus.OFF;
             return CompletableFuture.completedFuture(result);
@@ -159,61 +175,39 @@ public class UpdateManagerV3 {
                 .thenApply(status -> {
                     Utils.log("Safety check final result: " + status.name());
                     safetyStatus = status;
-                    // Always set to UPDATE_AVAILABLE so notification shows status
-                    state.set(State.UPDATE_AVAILABLE);
+                    if (status == RatterScannerChecker.SafetyStatus.ERROR) {
+                        debugOnClient("RatterScanner check failed. See latest.log for details.");
+                    }
                     return result;
                 })
                 .exceptionally(ex -> {
                     Utils.log("Safety check failed with exception: " + ex.getMessage());
                     safetyStatus = RatterScannerChecker.SafetyStatus.ERROR;
-                    state.set(State.UPDATE_AVAILABLE);
+                    debugOnClient("RatterScanner check failed. See latest.log for details.");
                     return result;
                 });
     }
 
-    private CompletableFuture<Void> handleNotify(UpdateCheckResult result) {
-        if (result == null) {
-            return CompletableFuture.completedFuture(null);
-        }
-
+    private void handleNotify(UpdateCheckResult result, Executor notificationExecutor) {
         if (result instanceof UpdateCheckResult.UpToDate) {
-            Minecraft.getInstance().execute(notifier::sendNoUpdates);
-            return CompletableFuture.completedFuture(null);
+            notificationExecutor.execute(notifier::sendNoUpdates);
+        } else if (result instanceof UpdateCheckResult.UpdateAvailable(PotentialUpdate update)) {
+            var status = safetyStatus;
+            notificationExecutor.execute(() -> {
+                notifier.sendUpdateAvailable(update.getUpdate(), status);
+                Utils.log("Update notification sent. Manual download required.");
+            });
+        } else if (result instanceof UpdateCheckResult.DifferentMcVersionOnly(PotentialUpdate update)) {
+            var status = safetyStatus;
+            notificationExecutor.execute(() -> {
+                notifier.sendUpdateForDifferentMcVersion(update.getUpdate(), status);
+                Utils.log("Update requires a different Minecraft version. Manual download link shown.");
+            });
         }
+    }
 
-        PotentialUpdate update;
-        boolean forDifferentMcVersion = false;
-
-        if (result instanceof UpdateCheckResult.UpdateAvailable(PotentialUpdate u)) {
-            update = u;
-        } else if (result instanceof UpdateCheckResult.DifferentMcVersionOnly(PotentialUpdate u)) {
-            update = u;
-            forDifferentMcVersion = true;
-        } else {
-            update = null;
-        }
-
-        if (update == null) {
-            return CompletableFuture.completedFuture(null);
-        }
-
-        // Send different notifications based on update type
-        if (forDifferentMcVersion) {
-            Minecraft.getInstance().execute(() ->
-                    notifier.sendUpdateForDifferentMcVersion(update.getUpdate())
-            );
-            Utils.log("Notification sent (different MC version)");
-            Utils.log("Update requires a different Minecraft version. Manual download link shown.");
-            return CompletableFuture.completedFuture(null);
-        } else {
-            Minecraft.getInstance().execute(() ->
-                    notifier.sendUpdateAvailable(update.getUpdate(), safetyStatus)
-            );
-            Utils.log("Notification sent");
-        }
-
-        Utils.log("Update notification sent. Manual download required.");
-        return CompletableFuture.completedFuture(null);
+    private static void debugOnClient(String message) {
+        Minecraft.getInstance().execute(() -> Utils.debug(message));
     }
 
     public void sendUpdateFoundMessage() {

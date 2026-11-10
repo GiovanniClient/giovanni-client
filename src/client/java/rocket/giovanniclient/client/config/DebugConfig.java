@@ -12,6 +12,11 @@ public class DebugConfig {
     public boolean DEBUG = false;
 
     @Expose
+    @ConfigOption(name = "Use Test Update Repository", desc = "Check GiovanniClient/test-gc-updates-repo for updates.")
+    @ConfigEditorBoolean
+    public boolean USE_TEST_UPDATE_REPOSITORY = false;
+
+    @Expose
     @ConfigOption(name = "See every invisible entity", desc = "")
     @ConfigEditorBoolean
     public boolean EVERYTHING_VISIBLE_TOGGLE = false;

@@ -9,6 +9,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 
 public class RatterScannerChecker {
@@ -35,8 +36,8 @@ public class RatterScannerChecker {
     }
 
     public static CompletableFuture<SafetyStatus> checkHash(String sha256) {
-        if (sha256 == null || sha256.isEmpty()) {
-            Utils.log("RatterScanner: Hash is null or empty");
+        if (sha256 == null || !sha256.matches("[0-9a-fA-F]{64}")) {
+            Utils.log("RatterScanner: Missing or invalid SHA-256");
             return CompletableFuture.completedFuture(SafetyStatus.ERROR);
         }
 
@@ -44,6 +45,7 @@ public class RatterScannerChecker {
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(API_BASE + sha256))
+                .timeout(Duration.ofSeconds(10))
                 .header("User-Agent", "GiovanniClient/1.0")
                 .GET()
                 .build();
