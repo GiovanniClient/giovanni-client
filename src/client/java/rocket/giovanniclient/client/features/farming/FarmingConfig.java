@@ -18,7 +18,8 @@ public class FarmingConfig {
     public enum JellybeanHiderMode {
         DISABLED("Disabled"),
         COPPER_CHAIN("Copper Chain"),
-        SEMI_HIDDEN("Semi-Hidden");
+        SEMI_HIDDEN("Semi-Hidden"),
+        BAMBOO("Bamboo");
 
         private final String label;
 

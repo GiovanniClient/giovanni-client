@@ -28,7 +28,7 @@ import java.util.WeakHashMap;
 
 public final class MagicJellybeanHider extends AbstractFeature {
     private static final String JELLYBEAN_TEXTURE = "c526a56b80f56a6870f891d1d46fa7f8c71494cad24e94326da84b3829417b81";
-    private static final int COPPER_CHAIN_HEIGHT = 72;
+    private static final int REPLACEMENT_HIDE_HEIGHT = 72;
     private static final int SEMI_HIDDEN_HEIGHT = 75;
     private static final RenderSnapshot EMPTY = new RenderSnapshot(null, false, Set.of(), Map.of());
 
@@ -41,24 +41,32 @@ public final class MagicJellybeanHider extends AbstractFeature {
         ClientLevel level = client.level;
         FarmingConfig farming = ConfigManager.getConfig().farming;
         JellybeanHiderMode mode = farming == null ? null : farming.MAGIC_JELLYBEAN_HIDER;
-        if (level == null || mode == null || mode == JellybeanHiderMode.DISABLED
-                || !"Garden".equals(PlayerLocator.getPlayerArea())) {
+        if (level == null || mode == null || !"Garden".equals(PlayerLocator.getPlayerArea())) {
             publish(client, EMPTY);
             return;
         }
 
-        boolean copperChain = mode == JellybeanHiderMode.COPPER_CHAIN;
-        BlockState replacement = copperChain ? Blocks.COPPER_CHAIN.weathering().oxidized().defaultBlockState()
-                : Blocks.AIR.defaultBlockState();
+        BlockState replacement = switch (mode) {
+            case DISABLED -> null;
+            case COPPER_CHAIN -> Blocks.COPPER_CHAIN.weathering().oxidized().defaultBlockState();
+            case SEMI_HIDDEN -> Blocks.AIR.defaultBlockState();
+            case BAMBOO -> Blocks.BAMBOO.defaultBlockState();
+        };
+        if (replacement == null) {
+            publish(client, EMPTY);
+            return;
+        }
+
+        boolean semiHidden = mode == JellybeanHiderMode.SEMI_HIDDEN;
         Set<ArmorStand> jellybeans = Collections.newSetFromMap(new IdentityHashMap<>());
         Map<BlockPos, BlockState> cane = new HashMap<>();
         for (Entity entity : level.entitiesForRendering()) {
             if (!(entity instanceof ArmorStand stand) || !isJellybean(stand)) continue;
             jellybeans.add(stand);
-            markCane(level, stand.blockPosition(), copperChain, replacement, cane);
-            markHeadCane(level, stand, copperChain, replacement, cane);
+            markCane(level, stand.blockPosition(), semiHidden, replacement, cane);
+            markHeadCane(level, stand, semiHidden, replacement, cane);
         }
-        publish(client, new RenderSnapshot(level, copperChain,
+        publish(client, new RenderSnapshot(level, semiHidden,
                 Collections.unmodifiableSet(jellybeans), Map.copyOf(cane)));
     }
 
@@ -71,7 +79,7 @@ public final class MagicJellybeanHider extends AbstractFeature {
     public static boolean shouldHide(Entity entity) {
         RenderSnapshot current = snapshot;
         return entity instanceof ArmorStand stand && stand.level() == current.level()
-                && (current.copperChain() ? stand.getY() > COPPER_CHAIN_HEIGHT : stand.getY() >= SEMI_HIDDEN_HEIGHT)
+                && (current.semiHidden() ? stand.getY() >= SEMI_HIDDEN_HEIGHT : stand.getY() > REPLACEMENT_HIDE_HEIGHT)
                 && current.jellybeans().contains(stand);
     }
 
@@ -81,7 +89,7 @@ public final class MagicJellybeanHider extends AbstractFeature {
         return current.cane().getOrDefault(new BlockPos(x, y, z), original);
     }
 
-    private static void markHeadCane(ClientLevel level, ArmorStand stand, boolean copperChain,
+    private static void markHeadCane(ClientLevel level, ArmorStand stand, boolean semiHidden,
                                      BlockState replacement, Map<BlockPos, BlockState> cane) {
         // Use the ArmorStandModel and CustomHeadLayer transforms. Marker stands
         // still render the skull even when their hitbox is empty.
@@ -101,13 +109,13 @@ public final class MagicJellybeanHider extends AbstractFeature {
         int firstY = Math.max(feet.getY() + 1, Mth.floor(centerY - radiusY));
         int endY = Mth.ceil(centerY + radiusY);
         for (int y = firstY; y < endY; y++) {
-            markCane(level, new BlockPos(feet.getX(), y, feet.getZ()), copperChain, replacement, cane);
+            markCane(level, new BlockPos(feet.getX(), y, feet.getZ()), semiHidden, replacement, cane);
         }
     }
 
-    private static void markCane(ClientLevel level, BlockPos pos, boolean copperChain,
+    private static void markCane(ClientLevel level, BlockPos pos, boolean semiHidden,
                                  BlockState replacement, Map<BlockPos, BlockState> cane) {
-        if ((copperChain || pos.getY() > SEMI_HIDDEN_HEIGHT) && level.getBlockState(pos).is(Blocks.SUGAR_CANE)) {
+        if ((!semiHidden || pos.getY() > SEMI_HIDDEN_HEIGHT) && level.getBlockState(pos).is(Blocks.SUGAR_CANE)) {
             cane.put(pos, replacement);
         }
     }
@@ -144,5 +152,5 @@ public final class MagicJellybeanHider extends AbstractFeature {
         client.levelExtractor.setBlocksDirty(pos.getX(), pos.getY(), pos.getZ(), pos.getX(), pos.getY(), pos.getZ());
     }
 
-    private record RenderSnapshot(ClientLevel level, boolean copperChain, Set<ArmorStand> jellybeans, Map<BlockPos, BlockState> cane) {}
+    private record RenderSnapshot(ClientLevel level, boolean semiHidden, Set<ArmorStand> jellybeans, Map<BlockPos, BlockState> cane) {}
 }
