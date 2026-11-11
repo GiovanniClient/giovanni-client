@@ -89,7 +89,7 @@ public class NamedEntityHide extends AbstractFeature {
         // A second named stand (for example a health line) can render even
         // when the original stand is outside the scan used to find the mob.
         Minecraft client = Minecraft.getInstance();
-        LivingEntity nearest = client.level == null ? null : NamedMobGlow.findMobUnderNametag(client, stand);
+        LivingEntity nearest = client.level == null ? null : PokedexMobGlow.findMobUnderNametag(client, stand);
         return isHiddenMob(nearest);
     }
 
@@ -152,7 +152,7 @@ public class NamedEntityHide extends AbstractFeature {
                 if (key.isEmpty() || !nametag.contains(key)) continue;
 
                 STANDS.put(stand.getUUID(), new Tracked(stand.getId(), key));
-                LivingEntity target = NamedMobGlow.findMobUnderNametag(client, stand);
+                LivingEntity target = PokedexMobGlow.findMobUnderNametag(client, stand);
                 if (target == null) break;
                 MOBS.put(target.getUUID(), new Tracked(target.getId(), key));
 
@@ -162,7 +162,7 @@ public class NamedEntityHide extends AbstractFeature {
                 for (Entity nearby : client.level.getEntities(target, accessoryBox,
                         candidate -> candidate instanceof ArmorStand)) {
                     ArmorStand accessory = (ArmorStand) nearby;
-                    if (NamedMobGlow.findMobUnderNametag(client, accessory) == target) {
+                    if (PokedexMobGlow.findMobUnderNametag(client, accessory) == target) {
                         STANDS.put(accessory.getUUID(), new Tracked(accessory.getId(), key));
                     }
                 }

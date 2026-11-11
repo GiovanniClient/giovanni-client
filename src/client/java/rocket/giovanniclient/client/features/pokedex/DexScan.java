@@ -19,7 +19,7 @@ public record DexScan(String island, double radius, List<Part> entities, Set<Int
         proposedIds = Set.copyOf(proposedIds);
     }
 
-    public record Part(int id, double x, double y, double z, DexProfile.Signature signature, DexProfile.Role role) {
+    public record Part(int id, double x, double y, double z, DexProfile.Signature signature, DexProfile.Role role, Double baseMaxHealth) {
         public Part {
             Objects.requireNonNull(signature);
             Objects.requireNonNull(role);
@@ -35,27 +35,41 @@ public record DexScan(String island, double radius, List<Part> entities, Set<Int
 
     public Capture captureIds(String rawIds) {
         var selected = new LinkedHashMap<Integer, Part>();
-        for (String token : rawIds.trim().split("[ ,]+")) {
+        String[] tokens = rawIds.trim().split("[\\s,]+");
+        boolean includeHealth = tokens.length > 0 && tokens[tokens.length - 1].equals("--health");
+        int idCount = tokens.length - (includeHealth ? 1 : 0);
+        for (int i = 0; i < idCount; i++) {
             int id;
-            try { id = Integer.parseInt(token); }
+            try { id = Integer.parseInt(tokens[i]); }
             catch (NumberFormatException ignored) { throw new IllegalArgumentException("Use IDs from the latest /gio dex scan, separated by spaces."); }
             Part part = entities.stream().filter(candidate -> candidate.id() == id).findFirst()
                     .orElseThrow(() -> new IllegalArgumentException("ID " + id + " was not found in the latest scan. Run /gio dex scan [radius] to refresh it."));
             selected.putIfAbsent(id, part);
         }
-        return capture(new ArrayList<>(selected.values()));
+        return capture(new ArrayList<>(selected.values()), includeHealth);
     }
 
     public static Capture capture(List<Part> entities) {
+        return capture(entities, false);
+    }
+
+    private static Capture capture(List<Part> entities, boolean includeHealth) {
         if (entities.isEmpty()) throw new IllegalArgumentException("Select at least one entity to capture.");
+        if (includeHealth && entities.stream().noneMatch(part -> part.baseMaxHealth() != null)) {
+            throw new IllegalArgumentException("Select a mob body with base maximum health to use --health.");
+        }
         Part anchor = entities.stream().filter(part -> part.signature().distinctive())
                 .max(Comparator.comparingInt(part -> part.signature().name().isEmpty() ? 1 : 2))
                 .orElseGet(() -> entities.stream().filter(part -> part.role() == DexProfile.Role.BODY).findFirst().orElse(entities.getFirst()));
         List<Part> ordered = new ArrayList<>();
         ordered.add(anchor);
         entities.stream().filter(part -> part != anchor).sorted(Comparator.comparingInt(Part::id)).forEach(ordered::add);
-        List<DexProfile.Part> parts = ordered.stream().map(part -> new DexProfile.Part(part.signature(), part.role(),
-                round(Math.hypot(part.x() - anchor.x(), part.z() - anchor.z())), round(part.y() - anchor.y()))).toList();
+        List<DexProfile.Part> parts = ordered.stream().map(part -> {
+            var signature = includeHealth && part.baseMaxHealth() != null
+                    ? part.signature().withBaseMaxHealth(part.baseMaxHealth()) : part.signature();
+            return new DexProfile.Part(signature, part.role(), round(Math.hypot(part.x() - anchor.x(), part.z() - anchor.z())),
+                    round(part.y() - anchor.y()));
+        }).toList();
         return new Capture(ordered, new DexProfile(parts));
     }
 

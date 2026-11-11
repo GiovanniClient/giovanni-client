@@ -12,6 +12,11 @@ public class DebugConfig {
     public boolean DEBUG = false;
 
     @Expose
+    @ConfigOption(name = "Dex Dev", desc = "Copy the Pokédex from the jar into your editable user files, then use only those files while enabled.")
+    @ConfigEditorBoolean
+    public Property<Boolean> DEX_DEV = Property.of(false);
+
+    @Expose
     @ConfigOption(name = "Use Test Update Repository", desc = "Check GiovanniClient/test-gc-updates-repo for updates.")
     @ConfigEditorBoolean
     public boolean USE_TEST_UPDATE_REPOSITORY = false;

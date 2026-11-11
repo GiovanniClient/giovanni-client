@@ -14,7 +14,7 @@ import rocket.giovanniclient.client.features.fun.FakeMotesLoss;
 import rocket.giovanniclient.client.features.misc.CloseChocolateEggs;
 import rocket.giovanniclient.client.features.pokedex.MobPokedex;
 import rocket.giovanniclient.client.features.render.MineshaftArmorStandESP;
-import rocket.giovanniclient.client.features.render.NamedMobGlow;
+import rocket.giovanniclient.client.features.render.PokedexMobGlow;
 import rocket.giovanniclient.client.features.render.NamedEntityHide;
 import rocket.giovanniclient.client.features.render.RatReplacer;
 import rocket.giovanniclient.client.features.render.StarredMobESP;
@@ -58,7 +58,7 @@ public class FeatureManager {
 
         register(new StarredMobESP());
         register(new MobPokedex());
-        register(new NamedMobGlow());
+        register(new PokedexMobGlow());
         register(new NamedEntityHide());
         register(new MineshaftArmorStandESP());
         register(new RatReplacer());

@@ -5,6 +5,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import rocket.giovanniclient.client.config.ConfigManager;
 import rocket.giovanniclient.client.features.AbstractFeature;
 
+import java.util.List;
 import java.util.Locale;
 
 public class PlayerLocator extends AbstractFeature {
@@ -12,10 +13,14 @@ public class PlayerLocator extends AbstractFeature {
     // Area is the "Island" the player is in, the one written in TAB
     // Location is more specific, and it's on the scoreboard
     private static final String[] LOCATION_MARKERS = {"\uE067", "\uE020", "ф", "⏣"};
+    private static final String CATACOMBS = "The Catacombs";
     private static volatile String CURRENT_PLAYER_LOCATION = "None";
     private static volatile String CURRENT_PLAYER_AREA = "None";
+    private static volatile LocatedPokedexArea currentPokedexArea;
     private int tick = 0;
     private ClientLevel world;
+
+    private record LocatedPokedexArea(ClientLevel world, String name) {}
 
     @Override
     public void onTick(Minecraft client) {
@@ -38,7 +43,8 @@ public class PlayerLocator extends AbstractFeature {
                 }
             }
             setPlayerArea(area);
-
+            String context = resolvePokedexArea(area, CURRENT_PLAYER_LOCATION);
+            currentPokedexArea = context == null ? null : new LocatedPokedexArea(world, context);
         }
 
         if (client != null) {
@@ -64,6 +70,7 @@ public class PlayerLocator extends AbstractFeature {
     private void resetLocation() {
         CURRENT_PLAYER_LOCATION = "None";
         CURRENT_PLAYER_AREA = "None";
+        currentPokedexArea = null;
         tick = 0;
     }
 
@@ -74,6 +81,26 @@ public class PlayerLocator extends AbstractFeature {
     }
 
     public static String getPlayerArea() { return CURRENT_PLAYER_AREA; }
+
+    /** Area key shared by the Pokédex and its glow settings, or null until the area is known. */
+    public static String getPokedexArea(Minecraft client) {
+        LocatedPokedexArea current = currentPokedexArea;
+        return current != null && current.world() == client.level ? current.name() : null;
+    }
+
+    public static String resolvePokedexArea(String area, String location) {
+        if (isCatacombsLocation(location)) return CATACOMBS;
+        if (area == null || area.isBlank() || area.strip().equalsIgnoreCase("None")) return null;
+        return area.strip();
+    }
+
+    public static boolean isCatacombsPokedexArea(String context) {
+        return CATACOMBS.equals(context);
+    }
+
+    private static boolean isCatacombsLocation(String location) {
+        return location != null && location.toLowerCase(Locale.ROOT).contains("catacombs");
+    }
 
     private void setPlayerArea(String area) {
         boolean wasInKuudra = isPlayerInKuudra();
@@ -86,12 +113,15 @@ public class PlayerLocator extends AbstractFeature {
     }
 
     private static String findPlayerLocation() {
+        List<String> lines = ScoreboardUtils.getCleanedSidebarLines();
         for (String marker : LOCATION_MARKERS) {
-            if (ScoreboardUtils.scoreboardContainsRaw(marker)) {
-                return stripLeadingSymbols(ScoreboardUtils.getRawLineContaining(marker));
+            for (String line : lines) {
+                if (line.contains(marker)) return stripLeadingSymbols(line);
             }
         }
-        return "None";
+        // The Catacombs scoreboard can identify a floor even if the location icon is missing.
+        return lines.stream().map(PlayerLocator::stripLeadingSymbols)
+                .filter(PlayerLocator::isCatacombsLocation).findFirst().orElse("None");
     }
 
     public static boolean isPlayerIn(String loc) {

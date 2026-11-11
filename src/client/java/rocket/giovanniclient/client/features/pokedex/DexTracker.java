@@ -16,6 +16,7 @@ public final class DexTracker {
         bindings.keySet().removeIf(anchor -> !present.contains(anchor));
         List<DexMatcher.Match> matches = DexMatcher.match(entries, samples, bindings);
         for (DexMatcher.Match match : matches) {
+            if (match.parts().size() == 1) continue;
             bindings.putIfAbsent(match.parts().getFirst().uuid(), match.parts().stream().map(DexMatcher.Sample::uuid).toList());
         }
         return matches;

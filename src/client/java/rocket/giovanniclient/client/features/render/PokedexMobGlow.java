@@ -24,9 +24,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-/** Highlights mobs whose nearby SkyBlock nametag contains a chosen name. */
-public class NamedMobGlow extends AbstractFeature {
-    private static final String OWNER = "named-mob-glow";
+/** Highlights Pokédex entries, with a nametag fallback for names outside the active catalog. */
+public class PokedexMobGlow extends AbstractFeature {
+    private static final String OWNER = "pokedex-mob-glow";
     private static final int SCAN_EVERY_TICKS = 10;
     private static final int MISSING_NAMETAG_GRACE_TICKS = 20;
 
@@ -96,9 +96,7 @@ public class NamedMobGlow extends AbstractFeature {
     }
 
     private static void syncIsland(Minecraft client) {
-        String area = PlayerLocator.getPlayerArea();
-        String island = client.level == null || client.player == null || area.isBlank() || area.equals("None")
-                ? null : area.trim();
+        String island = client.level == null || client.player == null ? null : PlayerLocator.getPokedexArea(client);
         if (world == client.level && Objects.equals(activeIsland, island)) return;
         clearTracked();
         world = client.level;

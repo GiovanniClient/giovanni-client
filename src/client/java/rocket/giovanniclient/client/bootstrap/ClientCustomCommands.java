@@ -17,7 +17,7 @@ import rocket.giovanniclient.client.config.ConfigManager;
 import rocket.giovanniclient.client.features.farming.AutoPestCycle;
 import rocket.giovanniclient.client.features.inventorybuttons.EditModeState;
 import rocket.giovanniclient.client.features.render.PlayerTracer;
-import rocket.giovanniclient.client.features.render.NamedMobGlow;
+import rocket.giovanniclient.client.features.render.PokedexMobGlow;
 import rocket.giovanniclient.client.features.render.IslandGlowLists;
 import rocket.giovanniclient.client.features.render.NamedEntityHide;
 import rocket.giovanniclient.client.features.pokedex.MobPokedex;
@@ -108,8 +108,8 @@ public final class ClientCustomCommands {
                     })
                     .then(ClientCommands.literal("list").executes(context -> {
                         if (!requireGlowIsland(context)) return 0;
-                        List<IslandGlowLists.NameColor> names = NamedMobGlow.names();
-                        context.getSource().sendFeedback(Component.literal("§eGlow — " + NamedMobGlow.island()
+                        List<IslandGlowLists.NameColor> names = PokedexMobGlow.names();
+                        context.getSource().sendFeedback(Component.literal("§eGlow — " + PokedexMobGlow.island()
                                 + " (" + names.size() + "/" + IslandGlowLists.MAX_NAMES + "):"));
                         if (names.isEmpty()) {
                             context.getSource().sendFeedback(Component.literal("§eGlow list is empty."));
@@ -123,14 +123,14 @@ public final class ClientCustomCommands {
                     }))
                     .then(ClientCommands.literal("clear").executes(context -> {
                         if (!requireGlowIsland(context)) return 0;
-                        NamedMobGlow.clearNames();
-                        context.getSource().sendFeedback(Component.literal("§cGlow list cleared for " + NamedMobGlow.island() + "."));
+                        PokedexMobGlow.clearNames();
+                        context.getSource().sendFeedback(Component.literal("§cGlow list cleared for " + PokedexMobGlow.island() + "."));
                         return 1;
                     }))
                     .then(ClientCommands.literal("off").executes(context -> {
                         if (!requireGlowIsland(context)) return 0;
-                        NamedMobGlow.clearNames();
-                        context.getSource().sendFeedback(Component.literal("§cGlow list cleared for " + NamedMobGlow.island() + "."));
+                        PokedexMobGlow.clearNames();
+                        context.getSource().sendFeedback(Component.literal("§cGlow list cleared for " + PokedexMobGlow.island() + "."));
                         return 1;
                     }))
                     .then(ClientCommands.literal("remove")
@@ -138,9 +138,9 @@ public final class ClientCustomCommands {
                                     .executes(context -> {
                                         if (!requireGlowIsland(context)) return 0;
                                         String name = StringArgumentType.getString(context, "name").trim();
-                                        boolean removed = NamedMobGlow.removeName(name);
+                                        boolean removed = PokedexMobGlow.removeName(name);
                                         context.getSource().sendFeedback(Component.literal(removed
-                                                ? "§aRemoved glow name from " + NamedMobGlow.island() + ": §f" + name
+                                                ? "§aRemoved glow name from " + PokedexMobGlow.island() + ": §f" + name
                                                 : "§cGlow name not found: §f" + name));
                                         return removed ? 1 : 0;
                                     })))
@@ -154,9 +154,9 @@ public final class ClientCustomCommands {
                                     context.getSource().sendFeedback(Component.literal("§cEnter a mob name."));
                                     return 0;
                                 }
-                                IslandGlowLists.AddResult result = NamedMobGlow.addName(name);
+                                IslandGlowLists.AddResult result = PokedexMobGlow.addName(name);
                                 switch (result) {
-                                    case ADDED -> context.getSource().sendFeedback(Component.literal("§aSaved glow name for " + NamedMobGlow.island() + ": §f" + name));
+                                    case ADDED -> context.getSource().sendFeedback(Component.literal("§aSaved glow name for " + PokedexMobGlow.island() + ": §f" + name));
                                     case ALREADY_PRESENT -> context.getSource().sendFeedback(Component.literal("§eAlready in glow list: §f" + name));
                                     case FULL -> context.getSource().sendFeedback(Component.literal("§cGlow list is full (" + IslandGlowLists.MAX_NAMES + " names per island)."));
                                 }
@@ -215,8 +215,8 @@ public final class ClientCustomCommands {
     }
 
     private static boolean requireGlowIsland(CommandContext<FabricClientCommandSource> context) {
-        if (NamedMobGlow.island() != null) return true;
-        context.getSource().sendError(Component.literal("Glow: island unknown. Wait for the SkyBlock TAB Area to appear."));
+        if (PokedexMobGlow.island() != null) return true;
+        context.getSource().sendError(Component.literal("Glow: SkyBlock location unknown. Wait for the TAB Area or Catacombs scoreboard."));
         return false;
     }
 

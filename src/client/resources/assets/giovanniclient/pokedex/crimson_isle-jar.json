@@ -1,0 +1,628 @@
+{
+  "version": 1,
+  "island": "Crimson Isle",
+  "entries": [
+    {
+      "name": "Barbarian Duke X",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:player",
+                "name": "dukebarb",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": " barbarian duke x",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "LABEL",
+              "horizontalOffset": 0.01,
+              "yOffset": 2.15
+            },
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "miniboss",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "LABEL",
+              "horizontalOffset": 0.07,
+              "yOffset": 2.45
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Mage Outlaw",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:player",
+                "name": "mage outlaw",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": " amage outlawa",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "LABEL",
+              "horizontalOffset": 0.0,
+              "yOffset": 2.15
+            },
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "miniboss",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "LABEL",
+              "horizontalOffset": 0.04,
+              "yOffset": 2.46
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Bladesoul",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:blaze",
+                "name": "dinnerbone",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:wither_skeleton",
+                "name": "",
+                "equipment": {
+                  "mainhand": "minecraft:golden_axe|model\u003dminecraft:golden_axe",
+                  "head": "minecraft:player_head|skin\u003da630094f27b11a2e902e26c16fe5dfe35fb4931ab5f947bbc9accab2ee501704|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": -2.4
+            },
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": " bladesoul",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "LABEL",
+              "horizontalOffset": 0.04,
+              "yOffset": 3.05
+            },
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "miniboss",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "LABEL",
+              "horizontalOffset": 0.05,
+              "yOffset": 3.35
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Flare",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:blaze",
+                "name": "dinnerbone",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:blaze",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": -1.8
+            },
+            {
+              "signature": {
+                "type": "minecraft:blaze",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": -3.6
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Pack Magma Cube",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": " pack magma cube",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "LABEL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:magma_cube",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": -2.1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Ghast",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:ghast",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Kada Knight",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": " kada knight",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "LABEL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:zombified_piglin",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.03,
+              "yOffset": -1.14
+            },
+            {
+              "signature": {
+                "type": "minecraft:chicken",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.07,
+              "yOffset": -1.65
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Mushroom Bull",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:mooshroom",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Magma Cube",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": " magma cube",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "LABEL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:magma_cube",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.05,
+              "yOffset": -3.3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Flaming Spider",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:spider",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Magma Cube Rider",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:zombified_piglin",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:magma_cube",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": -1.82
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Wither Spectre",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:wither_skeleton",
+                "name": "",
+                "equipment": {
+                  "head": "minecraft:player_head|skin\u003df6aa5acfd973f67ba8e249ae07a11ae7ca713c900d90d09ce0903c79ddd7dd9e|model\u003dminecraft:player_head",
+                  "chest": "minecraft:leather_chestplate|model\u003dminecraft:leather_chestplate|dye\u003dDyedItemColor[rgb\u003d921622]",
+                  "mainhand": "minecraft:iron_sword|model\u003dminecraft:iron_sword"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Blaze",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": " blaze",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "LABEL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:blaze",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.01,
+              "yOffset": -2.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Wither Skeleton",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:wither_skeleton",
+                "name": "",
+                "equipment": {
+                  "mainhand": "minecraft:stone_sword|model\u003dminecraft:stone_sword"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Matcho",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:player",
+                "name": "matcho",
+                "equipment": {
+                  "mainhand": "minecraft:paper|model\u003dhypixel_skyblock:item/uncategorized/match_sticks"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Smoldering Blaze",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": " smoldering blaze",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "LABEL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:blaze",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": -2.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Millennia-aged Blaze",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": " millennia-aged blaze",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "LABEL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:blaze",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": -2.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Hellwisp",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:ghast",
+                "name": "dinnerbone",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:ghast",
+                "name": "dinnerbone",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 4.0,
+              "yOffset": -0.1
+            },
+            {
+              "signature": {
+                "type": "minecraft:ghast",
+                "name": "dinnerbone",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 2.83,
+              "yOffset": -0.05
+            },
+            {
+              "signature": {
+                "type": "minecraft:ghast",
+                "name": "dinnerbone",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 2.83,
+              "yOffset": 0.05
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Vanquisher",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": " vanquisher",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "LABEL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:wither",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": -3.7
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

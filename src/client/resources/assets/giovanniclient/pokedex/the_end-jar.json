@@ -1,0 +1,289 @@
+{
+  "version": 1,
+  "island": "The End",
+  "entries": [
+    {
+      "name": "Enderman",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": " enderman",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "LABEL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:enderman",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.04,
+              "yOffset": -3.0
+            }
+          ]
+        },
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": " enderman",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "LABEL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:enderman",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.02,
+              "yOffset": -3.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Zealot Bruiser",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": " zealot bruiser",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "LABEL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:enderman",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": -3.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Voidling Fanatic",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": " voidling fanatic",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "LABEL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:enderman",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.03,
+              "yOffset": -3.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Voidling Extremist",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": " voidling extremist",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "LABEL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:enderman",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.02,
+              "yOffset": -3.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Obsidian Defender",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": " obsidian defender",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "LABEL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:wither_skeleton",
+                "name": "",
+                "equipment": {
+                  "chest": "minecraft:leather_chestplate|model\u003dminecraft:leather_chestplate|dye\u003dDyedItemColor[rgb\u003d0]",
+                  "head": "minecraft:obsidian|model\u003dminecraft:obsidian"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": -2.5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Zealot",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": " zealot",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "LABEL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:enderman",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.02,
+              "yOffset": -3.01
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Endermite",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": " endermite",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "LABEL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:endermite",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.11,
+              "yOffset": -0.4
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Seer",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": " seer",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "LABEL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:skeleton",
+                "name": "",
+                "equipment": {
+                  "head": "minecraft:player_head|skin\u003dd3d48224aff85357c3745951a4d85e924a12c2580dc3ad2854cbcf3c12aea4d7|model\u003dminecraft:player_head",
+                  "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots|dye\u003dDyedItemColor[rgb\u003d0]",
+                  "mainhand": "minecraft:bow|model\u003dminecraft:bow",
+                  "legs": "minecraft:leather_leggings|model\u003dminecraft:leather_leggings|dye\u003dDyedItemColor[rgb\u003d0]",
+                  "chest": "minecraft:leather_chestplate|model\u003dminecraft:leather_chestplate|dye\u003dDyedItemColor[rgb\u003d0]"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": -2.2
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -8,6 +8,7 @@ import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.player.Player;
@@ -16,7 +17,7 @@ import net.minecraft.world.item.ItemStack;
 import java.util.Map;
 import java.util.TreeMap;
 
-/** Extracts only identifying data: no UUIDs, entity IDs, health, pose or absolute positions. */
+/** Extracts stable identifying data from an entity. */
 final class EntityFingerprint {
     private EntityFingerprint() {}
 
@@ -32,7 +33,14 @@ final class EntityFingerprint {
     }
 
     static DexMatcher.Sample sample(Entity entity) {
-        return new DexMatcher.Sample(entity.getId(), entity.getUUID(), entity.getX(), entity.getY(), entity.getZ(), signature(entity));
+        return new DexMatcher.Sample(entity.getId(), entity.getUUID(), entity.getX(), entity.getY(), entity.getZ(),
+                signature(entity), baseMaxHealth(entity));
+    }
+
+    static Double baseMaxHealth(Entity entity) {
+        if (!(entity instanceof LivingEntity living) || entity instanceof ArmorStand) return null;
+        double value = living.getAttributeBaseValue(Attributes.MAX_HEALTH);
+        return Double.isFinite(value) && value > 0 ? value : null;
     }
 
     static DexProfile.Signature signature(Entity entity) {

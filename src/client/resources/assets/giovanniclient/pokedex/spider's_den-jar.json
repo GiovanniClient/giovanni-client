@@ -1,0 +1,322 @@
+{
+  "version": 1,
+  "island": "Spider\u0027s Den",
+  "entries": [
+    {
+      "name": "Broodmother",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": " broodmother",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "LABEL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:spider",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": -1.2
+            },
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "miniboss",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "LABEL",
+              "horizontalOffset": 0.01,
+              "yOffset": 0.3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Spider Jockey",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": " jockey skeleton",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "LABEL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:spider",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.05,
+              "yOffset": -2.25
+            },
+            {
+              "signature": {
+                "type": "minecraft:skeleton",
+                "name": "",
+                "equipment": {
+                  "mainhand": "minecraft:bow|model\u003dminecraft:bow"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.05,
+              "yOffset": -2.19
+            },
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": " spider jockey",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "LABEL",
+              "horizontalOffset": 0.03,
+              "yOffset": -1.05
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Voracious Spider",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": " voracious spider",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "LABEL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:spider",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": -1.2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Dasher Spider",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": " dasher spider",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "LABEL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:spider",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": -1.2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Arachne\u0027s Keeper",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": " arachne\u0027s keeper",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "LABEL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:cave_spider",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.01,
+              "yOffset": -0.8
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Weaver Spider",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": " weaver spider",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "LABEL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:spider",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.03,
+              "yOffset": -1.2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Splitter Spider",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": " splitter spider",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "LABEL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:spider",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": -1.2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Flint Skeleton",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": " flint skeleton",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "LABEL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:skeleton",
+                "name": "",
+                "equipment": {
+                  "mainhand": "minecraft:bow|model\u003dminecraft:bow"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": -2.2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Silverfish",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": " silverfish",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "LABEL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:silverfish",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.04,
+              "yOffset": -0.4
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

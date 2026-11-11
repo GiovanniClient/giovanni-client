@@ -1,5 +1,6 @@
 package rocket.giovanniclient.client.features.pokedex;
 
+import io.github.notenoughupdates.moulconfig.observer.Property;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -9,25 +10,33 @@ import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.phys.EntityHitResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rocket.giovanniclient.client.GiovanniClientClient;
+import rocket.giovanniclient.client.config.ConfigManager;
 import rocket.giovanniclient.client.features.AbstractFeature;
 import rocket.giovanniclient.client.util.PlayerLocator;
+import rocket.giovanniclient.client.util.Utils;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
-/** Island-scoped catalog plus the shared index of currently recognised mob assemblies. */
+/** Scope-aware catalogs and the shared index of currently recognised mob assemblies. */
 public final class MobPokedex extends AbstractFeature {
     private static final Logger LOGGER = LoggerFactory.getLogger("GiovanniClient/Pokedex");
     private static final DexStore STORE = new DexStore(FabricLoader.getInstance().getConfigDir().resolve("giovanniclient/pokedex"));
-    private static DexStore.Island active;
-    private static String loadError;
+    private static final Map<DexCatalog, Catalog> catalogs = new EnumMap<>(DexCatalog.class);
+    private static String context;
+    private static List<DexStore.Entry> activeEntries = List.of();
+    private static Set<String> activeNames = Set.of();
     private static ClientLevel world;
     private static List<Mob> mobs = List.of();
     private static int ticks;
@@ -36,10 +45,53 @@ public final class MobPokedex extends AbstractFeature {
 
     public record Part(Entity entity, DexProfile.Role role) {}
     public record Mob(String name, List<Part> parts) {}
+    public enum Removal { NOT_FOUND, REMOVED, BUNDLED_ONLY, REMOVED_BUNDLED_REMAINS }
+
+    private record Catalog(DexStore.Island local, DexStore.Island bundled, List<DexStore.Entry> entries, String error) {
+        private Catalog(DexStore.Island local, DexStore.Island bundled, String error) {
+            this(local, bundled, DexStore.merge(local.island(), local, bundled).entries(), error);
+        }
+    }
+
+    public static void observeDevSetting(Property<Boolean> setting) {
+        setting.addObserver((oldValue, newValue) -> {
+            boolean enabled = Boolean.TRUE.equals(newValue);
+            if (enabled == Boolean.TRUE.equals(oldValue)) return;
+
+            int imported = 0;
+            if (enabled) {
+                try {
+                    Path bundledDirectory = FabricLoader.getInstance().getModContainer(GiovanniClientClient.MOD_ID)
+                            .flatMap(mod -> mod.findPath(DexStore.BUNDLED_DIRECTORY))
+                            .orElseThrow(() -> new IOException("Bundled Pokédex directory not found."));
+                    imported = STORE.importBundled(bundledDirectory);
+                } catch (IOException exception) {
+                    setting.set(false);
+                    LOGGER.error("Could not import the Pokédex for Dex Dev", exception);
+                    Utils.chat("Dex Dev could not be enabled: " + exception.getMessage());
+                    return;
+                }
+            }
+
+            Minecraft client = Minecraft.getInstance();
+            syncContext(client);
+            loadCatalogs();
+            TRACKER.clear();
+            refresh(client);
+            ConfigManager.saveConfig();
+            Utils.chat(enabled ? "Dex Dev: imported " + imported + " catalogs. Only -user.json files are active."
+                    : "Dex Dev disabled. Bundled and personal catalogs are active.");
+        });
+    }
+
+    private static boolean isDevMode() {
+        var debug = ConfigManager.getConfig().debugConfig;
+        return debug != null && debug.DEX_DEV != null && Boolean.TRUE.equals(debug.DEX_DEV.get());
+    }
 
     @Override
     public void onTick(Minecraft client) {
-        syncIsland(client);
+        syncContext(client);
         if (++ticks % 5 == 0) refresh(client);
     }
 
@@ -50,8 +102,10 @@ public final class MobPokedex extends AbstractFeature {
     public void onWorldUnload(Minecraft client) { reset(); }
 
     private static void reset() {
-        active = null;
-        loadError = null;
+        context = null;
+        catalogs.clear();
+        activeEntries = List.of();
+        activeNames = Set.of();
         world = null;
         mobs = List.of();
         TRACKER.clear();
@@ -59,113 +113,166 @@ public final class MobPokedex extends AbstractFeature {
         ticks = 0;
     }
 
-    private static void syncIsland(Minecraft client) {
+    private static void syncContext(Minecraft client) {
         if (world != client.level) {
             reset();
             world = client.level;
         }
-        String island = PlayerLocator.getPlayerArea();
-        if (client.level == null || client.player == null || island.equals("None") || island.isBlank()) {
-            active = null;
-            loadError = null;
-            mobs = List.of();
-            TRACKER.clear();
-            SCANS.clear();
-            return;
-        }
-        if (active != null && active.island().equals(island)) return;
+        String next = client.level == null || client.player == null ? null : PlayerLocator.getPokedexArea(client);
+        if (Objects.equals(context, next)) return;
+        context = next;
         mobs = List.of();
         TRACKER.clear();
         SCANS.clear();
-        loadError = null;
-        try {
-            active = STORE.load(island);
-        } catch (IOException exception) {
-            active = new DexStore.Island(1, island, List.of());
-            loadError = exception.getMessage();
-            LOGGER.error("Could not load Pokédex for {}", island, exception);
+        loadCatalogs();
+    }
+
+    private static void loadCatalogs() {
+        catalogs.clear();
+        for (DexCatalog catalog : DexCatalog.activeFor(context)) catalogs.put(catalog, loadCatalog(catalog.id(context)));
+        rebuildEntries();
+    }
+
+    private static Catalog loadCatalog(String id) {
+        DexStore.Island empty = new DexStore.Island(1, id, List.of());
+        DexStore.Island bundled = empty;
+        DexStore.Island local = empty;
+        String error = null;
+        if (!isDevMode()) {
+            try {
+                bundled = STORE.loadBundled(id);
+            } catch (IOException exception) {
+                LOGGER.error("Could not load bundled Pokédex for {}", id, exception);
+            }
         }
+        try {
+            local = STORE.load(id);
+        } catch (IOException exception) {
+            error = exception.getMessage();
+            LOGGER.error("Could not load local Pokédex for {}", id, exception);
+        }
+        return new Catalog(local, bundled, error);
+    }
+
+    private static void rebuildEntries() {
+        // EnumMap iterates in catalog priority order: current area, then shared groups.
+        var entries = catalogs.values().stream().flatMap(catalog -> catalog.entries().stream()).toList();
+        activeEntries = DexStore.mergeEntries(entries, List.of());
+        var names = new HashSet<String>();
+        for (DexStore.Entry entry : activeEntries) names.add(DexProfile.key(entry.name()));
+        activeNames = Set.copyOf(names);
     }
 
     public static String island() {
-        syncIsland(Minecraft.getInstance());
-        return active == null ? null : active.island();
+        syncContext(Minecraft.getInstance());
+        return context;
     }
 
     public static List<DexStore.Entry> entries() {
-        syncIsland(Minecraft.getInstance());
-        return active == null ? List.of() : active.entries();
+        syncContext(Minecraft.getInstance());
+        return activeEntries;
+    }
+
+    public static List<DexStore.Entry> entries(DexCatalog scope) {
+        Catalog catalog = catalog(scope);
+        return catalog == null ? List.of() : catalog.entries();
+    }
+
+    public static String catalogName(DexCatalog scope) {
+        if (scope == DexCatalog.CURRENT) return island();
+        return catalog(scope) == null ? null : scope.displayName();
+    }
+
+    private static Catalog catalog(DexCatalog scope) {
+        syncContext(Minecraft.getInstance());
+        return catalogs.get(scope);
     }
 
     public static boolean hasEntry(String name) {
-        return active != null && active.entries().stream().anyMatch(entry -> DexProfile.key(entry.name()).equals(DexProfile.key(name)));
+        return activeNames.contains(DexProfile.key(name));
     }
 
     public static List<Mob> mobs(String name) {
         return mobs.stream().filter(mob -> DexProfile.key(mob.name()).equals(DexProfile.key(name))).toList();
     }
 
-    public static Path file() {
-        return active == null ? null : STORE.path(active.island());
+    public static Path file(DexCatalog scope) {
+        Catalog catalog = catalog(scope);
+        return catalog == null ? null : STORE.path(catalog.local().island());
     }
 
-    public static String error() { return loadError; }
+    public static String error(DexCatalog scope) {
+        Catalog catalog = catalog(scope);
+        return catalog == null ? null : catalog.error();
+    }
 
-    public static void reload() throws IOException {
-        requireIsland();
-        DexStore.Island loaded = STORE.load(active.island());
-        active = loaded;
-        loadError = null;
+    public static void reload() {
+        requireContext();
+        loadCatalogs();
         TRACKER.clear();
         refresh(Minecraft.getInstance());
     }
 
-    public static boolean add(String name, DexScan.Capture capture) throws IOException {
-        requireWritable();
-        DexStore.Island updated = DexStore.withVariant(active, name, capture.profile());
-        return save(updated);
+    public static boolean add(String name, DexScan.Capture capture, DexCatalog scope) throws IOException {
+        return saveVariant(name, capture.profile(), scope, false);
     }
 
-    public static boolean addVariant(String name, DexScan.Capture capture) throws IOException {
-        requireWritable();
-        return save(DexStore.withExistingVariant(active, name, capture.profile()));
+    public static boolean addVariant(String name, DexScan.Capture capture, DexCatalog scope) throws IOException {
+        return saveVariant(name, capture.profile(), scope, true);
     }
 
-    private static boolean save(DexStore.Island updated) throws IOException {
-        if (updated == active) return false;
-        STORE.save(updated);
-        active = updated;
-        TRACKER.clear();
-        refresh(Minecraft.getInstance());
+    private static boolean saveVariant(String name, DexProfile profile, DexCatalog scope, boolean existingOnly) throws IOException {
+        Catalog target = requireWritable(scope);
+        DexStore.Entry existing = findEntry(target.entries(), name);
+        if (existing == null && existingOnly) {
+            throw new IllegalArgumentException("Mob not in this catalog: " + name + ". Register it with add or capture first.");
+        }
+        if (existing != null && existing.variants().stream().anyMatch(variant -> DexStore.sameVariant(variant, profile))) return false;
+        DexStore.Island updated = DexStore.withVariant(target.local(), existing == null ? name : existing.name(), profile);
+        save(target, updated, scope);
         return true;
     }
 
-    public static boolean remove(String name) throws IOException {
-        requireWritable();
-        List<DexStore.Entry> remaining = active.entries().stream()
+    public static Removal remove(String name, DexCatalog scope) throws IOException {
+        Catalog target = requireWritable(scope);
+        boolean bundled = findEntry(target.bundled().entries(), name) != null;
+        List<DexStore.Entry> remaining = target.local().entries().stream()
                 .filter(entry -> !DexProfile.key(entry.name()).equals(DexProfile.key(name))).toList();
-        if (remaining.size() == active.entries().size()) return false;
-        DexStore.Island updated = new DexStore.Island(1, active.island(), remaining);
+        if (remaining.size() == target.local().entries().size()) return bundled ? Removal.BUNDLED_ONLY : Removal.NOT_FOUND;
+        save(target, new DexStore.Island(1, target.local().island(), remaining), scope);
+        return bundled ? Removal.REMOVED_BUNDLED_REMAINS : Removal.REMOVED;
+    }
+
+    private static DexStore.Entry findEntry(List<DexStore.Entry> entries, String name) {
+        String key = DexProfile.key(name);
+        return entries.stream().filter(entry -> DexProfile.key(entry.name()).equals(key)).findFirst().orElse(null);
+    }
+
+    private static void save(Catalog target, DexStore.Island updated, DexCatalog scope) throws IOException {
         STORE.save(updated);
-        active = updated;
+        Catalog replacement = new Catalog(updated, target.bundled(), null);
+        catalogs.put(scope, replacement);
+        rebuildEntries();
         TRACKER.clear();
         refresh(Minecraft.getInstance());
-        return true;
     }
 
-    private static void requireIsland() {
-        syncIsland(Minecraft.getInstance());
-        if (active == null) throw new IllegalStateException("Island unknown. Wait for the SkyBlock TAB Area to appear.");
+    private static void requireContext() {
+        syncContext(Minecraft.getInstance());
+        if (context == null) throw new IllegalStateException("SkyBlock location unknown. Wait for the TAB Area or Catacombs scoreboard.");
     }
 
-    private static void requireWritable() {
-        requireIsland();
-        if (loadError != null) throw new IllegalStateException(loadError + ". Fix the file and use /gio dex reload before saving.");
+    private static Catalog requireWritable(DexCatalog scope) {
+        requireContext();
+        Catalog target = catalogs.get(scope);
+        if (target == null) throw new IllegalStateException(scope.displayName() + " is only available in a SkyBlock island context.");
+        if (target.error() != null) throw new IllegalStateException(target.error() + ". Fix the file and use /gio dex reload before saving.");
+        return target;
     }
 
     private static void refresh(Minecraft client) {
         mobs = List.of();
-        if (active == null || loadError != null || active.entries().isEmpty() || client.level == null) return;
+        if (activeEntries.isEmpty() || client.level == null) return;
         List<DexMatcher.Sample> samples = new ArrayList<>();
         Map<Integer, Entity> entities = new HashMap<>();
         for (Entity entity : client.level.entitiesForRendering()) {
@@ -173,7 +280,7 @@ public final class MobPokedex extends AbstractFeature {
             samples.add(EntityFingerprint.sample(entity));
             entities.put(entity.getId(), entity);
         }
-        mobs = TRACKER.resolve(active.entries(), samples).stream().map(match -> {
+        mobs = TRACKER.resolve(activeEntries, samples).stream().map(match -> {
             List<Part> parts = new ArrayList<>();
             for (int i = 0; i < match.parts().size(); i++) {
                 parts.add(new Part(entities.get(match.parts().get(i).id()), match.roles().get(i)));
@@ -242,7 +349,7 @@ public final class MobPokedex extends AbstractFeature {
     }
 
     public static DexScan scan(double radius) {
-        requireIsland();
+        requireContext();
         List<Entity> nearby = nearby(radius);
         Set<Integer> proposed;
         try {
@@ -250,20 +357,21 @@ public final class MobPokedex extends AbstractFeature {
         } catch (IllegalArgumentException | IllegalStateException exception) {
             proposed = Set.of();
         }
-        DexScan scan = new DexScan(active.island(), radius, nearby.stream().map(MobPokedex::snapshot).toList(), proposed);
+        DexScan scan = new DexScan(context, radius, nearby.stream().map(MobPokedex::snapshot).toList(), proposed);
         SCANS.remember(world, scan);
         return scan;
     }
 
     public static DexScan.Capture captureIds(String rawIds) {
-        requireIsland();
-        DexScan scan = SCANS.get(world, active.island());
+        requireContext();
+        DexScan scan = SCANS.get(world, context);
         if (scan == null) throw new IllegalStateException("No saved scan for this island and world. Run /gio dex scan [radius] first.");
         return scan.captureIds(rawIds);
     }
 
     private static DexScan.Part snapshot(Entity entity) {
-        return new DexScan.Part(entity.getId(), entity.getX(), entity.getY(), entity.getZ(), EntityFingerprint.signature(entity), EntityFingerprint.role(entity));
+        return new DexScan.Part(entity.getId(), entity.getX(), entity.getY(), entity.getZ(), EntityFingerprint.signature(entity),
+                EntityFingerprint.role(entity), EntityFingerprint.baseMaxHealth(entity));
     }
 
     private static boolean isBody(Entity entity) { return entity instanceof LivingEntity && !(entity instanceof ArmorStand); }

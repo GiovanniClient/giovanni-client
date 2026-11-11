@@ -1,0 +1,187 @@
+{
+  "version": 1,
+  "island": "Deep Caverns",
+  "entries": [
+    {
+      "name": "Sneaky Creeper",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:creeper",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Lapis Zombie",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:zombie",
+                "name": "",
+                "equipment": {
+                  "head": "minecraft:blue_stained_glass|model\u003dminecraft:blue_stained_glass",
+                  "chest": "minecraft:leather_chestplate|model\u003dminecraft:leather_chestplate|dye\u003dDyedItemColor[rgb\u003d255]",
+                  "legs": "minecraft:leather_leggings|model\u003dminecraft:leather_leggings|dye\u003dDyedItemColor[rgb\u003d255]",
+                  "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots|dye\u003dDyedItemColor[rgb\u003d255]"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Redsone Pigman",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:zombified_piglin",
+                "name": "",
+                "equipment": {
+                  "mainhand": "minecraft:golden_sword|model\u003dhypixel_skyblock:item/uncategorized/pigman_sword"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Emerald Slime",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:slime",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Miner Zombie",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:zombie",
+                "name": "",
+                "equipment": {
+                  "feet": "minecraft:diamond_boots|model\u003dminecraft:diamond_boots",
+                  "head": "minecraft:diamond_helmet|model\u003dminecraft:diamond_helmet",
+                  "chest": "minecraft:diamond_chestplate|model\u003dminecraft:diamond_chestplate",
+                  "legs": "minecraft:diamond_leggings|model\u003dminecraft:diamond_leggings",
+                  "mainhand": "minecraft:diamond_sword|model\u003dminecraft:diamond_sword"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        },
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:zombie",
+                "name": "",
+                "equipment": {
+                  "feet": "minecraft:diamond_boots|model\u003dminecraft:diamond_boots",
+                  "head": "minecraft:diamond_block|model\u003dminecraft:diamond_block",
+                  "chest": "minecraft:diamond_chestplate|model\u003dminecraft:diamond_chestplate",
+                  "legs": "minecraft:diamond_leggings|model\u003dminecraft:diamond_leggings",
+                  "mainhand": "minecraft:diamond_sword|model\u003dminecraft:diamond_sword"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Miner Skeleton",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:skeleton",
+                "name": "",
+                "equipment": {
+                  "feet": "minecraft:diamond_boots|model\u003dminecraft:diamond_boots",
+                  "head": "minecraft:diamond_helmet|model\u003dminecraft:diamond_helmet",
+                  "chest": "minecraft:diamond_chestplate|model\u003dminecraft:diamond_chestplate",
+                  "legs": "minecraft:diamond_leggings|model\u003dminecraft:diamond_leggings",
+                  "mainhand": "minecraft:bow|model\u003dminecraft:bow"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        },
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:skeleton",
+                "name": "",
+                "equipment": {
+                  "feet": "minecraft:diamond_boots|model\u003dminecraft:diamond_boots",
+                  "head": "minecraft:diamond_block|model\u003dminecraft:diamond_block",
+                  "chest": "minecraft:diamond_chestplate|model\u003dminecraft:diamond_chestplate",
+                  "legs": "minecraft:diamond_leggings|model\u003dminecraft:diamond_leggings",
+                  "mainhand": "minecraft:bow|model\u003dminecraft:bow"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

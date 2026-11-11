@@ -10,7 +10,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-/** Persistent name/colour selections, with an independent limit for each TAB Area. */
+/** Persistent name/colour selections, with an independent limit for each SkyBlock area or dungeon. */
 public final class IslandGlowLists {
     public static final int MAX_NAMES = 10;
     private static final int[] COLORS = {
@@ -83,7 +83,7 @@ public final class IslandGlowLists {
 
     private static String requireIsland(String island) {
         String key = islandKey(island);
-        if (key == null) throw new IllegalStateException("Island unknown. Wait for the SkyBlock TAB Area to appear.");
+        if (key == null) throw new IllegalStateException("SkyBlock location unknown. Wait for the TAB Area or Catacombs scoreboard.");
         return key;
     }
 }

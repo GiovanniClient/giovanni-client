@@ -45,16 +45,27 @@ public record DexProfile(List<Part> parts) {
         }
     }
 
-    public record Signature(String type, String name, Map<String, String> equipment, String appearance) {
+    public record Signature(String type, String name, Map<String, String> equipment, String appearance, Double baseMaxHealth) {
         public Signature {
             if (type == null || type.isBlank()) throw new IllegalArgumentException("Missing entity type.");
             name = Objects.requireNonNull(name);
             equipment = Map.copyOf(equipment);
             appearance = Objects.requireNonNull(appearance);
+            if (baseMaxHealth != null && (!Double.isFinite(baseMaxHealth) || baseMaxHealth <= 0)) {
+                throw new IllegalArgumentException("Invalid base maximum health.");
+            }
+        }
+
+        public Signature(String type, String name, Map<String, String> equipment, String appearance) {
+            this(type, name, equipment, appearance, null);
+        }
+
+        Signature withBaseMaxHealth(Double health) {
+            return new Signature(type, name, equipment, appearance, health);
         }
 
         public boolean distinctive() {
-            return !name.isBlank() || !equipment.isEmpty() || !appearance.isBlank();
+            return !name.isBlank() || !equipment.isEmpty() || !appearance.isBlank() || baseMaxHealth != null;
         }
     }
 

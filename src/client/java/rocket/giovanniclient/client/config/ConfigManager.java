@@ -10,6 +10,7 @@ import io.github.notenoughupdates.moulconfig.processor.BuiltinMoulConfigGuis;
 import io.github.notenoughupdates.moulconfig.processor.ConfigProcessorDriver;
 import io.github.notenoughupdates.moulconfig.processor.MoulConfigProcessor;
 import rocket.giovanniclient.giovanniclient.config.ClientConfigState;
+import rocket.giovanniclient.client.features.pokedex.MobPokedex;
 import rocket.giovanniclient.client.features.render.BlockReplacements;
 
 import java.io.IOException;
@@ -203,6 +204,10 @@ public class ConfigManager {
 
         if (config.debugConfig != null && config.debugConfig.YGGDRASIL != null) {
             config.debugConfig.YGGDRASIL.addObserver((oldValue, newValue) -> syncClientConfigState());
+        }
+
+        if (config.debugConfig != null && config.debugConfig.DEX_DEV != null) {
+            MobPokedex.observeDevSetting(config.debugConfig.DEX_DEV);
         }
 
         if (config.rc != null && config.rc.kuudraAccordion != null) {
