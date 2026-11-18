@@ -21,7 +21,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -38,14 +37,16 @@ public final class MobPokedex extends AbstractFeature {
     private static List<DexStore.Entry> activeEntries = List.of();
     private static Set<String> activeNames = Set.of();
     private static ClientLevel world;
-    private static List<Mob> mobs = List.of();
-    private static int ticks;
-    private static final DexTracker TRACKER = new DexTracker();
+    private static final DexRecognition RECOGNITION = new DexRecognition();
     private static final DexScan.Cache SCANS = new DexScan.Cache();
 
     public record Part(Entity entity, DexProfile.Role role) {}
     public record Mob(String name, List<Part> parts) {}
     public enum Removal { NOT_FOUND, REMOVED, BUNDLED_ONLY, REMOVED_BUNDLED_REMAINS }
+
+    public MobPokedex() {
+        RECOGNITION.registerEntityEvents();
+    }
 
     private record Catalog(DexStore.Island local, DexStore.Island bundled, List<DexStore.Entry> entries, String error) {
         private Catalog(DexStore.Island local, DexStore.Island bundled, String error) {
@@ -76,8 +77,6 @@ public final class MobPokedex extends AbstractFeature {
             Minecraft client = Minecraft.getInstance();
             syncContext(client);
             loadCatalogs();
-            TRACKER.clear();
-            refresh(client);
             ConfigManager.saveConfig();
             Utils.chat(enabled ? "Dex Dev: imported " + imported + " catalogs. Only -user.json files are active."
                     : "Dex Dev disabled. Bundled and personal catalogs are active.");
@@ -92,37 +91,31 @@ public final class MobPokedex extends AbstractFeature {
     @Override
     public void onTick(Minecraft client) {
         syncContext(client);
-        if (++ticks % 5 == 0) refresh(client);
+        RECOGNITION.tick();
     }
 
     @Override
-    public void onWorldLoad(Minecraft client) { reset(); }
+    public void onWorldLoad(Minecraft client) { reset(client.level); }
 
     @Override
-    public void onWorldUnload(Minecraft client) { reset(); }
+    public void onWorldUnload(Minecraft client) { reset(null); }
 
-    private static void reset() {
+    private static void reset(ClientLevel level) {
         context = null;
         catalogs.clear();
         activeEntries = List.of();
         activeNames = Set.of();
-        world = null;
-        mobs = List.of();
-        TRACKER.clear();
+        world = level;
+        RECOGNITION.worldChanged(level);
+        RECOGNITION.setEntries(List.of());
         SCANS.clear();
-        ticks = 0;
     }
 
     private static void syncContext(Minecraft client) {
-        if (world != client.level) {
-            reset();
-            world = client.level;
-        }
+        if (world != client.level) reset(client.level);
         String next = client.level == null || client.player == null ? null : PlayerLocator.getPokedexArea(client);
         if (Objects.equals(context, next)) return;
         context = next;
-        mobs = List.of();
-        TRACKER.clear();
         SCANS.clear();
         loadCatalogs();
     }
@@ -161,6 +154,7 @@ public final class MobPokedex extends AbstractFeature {
         var names = new HashSet<String>();
         for (DexStore.Entry entry : activeEntries) names.add(DexProfile.key(entry.name()));
         activeNames = Set.copyOf(names);
+        RECOGNITION.setEntries(activeEntries);
     }
 
     public static String island() {
@@ -193,7 +187,7 @@ public final class MobPokedex extends AbstractFeature {
     }
 
     public static List<Mob> mobs(String name) {
-        return mobs.stream().filter(mob -> DexProfile.key(mob.name()).equals(DexProfile.key(name))).toList();
+        return RECOGNITION.mobs(name, Minecraft.getInstance().level);
     }
 
     public static Path file(DexCatalog scope) {
@@ -209,8 +203,6 @@ public final class MobPokedex extends AbstractFeature {
     public static void reload() {
         requireContext();
         loadCatalogs();
-        TRACKER.clear();
-        refresh(Minecraft.getInstance());
     }
 
     public static boolean add(String name, DexScan.Capture capture, DexCatalog scope) throws IOException {
@@ -253,8 +245,6 @@ public final class MobPokedex extends AbstractFeature {
         Catalog replacement = new Catalog(updated, target.bundled(), null);
         catalogs.put(scope, replacement);
         rebuildEntries();
-        TRACKER.clear();
-        refresh(Minecraft.getInstance());
     }
 
     private static void requireContext() {
@@ -268,25 +258,6 @@ public final class MobPokedex extends AbstractFeature {
         if (target == null) throw new IllegalStateException(scope.displayName() + " is only available in a SkyBlock island context.");
         if (target.error() != null) throw new IllegalStateException(target.error() + ". Fix the file and use /gio dex reload before saving.");
         return target;
-    }
-
-    private static void refresh(Minecraft client) {
-        mobs = List.of();
-        if (activeEntries.isEmpty() || client.level == null) return;
-        List<DexMatcher.Sample> samples = new ArrayList<>();
-        Map<Integer, Entity> entities = new HashMap<>();
-        for (Entity entity : client.level.entitiesForRendering()) {
-            if (!EntityFingerprint.eligible(entity)) continue;
-            samples.add(EntityFingerprint.sample(entity));
-            entities.put(entity.getId(), entity);
-        }
-        mobs = TRACKER.resolve(activeEntries, samples).stream().map(match -> {
-            List<Part> parts = new ArrayList<>();
-            for (int i = 0; i < match.parts().size(); i++) {
-                parts.add(new Part(entities.get(match.parts().get(i).id()), match.roles().get(i)));
-            }
-            return new Mob(match.name(), List.copyOf(parts));
-        }).toList();
     }
 
     public static List<Entity> nearby() {
@@ -371,7 +342,7 @@ public final class MobPokedex extends AbstractFeature {
 
     private static DexScan.Part snapshot(Entity entity) {
         return new DexScan.Part(entity.getId(), entity.getX(), entity.getY(), entity.getZ(), EntityFingerprint.signature(entity),
-                EntityFingerprint.role(entity), EntityFingerprint.baseMaxHealth(entity));
+                EntityFingerprint.role(entity), EntityFingerprint.baseMaxHealth(entity), EntityFingerprint.size(entity));
     }
 
     private static boolean isBody(Entity entity) { return entity instanceof LivingEntity && !(entity instanceof ArmorStand); }

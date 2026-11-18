@@ -19,7 +19,8 @@ public record DexScan(String island, double radius, List<Part> entities, Set<Int
         proposedIds = Set.copyOf(proposedIds);
     }
 
-    public record Part(int id, double x, double y, double z, DexProfile.Signature signature, DexProfile.Role role, Double baseMaxHealth) {
+    public record Part(int id, double x, double y, double z, DexProfile.Signature signature, DexProfile.Role role,
+                       Double baseMaxHealth, DexProfile.Size size) {
         public Part {
             Objects.requireNonNull(signature);
             Objects.requireNonNull(role);
@@ -35,28 +36,38 @@ public record DexScan(String island, double radius, List<Part> entities, Set<Int
 
     public Capture captureIds(String rawIds) {
         var selected = new LinkedHashMap<Integer, Part>();
-        String[] tokens = rawIds.trim().split("[\\s,]+");
-        boolean includeHealth = tokens.length > 0 && tokens[tokens.length - 1].equals("--health");
-        int idCount = tokens.length - (includeHealth ? 1 : 0);
-        for (int i = 0; i < idCount; i++) {
+        boolean includeHealth = false;
+        boolean includeSize = false;
+        for (String token : rawIds.trim().split("[\\s,]+")) {
+            if (token.equals("--health")) {
+                includeHealth = true;
+                continue;
+            }
+            if (token.equals("--size")) {
+                includeSize = true;
+                continue;
+            }
             int id;
-            try { id = Integer.parseInt(tokens[i]); }
+            try { id = Integer.parseInt(token); }
             catch (NumberFormatException ignored) { throw new IllegalArgumentException("Use IDs from the latest /gio dex scan, separated by spaces."); }
             Part part = entities.stream().filter(candidate -> candidate.id() == id).findFirst()
                     .orElseThrow(() -> new IllegalArgumentException("ID " + id + " was not found in the latest scan. Run /gio dex scan [radius] to refresh it."));
             selected.putIfAbsent(id, part);
         }
-        return capture(new ArrayList<>(selected.values()), includeHealth);
+        return capture(new ArrayList<>(selected.values()), includeHealth, includeSize);
     }
 
     public static Capture capture(List<Part> entities) {
-        return capture(entities, false);
+        return capture(entities, false, false);
     }
 
-    private static Capture capture(List<Part> entities, boolean includeHealth) {
+    private static Capture capture(List<Part> entities, boolean includeHealth, boolean includeSize) {
         if (entities.isEmpty()) throw new IllegalArgumentException("Select at least one entity to capture.");
         if (includeHealth && entities.stream().noneMatch(part -> part.baseMaxHealth() != null)) {
             throw new IllegalArgumentException("Select a mob body with base maximum health to use --health.");
+        }
+        if (includeSize && entities.stream().noneMatch(part -> part.size() != null)) {
+            throw new IllegalArgumentException("Select a living mob part with a size shown in the scan to use --size.");
         }
         Part anchor = entities.stream().filter(part -> part.signature().distinctive())
                 .max(Comparator.comparingInt(part -> part.signature().name().isEmpty() ? 1 : 2))
@@ -65,8 +76,9 @@ public record DexScan(String island, double radius, List<Part> entities, Set<Int
         ordered.add(anchor);
         entities.stream().filter(part -> part != anchor).sorted(Comparator.comparingInt(Part::id)).forEach(ordered::add);
         List<DexProfile.Part> parts = ordered.stream().map(part -> {
-            var signature = includeHealth && part.baseMaxHealth() != null
-                    ? part.signature().withBaseMaxHealth(part.baseMaxHealth()) : part.signature();
+            var signature = part.signature();
+            if (includeHealth && part.baseMaxHealth() != null) signature = signature.withBaseMaxHealth(part.baseMaxHealth());
+            if (includeSize && part.size() != null) signature = signature.withSize(part.size());
             return new DexProfile.Part(signature, part.role(), round(Math.hypot(part.x() - anchor.x(), part.z() - anchor.z())),
                     round(part.y() - anchor.y()));
         }).toList();

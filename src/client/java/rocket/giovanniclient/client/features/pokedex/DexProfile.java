@@ -45,7 +45,17 @@ public record DexProfile(List<Part> parts) {
         }
     }
 
-    public record Signature(String type, String name, Map<String, String> equipment, String appearance, Double baseMaxHealth) {
+    /** Standing hitbox dimensions in blocks. */
+    public record Size(double width, double height) {
+        public Size {
+            if (!Double.isFinite(width) || !Double.isFinite(height) || width <= 0 || height <= 0) {
+                throw new IllegalArgumentException("Invalid entity dimensions.");
+            }
+        }
+    }
+
+    public record Signature(String type, String name, Map<String, String> equipment, String appearance,
+                            Double baseMaxHealth, Size size) {
         public Signature {
             if (type == null || type.isBlank()) throw new IllegalArgumentException("Missing entity type.");
             name = Objects.requireNonNull(name);
@@ -57,15 +67,19 @@ public record DexProfile(List<Part> parts) {
         }
 
         public Signature(String type, String name, Map<String, String> equipment, String appearance) {
-            this(type, name, equipment, appearance, null);
+            this(type, name, equipment, appearance, null, null);
         }
 
         Signature withBaseMaxHealth(Double health) {
-            return new Signature(type, name, equipment, appearance, health);
+            return new Signature(type, name, equipment, appearance, health, size);
+        }
+
+        Signature withSize(Size size) {
+            return new Signature(type, name, equipment, appearance, baseMaxHealth, size);
         }
 
         public boolean distinctive() {
-            return !name.isBlank() || !equipment.isEmpty() || !appearance.isBlank() || baseMaxHealth != null;
+            return !name.isBlank() || !equipment.isEmpty() || !appearance.isBlank() || baseMaxHealth != null || size != null;
         }
     }
 

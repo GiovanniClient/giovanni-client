@@ -8,6 +8,7 @@ import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.item.FallingBlockEntity;
@@ -21,26 +22,43 @@ import java.util.TreeMap;
 final class EntityFingerprint {
     private EntityFingerprint() {}
 
+    static boolean supports(Entity entity) {
+        return entity instanceof LivingEntity || entity instanceof Display || entity instanceof FallingBlockEntity;
+    }
+
     static boolean eligible(Entity entity) {
-        if (!entity.isAlive()) return false;
+        if (!supports(entity) || !entity.isAlive()) return false;
         if (entity instanceof Player player) {
             Minecraft client = Minecraft.getInstance();
             // Hypixel's fake players generally have v2/v3 UUIDs. Never learn real players.
             return player != client.player && player.getUUID().version() != 4
                     && (client.getConnection() == null || client.getConnection().getPlayerInfo(player.getUUID()) == null);
         }
-        return entity instanceof LivingEntity || entity instanceof Display || entity instanceof FallingBlockEntity;
+        return true;
     }
 
     static DexMatcher.Sample sample(Entity entity) {
         return new DexMatcher.Sample(entity.getId(), entity.getUUID(), entity.getX(), entity.getY(), entity.getZ(),
-                signature(entity), baseMaxHealth(entity));
+                signature(entity), baseMaxHealth(entity), size(entity));
     }
 
     static Double baseMaxHealth(Entity entity) {
         if (!(entity instanceof LivingEntity living) || entity instanceof ArmorStand) return null;
         double value = living.getAttributeBaseValue(Attributes.MAX_HEALTH);
         return Double.isFinite(value) && value > 0 ? value : null;
+    }
+
+    static DexProfile.Size size(Entity entity) {
+        if (!(entity instanceof LivingEntity living)) return null;
+        // Standing dimensions include scale and age without changing with the current pose.
+        var dimensions = living.getDimensions(Pose.STANDING);
+        double width = roundDimension(dimensions.width());
+        double height = roundDimension(dimensions.height());
+        return width > 0 && height > 0 ? new DexProfile.Size(width, height) : null;
+    }
+
+    private static double roundDimension(float value) {
+        return Float.isFinite(value) ? Math.round(value * 1000.0) / 1000.0 : 0;
     }
 
     static DexProfile.Signature signature(Entity entity) {

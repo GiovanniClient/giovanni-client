@@ -4,6 +4,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.minecraft.client.Minecraft;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
 import rocket.giovanniclient.client.features.pokedex.DexCatalog;
@@ -11,10 +12,13 @@ import rocket.giovanniclient.client.features.pokedex.DexProfile;
 import rocket.giovanniclient.client.features.pokedex.DexScan;
 import rocket.giovanniclient.client.features.pokedex.DexStore;
 import rocket.giovanniclient.client.features.pokedex.MobPokedex;
+import rocket.giovanniclient.client.features.render.GlowOverrideManager;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -23,6 +27,8 @@ import static com.mojang.brigadier.arguments.DoubleArgumentType.getDouble;
 import static com.mojang.brigadier.arguments.StringArgumentType.*;
 
 final class PokedexCommands {
+    private static final String CAPTURE_OPTIONS = " [--health] [--size]";
+
     private PokedexCommands() {}
 
     static LiteralArgumentBuilder<FabricClientCommandSource> create(String alias) {
@@ -142,8 +148,23 @@ final class PokedexCommands {
             for (var part : entry.variants().get(i).parts()) {
                 feedback(context, "§f • " + part.role() + " " + part.signature().type()
                         + " \"" + part.signature().name() + "\" " + part.signature().equipment()
-                        + " " + part.signature().appearance() + maxHealthText(part.signature().baseMaxHealth()));
+                        + " " + part.signature().appearance() + discriminants(part.signature().baseMaxHealth(), part.signature().size()));
             }
+        }
+        Minecraft client = Minecraft.getInstance();
+        if (client.player != null) {
+            var player = client.player;
+            var mobs = MobPokedex.mobs(entry.name());
+            feedback(context, "§7Live matches: " + mobs.size() + (mobs.size() > 12 ? " (12 nearest shown)" : ""));
+            mobs.stream().map(mob -> mob.parts().stream()
+                            .filter(part -> part.role() != DexProfile.Role.LABEL).findFirst().orElse(mob.parts().getFirst()).entity())
+                    .sorted(Comparator.comparingDouble(player::distanceToSqr)).limit(12).forEach(entity -> {
+                        double distance = Math.sqrt(player.distanceToSqr(entity));
+                        feedback(context, String.format(Locale.ROOT,
+                                "§7 • #%d at %.1f %.1f %.1f (%.1f blocks), Giovanni glow: %s, Minecraft glow: %s",
+                                entity.getId(), entity.getX(), entity.getY(), entity.getZ(), distance,
+                                GlowOverrideManager.has(entity), client.shouldEntityAppearGlowing(entity)));
+                    });
         }
         return 1;
     }
@@ -175,8 +196,9 @@ final class PokedexCommands {
         feedback(context, "§ePokédex — /gio dex or /gio pokedex");
         feedback(context, "§e/gio dex scan [radius] §7— save loaded parts within the radius (default 7, maximum 128); * marks the proposed capture.");
         feedback(context, "§e/gio dex add <name> §7— automatically capture the targeted or nearby mob.");
-        feedback(context, "§e/gio dex capture \"name\" <IDs...> [--health] §7— capture selected scan IDs. --health matches the body's base maximum health.");
-        feedback(context, "§e/gio dex variant \"name\" [IDs... [--health]] §7— add a variant. Omit IDs for automatic selection.");
+        feedback(context, "§e/gio dex capture \"name\" <IDs...>" + CAPTURE_OPTIONS + " §7— capture selected scan IDs.");
+        feedback(context, "§e/gio dex variant \"name\" [IDs..." + CAPTURE_OPTIONS + "] §7— add a variant. Omit IDs for automatic selection.");
+        feedback(context, "§7--health matches base maximum health. --size matches standing hitbox width and height.");
         feedback(context, "§e/gio dex list §7— list active mobs for the current island or Catacombs, including any shared catalogs.");
         feedback(context, "§e/gio dex info <name> §7— show saved signatures and variants.");
         feedback(context, "§e/gio dex remove <name> §7— remove personal captures from the current island or Catacombs catalog.");
@@ -191,8 +213,9 @@ final class PokedexCommands {
         String prefix = "§e" + prefix(target);
         feedback(context, "§ePokédex — shared " + target.displayName() + " catalog");
         feedback(context, prefix + " add <name> §7— capture a nearby mob for this catalog.");
-        feedback(context, prefix + " capture \"name\" <IDs...> [--health] §7— use parts from the latest scan. --health matches base maximum health.");
-        feedback(context, prefix + " variant \"name\" [IDs... [--health]] §7— add a variant to an entry in this catalog.");
+        feedback(context, prefix + " capture \"name\" <IDs...>" + CAPTURE_OPTIONS + " §7— use parts from the latest scan.");
+        feedback(context, prefix + " variant \"name\" [IDs..." + CAPTURE_OPTIONS + "] §7— add a variant to an entry in this catalog.");
+        feedback(context, "§7--health matches base maximum health. --size matches standing hitbox width and height.");
         feedback(context, prefix + " list §7— list the shared catalog.");
         feedback(context, prefix + " info <name> §7— inspect an entry in this catalog.");
         feedback(context, prefix + " remove <name> §7— remove personal captures from this catalog.");
@@ -202,7 +225,8 @@ final class PokedexCommands {
     private static int captureUsage(CommandContext<FabricClientCommandSource> context, DexCatalog target) {
         String prefix = prefix(target);
         String sample = exampleName(target);
-        usage(context, prefix + " capture \"name\" <IDs from scan...> [--health] — example: " + prefix + " capture " + escapeIfRequired(sample) + " 171357");
+        usage(context, prefix + " capture \"name\" <IDs from scan...>" + CAPTURE_OPTIONS
+                + " — example: " + prefix + " capture " + escapeIfRequired(sample) + " 171357");
         feedback(context, "§7For automatic selection use §e" + prefix + " add " + sample + "§7. capture requires IDs.");
         return 0;
     }
@@ -214,9 +238,9 @@ final class PokedexCommands {
                     + " (* = proposed capture):");
             for (DexScan.Part part : scan.entities()) {
                 feedback(context, (scan.proposedIds().contains(part.id()) ? "§a* " : "§7  ") + DexScan.describe(part)
-                        + maxHealthText(part.baseMaxHealth()));
+                        + discriminants(part.baseMaxHealth(), part.size()));
             }
-            feedback(context, "§7Capture from the saved snapshot: /gio dex capture \"Mob name\" <IDs...> [--health]");
+            feedback(context, "§7Capture from the saved snapshot: /gio dex capture \"Mob name\" <IDs...>" + CAPTURE_OPTIONS);
             if (activeCatalogs().size() > 1) {
                 feedback(context, "§7For a shared mob: /gio dex " + sharedCommandChoices() + " capture \"Mob name\" 123 124");
             }
@@ -233,7 +257,7 @@ final class PokedexCommands {
     private static int variantUsage(CommandContext<FabricClientCommandSource> context, DexCatalog target) {
         String prefix = prefix(target);
         String sample = escapeIfRequired(exampleName(target));
-        usage(context, prefix + " variant \"existing name\" [IDs from scan... [--health]]");
+        usage(context, prefix + " variant \"existing name\" [IDs from scan..." + CAPTURE_OPTIONS + "]");
         feedback(context, "§7Examples: §e" + prefix + " variant " + sample + " §7or §e" + prefix + " variant " + sample + " 123 124§7. Use quotes for names with spaces.");
         return 0;
     }
@@ -248,8 +272,9 @@ final class PokedexCommands {
                 + ": " + capture.entities().size() + " parts, " + variants + " total variants."
                 : "§eThis variant is already registered in " + catalog + ".");
         for (int i = 0; i < capture.entities().size(); i++) {
+            DexProfile.Signature signature = capture.profile().parts().get(i).signature();
             feedback(context, "§7 • " + DexScan.describe(capture.entities().get(i))
-                    + maxHealthText(capture.profile().parts().get(i).signature().baseMaxHealth()));
+                    + discriminants(signature.baseMaxHealth(), signature.size()));
         }
         if (capture.profile().typeOnly()) {
             feedback(context, "§eType-only signature: matches all identical " + capture.profile().parts().getFirst().signature().type()
@@ -259,8 +284,9 @@ final class PokedexCommands {
         return 1;
     }
 
-    private static String maxHealthText(Double health) {
-        return health == null ? "" : " (base max HP " + health + ")";
+    private static String discriminants(Double health, DexProfile.Size size) {
+        return (health == null ? "" : " (base max HP " + health + ")")
+                + (size == null ? "" : " (size " + size.width() + " × " + size.height() + " blocks)");
     }
 
     private static String requireCatalog(DexCatalog target) {
