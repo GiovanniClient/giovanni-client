@@ -12,6 +12,7 @@
     "ChatMessageMixin",
     "ClientDisconnectMixin",
     "ClientPlayNetworkHandlerMixin",
+    "FishingMobSoundsMixin",
     "LocalCommandPacketGuardMixin",
     "PlayerListHudAccessor",
     "keybinds.KeyMappingPrivacyMixin",

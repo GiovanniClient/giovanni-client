@@ -22,7 +22,12 @@ public class MiscConfig {
     public boolean CHAT_HISTORY_PREFIX = false;
 
     @Expose
-    @ConfigOption(name = "AutoReconnect", desc = "Reconnect after 5 seconds.")
+    @ConfigOption(name = "AutoReconnect", desc = "Reconnect after 5 seconds")
     @ConfigEditorBoolean
     public boolean AUTO_RECONNECT = false;
+
+    @Expose
+    @ConfigOption(name = "Sea Creatures Shutup", desc = "Mute mob hurt and death sounds while holding a fishing rod")
+    @ConfigEditorBoolean
+    public boolean MUTE_FISHING_MOB_SOUNDS = false;
 }
