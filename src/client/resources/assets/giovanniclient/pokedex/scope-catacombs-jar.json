@@ -1,0 +1,1218 @@
+{
+  "version": 1,
+  "island": "scope:catacombs",
+  "entries": [
+    {
+      "name": "Crypt Lurker",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:zombie",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        },
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:zombie",
+                "name": "",
+                "equipment": {
+                  "mainhand": "minecraft:bone|model\u003dminecraft:bone"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        },
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:zombie",
+                "name": "",
+                "equipment": {},
+                "appearance": "",
+                "baseMaxHealth": 15180.000000000002
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Zombie Grunt",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:zombie",
+                "name": "",
+                "equipment": {
+                  "legs": "minecraft:leather_leggings|model\u003dminecraft:leather_leggings|dye\u003dDyedItemColor[rgb\u003d97585]",
+                  "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots|dye\u003dDyedItemColor[rgb\u003d10383363]",
+                  "head": "minecraft:leather_helmet|model\u003dminecraft:leather_helmet|dye\u003dDyedItemColor[rgb\u003d10383363]",
+                  "chest": "minecraft:leather_chestplate|model\u003dminecraft:leather_chestplate|dye\u003dDyedItemColor[rgb\u003d97585]"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        },
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:zombie",
+                "name": "",
+                "equipment": {
+                  "legs": "minecraft:leather_leggings|model\u003dminecraft:leather_leggings|dye\u003dDyedItemColor[rgb\u003d0]",
+                  "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots|dye\u003dDyedItemColor[rgb\u003d524288]",
+                  "head": "minecraft:leather_helmet|model\u003dminecraft:leather_helmet|dye\u003dDyedItemColor[rgb\u003d10383363]",
+                  "chest": "minecraft:leather_chestplate|model\u003dminecraft:leather_chestplate|dye\u003dDyedItemColor[rgb\u003d0]"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Tank Zombie",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:zombie",
+                "name": "",
+                "equipment": {
+                  "legs": "minecraft:leather_leggings|model\u003dminecraft:leather_leggings|dye\u003dDyedItemColor[rgb\u003d8553090]",
+                  "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots|dye\u003dDyedItemColor[rgb\u003d16777215]",
+                  "head": "minecraft:leather_helmet|model\u003dminecraft:leather_helmet|dye\u003dDyedItemColor[rgb\u003d16777215]",
+                  "chest": "minecraft:leather_chestplate|model\u003dminecraft:leather_chestplate|dye\u003dDyedItemColor[rgb\u003d8553090]"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        },
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:zombie",
+                "name": "",
+                "equipment": {
+                  "legs": "minecraft:leather_leggings|model\u003dminecraft:leather_leggings|dye\u003dDyedItemColor[rgb\u003d0]",
+                  "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots|dye\u003dDyedItemColor[rgb\u003d6908265]",
+                  "head": "minecraft:leather_helmet|model\u003dminecraft:leather_helmet|dye\u003dDyedItemColor[rgb\u003d16777215]",
+                  "chest": "minecraft:leather_chestplate|model\u003dminecraft:leather_chestplate|dye\u003dDyedItemColor[rgb\u003d0]"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Skeleton Soldier",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:skeleton",
+                "name": "",
+                "equipment": {
+                  "chest": "minecraft:leather_chestplate|model\u003dminecraft:leather_chestplate|dye\u003dDyedItemColor[rgb\u003d16759819]",
+                  "legs": "minecraft:leather_leggings|model\u003dminecraft:leather_leggings|dye\u003dDyedItemColor[rgb\u003d16759819]",
+                  "mainhand": "minecraft:bow|model\u003dminecraft:bow",
+                  "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots|dye\u003dDyedItemColor[rgb\u003d16759819]",
+                  "head": "minecraft:leather_helmet|model\u003dminecraft:leather_helmet|dye\u003dDyedItemColor[rgb\u003d16759819]"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        },
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:skeleton",
+                "name": "",
+                "equipment": {
+                  "chest": "minecraft:leather_chestplate|model\u003dminecraft:leather_chestplate|dye\u003dDyedItemColor[rgb\u003d6891008]",
+                  "legs": "minecraft:leather_leggings|model\u003dminecraft:leather_leggings|dye\u003dDyedItemColor[rgb\u003d6891008]",
+                  "mainhand": "minecraft:bow|model\u003dminecraft:bow",
+                  "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots|dye\u003dDyedItemColor[rgb\u003d6891008]",
+                  "head": "minecraft:leather_helmet|model\u003dminecraft:leather_helmet|dye\u003dDyedItemColor[rgb\u003d16759819]"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Angry Archaeologist",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:player",
+                "name": "diamond guy",
+                "equipment": {
+                  "chest": "minecraft:diamond_chestplate|model\u003dminecraft:diamond_chestplate",
+                  "legs": "minecraft:diamond_leggings|model\u003dminecraft:diamond_leggings",
+                  "mainhand": "minecraft:diamond_sword|model\u003dminecraft:diamond_sword",
+                  "feet": "minecraft:diamond_boots|model\u003dminecraft:diamond_boots",
+                  "head": "minecraft:diamond_helmet|model\u003dminecraft:diamond_helmet"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Sniper",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:skeleton",
+                "name": "",
+                "equipment": {
+                  "mainhand": "minecraft:bow|model\u003dminecraft:bow",
+                  "head": "minecraft:player_head|skin\u003db18c071f080dba50a62a6263ff724edc157ce4fb4883cceff2491d5bbde830c1|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Crypt Souleater",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:player",
+                "name": "crypt souleater",
+                "equipment": {
+                  "mainhand": "minecraft:diamond_sword|model\u003dminecraft:diamond_sword"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        },
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:player",
+                "name": "crypt souleater",
+                "equipment": {
+                  "mainhand": "minecraft:bow|model\u003dminecraft:bow"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Skeleton Grunt",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:skeleton",
+                "name": "",
+                "equipment": {
+                  "chest": "minecraft:leather_chestplate|model\u003dminecraft:leather_chestplate|dye\u003dDyedItemColor[rgb\u003d4936960]",
+                  "legs": "minecraft:leather_leggings|model\u003dminecraft:leather_leggings|dye\u003dDyedItemColor[rgb\u003d4936960]",
+                  "mainhand": "minecraft:bow|model\u003dminecraft:bow",
+                  "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots|dye\u003dDyedItemColor[rgb\u003d4936960]",
+                  "head": "minecraft:leather_helmet|model\u003dminecraft:leather_helmet|dye\u003dDyedItemColor[rgb\u003d14805812]"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        },
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:skeleton",
+                "name": "",
+                "equipment": {
+                  "chest": "minecraft:leather_chestplate|model\u003dminecraft:leather_chestplate|dye\u003dDyedItemColor[rgb\u003d14805812]",
+                  "legs": "minecraft:leather_leggings|model\u003dminecraft:leather_leggings|dye\u003dDyedItemColor[rgb\u003d14805812]",
+                  "mainhand": "minecraft:bow|model\u003dminecraft:bow",
+                  "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots|dye\u003dDyedItemColor[rgb\u003d14805812]",
+                  "head": "minecraft:leather_helmet|model\u003dminecraft:leather_helmet|dye\u003dDyedItemColor[rgb\u003d14805812]"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Crypt Dreadlord",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:player",
+                "name": "crypt dreadlord",
+                "equipment": {
+                  "mainhand": "minecraft:bow|model\u003dminecraft:bow"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        },
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:player",
+                "name": "crypt dreadlord",
+                "equipment": {
+                  "mainhand": "minecraft:iron_sword|model\u003dminecraft:iron_sword"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Undead Skeleton",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:skeleton",
+                "name": "",
+                "equipment": {
+                  "mainhand": "minecraft:bow|model\u003dminecraft:bow"
+                },
+                "appearance": "",
+                "baseMaxHealth": 50000.0
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        },
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:skeleton",
+                "name": "",
+                "equipment": {
+                  "mainhand": "minecraft:bow|model\u003dminecraft:bow"
+                },
+                "appearance": "",
+                "baseMaxHealth": 100000.0
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Scared Skeleton",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:skeleton",
+                "name": "",
+                "equipment": {
+                  "mainhand": "minecraft:bow|model\u003dminecraft:bow"
+                },
+                "appearance": "",
+                "baseMaxHealth": 25520.0
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        },
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:skeleton",
+                "name": "",
+                "equipment": {
+                  "mainhand": "minecraft:bow|model\u003dminecraft:bow"
+                },
+                "appearance": "",
+                "baseMaxHealth": 25080.000000000004
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        },
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:skeleton",
+                "name": "",
+                "equipment": {
+                  "mainhand": "minecraft:bow|model\u003dminecraft:bow"
+                },
+                "appearance": "",
+                "baseMaxHealth": 28500.0
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        },
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:skeleton",
+                "name": "",
+                "equipment": {
+                  "mainhand": "minecraft:bow|model\u003dminecraft:bow"
+                },
+                "appearance": "",
+                "baseMaxHealth": 67488.0
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        },
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:skeleton",
+                "name": "",
+                "equipment": {
+                  "mainhand": "minecraft:bow|model\u003dminecraft:bow"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        },
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:skeleton",
+                "name": "",
+                "equipment": {
+                  "mainhand": "minecraft:bow|model\u003dminecraft:bow"
+                },
+                "appearance": "",
+                "baseMaxHealth": 1800000.0
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Bonzo",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:player",
+                "name": "bonzo",
+                "equipment": {
+                  "mainhand": "minecraft:paper|model\u003dhypixel_skyblock:item/power_stones/dark_orb"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        },
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:player",
+                "name": "bonzo",
+                "equipment": {
+                  "mainhand": "minecraft:blaze_rod|model\u003dhypixel_skyblock:item/island_relevant/dungeons/bonzos_staff"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Lost Adventurer",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:player",
+                "name": "lost adventurer",
+                "equipment": {
+                  "chest": "minecraft:leather_chestplate|model\u003dminecraft:leather_chestplate|dye\u003dDyedItemColor[rgb\u003d4706631]",
+                  "legs": "minecraft:leather_leggings|model\u003dminecraft:leather_leggings|dye\u003dDyedItemColor[rgb\u003d4706631]",
+                  "mainhand": "minecraft:diamond_sword|model\u003dhypixel_skyblock:item/uncategorized/aspect_of_the_dragon",
+                  "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots|dye\u003dDyedItemColor[rgb\u003d4706631]",
+                  "head": "minecraft:player_head|skin\u003d99cc8ba26793218f6f6491947a1837fd52878701f33f76bbe2883a45aba8ab8f|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        },
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:player",
+                "name": "lost adventurer",
+                "equipment": {
+                  "chest": "minecraft:leather_chestplate|model\u003dminecraft:leather_chestplate|dye\u003dDyedItemColor[rgb\u003d4706631]",
+                  "legs": "minecraft:leather_leggings|model\u003dminecraft:leather_leggings|dye\u003dDyedItemColor[rgb\u003d4706631]",
+                  "mainhand": "minecraft:bow|model\u003dminecraft:bow",
+                  "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots|dye\u003dDyedItemColor[rgb\u003d4706631]",
+                  "head": "minecraft:player_head|skin\u003d99cc8ba26793218f6f6491947a1837fd52878701f33f76bbe2883a45aba8ab8f|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        },
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:player",
+                "name": "lost adventurer",
+                "equipment": {
+                  "chest": "minecraft:leather_chestplate|model\u003dminecraft:leather_chestplate|dye\u003dDyedItemColor[rgb\u003d14542064]",
+                  "legs": "minecraft:leather_leggings|model\u003dminecraft:leather_leggings|dye\u003dDyedItemColor[rgb\u003d14542064]",
+                  "mainhand": "minecraft:diamond_sword|model\u003dhypixel_skyblock:item/uncategorized/aspect_of_the_dragon",
+                  "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots|dye\u003dDyedItemColor[rgb\u003d14542064]",
+                  "head": "minecraft:player_head|skin\u003da0e81ed07dfb0244d56f4d5f2b37553ec026fb4796f0fb0c57a8eb264983e1e0|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        },
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:player",
+                "name": "lost adventurer",
+                "equipment": {
+                  "chest": "minecraft:leather_chestplate|model\u003dminecraft:leather_chestplate|dye\u003dDyedItemColor[rgb\u003d14542064]",
+                  "legs": "minecraft:leather_leggings|model\u003dminecraft:leather_leggings|dye\u003dDyedItemColor[rgb\u003d14542064]",
+                  "mainhand": "minecraft:bow|model\u003dminecraft:bow",
+                  "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots|dye\u003dDyedItemColor[rgb\u003d14542064]",
+                  "head": "minecraft:player_head|skin\u003da0e81ed07dfb0244d56f4d5f2b37553ec026fb4796f0fb0c57a8eb264983e1e0|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        },
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:player",
+                "name": "lost adventurer",
+                "equipment": {
+                  "chest": "minecraft:leather_chestplate|model\u003dminecraft:leather_chestplate|dye\u003dDyedItemColor[rgb\u003d11670243]",
+                  "legs": "minecraft:leather_leggings|model\u003dminecraft:leather_leggings|dye\u003dDyedItemColor[rgb\u003d11670243]",
+                  "mainhand": "minecraft:diamond_sword|model\u003dhypixel_skyblock:item/uncategorized/aspect_of_the_dragon",
+                  "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots|dye\u003dDyedItemColor[rgb\u003d11670243]",
+                  "head": "minecraft:player_head|skin\u003d605fc4e2b68c45059afef3999e9a95aa3d8943597a7894e569397d6cf5d1672a|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Skeleton Master",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:skeleton",
+                "name": "",
+                "equipment": {
+                  "chest": "minecraft:leather_chestplate|model\u003dminecraft:leather_chestplate|dye\u003dDyedItemColor[rgb\u003d16739083]",
+                  "legs": "minecraft:leather_leggings|model\u003dminecraft:leather_leggings|dye\u003dDyedItemColor[rgb\u003d16739083]",
+                  "mainhand": "minecraft:bow|model\u003dminecraft:bow",
+                  "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots|dye\u003dDyedItemColor[rgb\u003d16739083]",
+                  "head": "minecraft:leather_helmet|model\u003dminecraft:leather_helmet|dye\u003dDyedItemColor[rgb\u003d16739083]"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        },
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:skeleton",
+                "name": "",
+                "equipment": {
+                  "chest": "minecraft:leather_chestplate|model\u003dminecraft:leather_chestplate|dye\u003dDyedItemColor[rgb\u003d6881280]",
+                  "legs": "minecraft:leather_leggings|model\u003dminecraft:leather_leggings|dye\u003dDyedItemColor[rgb\u003d6881280]",
+                  "mainhand": "minecraft:bow|model\u003dminecraft:bow",
+                  "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots|dye\u003dDyedItemColor[rgb\u003d6881280]",
+                  "head": "minecraft:leather_helmet|model\u003dminecraft:leather_helmet|dye\u003dDyedItemColor[rgb\u003d16739083]"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Bat",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:bat",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Shadow Assassin",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:player",
+                "name": "shadow assassin",
+                "equipment": {
+                  "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots|dye\u003dDyedItemColor[rgb\u003d6029470]",
+                  "mainhand": "minecraft:iron_sword|model\u003dhypixel_skyblock:item/uncategorized/silent_death"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Zombie Soldier",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:zombie",
+                "name": "",
+                "equipment": {
+                  "chest": "minecraft:leather_chestplate|model\u003dminecraft:leather_chestplate|dye\u003dDyedItemColor[rgb\u003d3801088]",
+                  "legs": "minecraft:leather_leggings|model\u003dminecraft:leather_leggings|dye\u003dDyedItemColor[rgb\u003d3801088]",
+                  "mainhand": "minecraft:iron_sword|model\u003dhypixel_skyblock:item/uncategorized/zombie_soldier_cutlass",
+                  "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots|dye\u003dDyedItemColor[rgb\u003d3801088]",
+                  "head": "minecraft:leather_helmet|model\u003dminecraft:leather_helmet|dye\u003dDyedItemColor[rgb\u003d13664000]"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        },
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:zombie",
+                "name": "",
+                "equipment": {
+                  "chest": "minecraft:leather_chestplate|model\u003dminecraft:leather_chestplate|dye\u003dDyedItemColor[rgb\u003d13664000]",
+                  "legs": "minecraft:leather_leggings|model\u003dminecraft:leather_leggings|dye\u003dDyedItemColor[rgb\u003d13664000]",
+                  "mainhand": "minecraft:iron_sword|model\u003dhypixel_skyblock:item/uncategorized/zombie_soldier_cutlass",
+                  "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots|dye\u003dDyedItemColor[rgb\u003d13664000]",
+                  "head": "minecraft:leather_helmet|model\u003dminecraft:leather_helmet|dye\u003dDyedItemColor[rgb\u003d13664000]"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Skeletor",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:skeleton",
+                "name": "",
+                "equipment": {
+                  "chest": "minecraft:chainmail_chestplate|model\u003dminecraft:chainmail_chestplate",
+                  "legs": "minecraft:chainmail_leggings|model\u003dminecraft:chainmail_leggings",
+                  "mainhand": "minecraft:bone|model\u003dminecraft:bone",
+                  "feet": "minecraft:chainmail_boots|model\u003dminecraft:chainmail_boots",
+                  "head": "minecraft:player_head|skin\u003d89d074ad9b9971879eb325bddff3675f7224856bd6d569fc8d483c133d73005d|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Cellar Spider",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:cave_spider",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Super Archer",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:skeleton",
+                "name": "",
+                "equipment": {
+                  "chest": "minecraft:leather_chestplate|model\u003dminecraft:leather_chestplate|dye\u003dDyedItemColor[rgb\u003d11403055]",
+                  "legs": "minecraft:leather_leggings|model\u003dminecraft:leather_leggings|dye\u003dDyedItemColor[rgb\u003d11403055]",
+                  "mainhand": "minecraft:bow|model\u003dminecraft:bow",
+                  "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots|dye\u003dDyedItemColor[rgb\u003d11403055]",
+                  "head": "minecraft:leather_helmet|model\u003dminecraft:leather_helmet|dye\u003dDyedItemColor[rgb\u003d11403055]"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        },
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:skeleton",
+                "name": "",
+                "equipment": {
+                  "chest": "minecraft:leather_chestplate|model\u003dminecraft:leather_chestplate|dye\u003dDyedItemColor[rgb\u003d1534208]",
+                  "legs": "minecraft:leather_leggings|model\u003dminecraft:leather_leggings|dye\u003dDyedItemColor[rgb\u003d1534208]",
+                  "mainhand": "minecraft:bow|model\u003dminecraft:bow",
+                  "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots|dye\u003dDyedItemColor[rgb\u003d1534208]",
+                  "head": "minecraft:leather_helmet|model\u003dminecraft:leather_helmet|dye\u003dDyedItemColor[rgb\u003d11403055]"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Withermancer",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:wither_skeleton",
+                "name": "",
+                "equipment": {
+                  "mainhand": "minecraft:stone_sword|model\u003dminecraft:stone_sword"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Skeletor Prime",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:player",
+                "name": "skeletor prime",
+                "equipment": {
+                  "mainhand": "minecraft:bone|model\u003dminecraft:bone"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Super Tank Zombie",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:zombie",
+                "name": "",
+                "equipment": {
+                  "chest": "minecraft:leather_chestplate|model\u003dminecraft:leather_chestplate|dye\u003dDyedItemColor[rgb\u003d5923940]",
+                  "legs": "minecraft:leather_leggings|model\u003dminecraft:leather_leggings|dye\u003dDyedItemColor[rgb\u003d5923940]",
+                  "mainhand": "minecraft:stone_sword|model\u003dhypixel_skyblock:item/uncategorized/earth_shard",
+                  "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots|dye\u003dDyedItemColor[rgb\u003d15132390]",
+                  "head": "minecraft:leather_helmet|model\u003dminecraft:leather_helmet|dye\u003dDyedItemColor[rgb\u003d15132390]"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Terracotta",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:player",
+                "name": "terracotta",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        },
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:player",
+                "name": "terracotta",
+                "equipment": {
+                  "mainhand": "minecraft:paper|model\u003dhypixel_skyblock:item/uncategorized/flower_of_truth"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Fel",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:enderman",
+                "name": "dinnerbone",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Prince",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:player",
+                "name": "crypt undead",
+                "equipment": {
+                  "mainhand": "minecraft:bone|model\u003dminecraft:bone"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Golem",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:iron_golem",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Frozen Adventurer",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:player",
+                "name": "lost adventurer",
+                "equipment": {
+                  "chest": "minecraft:leather_chestplate|model\u003dminecraft:leather_chestplate|dye\u003dDyedItemColor[rgb\u003d10541807]",
+                  "legs": "minecraft:leather_leggings|model\u003dminecraft:leather_leggings|dye\u003dDyedItemColor[rgb\u003d10541807]",
+                  "mainhand": "minecraft:stick|model\u003dhypixel_skyblock:item/island_relevant/winter/weapons/ice_spray_wand",
+                  "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots|dye\u003dDyedItemColor[rgb\u003d10541807]",
+                  "head": "minecraft:player_head|skin\u003d70310b55eed958fee8ffaaf718467167deb1a7c9046d67b25887b596925636bb|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Zombie Lord",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:zombie",
+                "name": "",
+                "equipment": {
+                  "chest": "minecraft:leather_chestplate|model\u003dminecraft:leather_chestplate|dye\u003dDyedItemColor[rgb\u003d10158529]",
+                  "legs": "minecraft:leather_leggings|model\u003dminecraft:leather_leggings|dye\u003dDyedItemColor[rgb\u003d10158529]",
+                  "mainhand": "minecraft:diamond_sword|model\u003dminecraft:diamond_sword",
+                  "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots|dye\u003dDyedItemColor[rgb\u003d10158529]",
+                  "head": "minecraft:golden_helmet|model\u003dminecraft:golden_helmet"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Zombie Commander",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:player",
+                "name": "zombie commander",
+                "equipment": {
+                  "chest": "minecraft:leather_chestplate|model\u003dminecraft:leather_chestplate|dye\u003dDyedItemColor[rgb\u003d13963824]",
+                  "legs": "minecraft:leather_leggings|model\u003dminecraft:leather_leggings|dye\u003dDyedItemColor[rgb\u003d13963824]",
+                  "mainhand": "minecraft:fishing_rod|model\u003dhypixel_skyblock:item/uncategorized/zombie_commander_whip",
+                  "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots|dye\u003dDyedItemColor[rgb\u003d13963824]",
+                  "head": "minecraft:leather_helmet|model\u003dminecraft:leather_helmet|dye\u003dDyedItemColor[rgb\u003d13963824]"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Zombie Knight",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:zombie",
+                "name": "",
+                "equipment": {
+                  "legs": "minecraft:golden_leggings|model\u003dminecraft:golden_leggings",
+                  "feet": "minecraft:golden_boots|model\u003dminecraft:golden_boots",
+                  "head": "minecraft:golden_helmet|model\u003dminecraft:golden_helmet",
+                  "chest": "minecraft:golden_chestplate|model\u003dminecraft:golden_chestplate"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Wither Guard",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:wither_skeleton",
+                "name": "",
+                "equipment": {
+                  "mainhand": "minecraft:bow|model\u003dminecraft:bow"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Wither Miner",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:wither_skeleton",
+                "name": "",
+                "equipment": {
+                  "mainhand": "minecraft:stone_pickaxe|model\u003dminecraft:stone_pickaxe"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

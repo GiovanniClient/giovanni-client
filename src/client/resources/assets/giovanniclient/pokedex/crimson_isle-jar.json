@@ -389,9 +389,9 @@
                 "type": "minecraft:wither_skeleton",
                 "name": "",
                 "equipment": {
+                  "mainhand": "minecraft:iron_sword|model\u003dminecraft:iron_sword",
                   "head": "minecraft:player_head|skin\u003df6aa5acfd973f67ba8e249ae07a11ae7ca713c900d90d09ce0903c79ddd7dd9e|model\u003dminecraft:player_head",
-                  "chest": "minecraft:leather_chestplate|model\u003dminecraft:leather_chestplate|dye\u003dDyedItemColor[rgb\u003d921622]",
-                  "mainhand": "minecraft:iron_sword|model\u003dminecraft:iron_sword"
+                  "chest": "minecraft:leather_chestplate|model\u003dminecraft:leather_chestplate|dye\u003dDyedItemColor[rgb\u003d921622]"
                 },
                 "appearance": ""
               },

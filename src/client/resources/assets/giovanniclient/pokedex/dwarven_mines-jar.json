@@ -54,11 +54,11 @@
                 "type": "minecraft:player",
                 "name": "ice walker",
                 "equipment": {
-                  "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots|dye\u003dDyedItemColor[rgb\u003d261368]",
-                  "head": "minecraft:packed_ice|model\u003dminecraft:packed_ice",
                   "chest": "minecraft:leather_chestplate|model\u003dminecraft:leather_chestplate|dye\u003dDyedItemColor[rgb\u003d261368]",
                   "legs": "minecraft:leather_leggings|model\u003dminecraft:leather_leggings|dye\u003dDyedItemColor[rgb\u003d261368]",
-                  "mainhand": "minecraft:iron_sword|model\u003dminecraft:iron_sword"
+                  "mainhand": "minecraft:iron_sword|model\u003dminecraft:iron_sword",
+                  "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots|dye\u003dDyedItemColor[rgb\u003d261368]",
+                  "head": "minecraft:packed_ice|model\u003dminecraft:packed_ice"
                 },
                 "appearance": ""
               },
@@ -114,44 +114,8 @@
                 "type": "minecraft:player",
                 "name": "goblin",
                 "equipment": {
-                  "legs": "minecraft:leather_leggings|model\u003dminecraft:leather_leggings",
-                  "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots"
-                },
-                "appearance": ""
-              },
-              "role": "BODY",
-              "horizontalOffset": 0.0,
-              "yOffset": 0.0
-            }
-          ]
-        },
-        {
-          "parts": [
-            {
-              "signature": {
-                "type": "minecraft:player",
-                "name": "goblin",
-                "equipment": {
                   "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots",
-                  "legs": "minecraft:leather_leggings|model\u003dminecraft:leather_leggings",
-                  "mainhand": "minecraft:stone_sword|model\u003dminecraft:stone_sword"
-                },
-                "appearance": ""
-              },
-              "role": "BODY",
-              "horizontalOffset": 0.0,
-              "yOffset": 0.0
-            }
-          ]
-        },
-        {
-          "parts": [
-            {
-              "signature": {
-                "type": "minecraft:player",
-                "name": "goblin",
-                "equipment": {
-                  "mainhand": "minecraft:stone_sword|model\u003dminecraft:stone_sword"
+                  "legs": "minecraft:leather_leggings|model\u003dminecraft:leather_leggings"
                 },
                 "appearance": ""
               },
@@ -169,7 +133,25 @@
                 "name": "goblin",
                 "equipment": {
                   "mainhand": "minecraft:stone_sword|model\u003dminecraft:stone_sword",
-                  "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots"
+                  "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots",
+                  "legs": "minecraft:leather_leggings|model\u003dminecraft:leather_leggings"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        },
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:player",
+                "name": "goblin",
+                "equipment": {
+                  "mainhand": "minecraft:stone_sword|model\u003dminecraft:stone_sword"
                 },
                 "appearance": ""
               },
@@ -187,8 +169,26 @@
                 "name": "goblin",
                 "equipment": {
                   "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots",
-                  "legs": "minecraft:leather_leggings|model\u003dminecraft:leather_leggings",
-                  "mainhand": "minecraft:stick|model\u003dminecraft:stick"
+                  "mainhand": "minecraft:stone_sword|model\u003dminecraft:stone_sword"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        },
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:player",
+                "name": "goblin",
+                "equipment": {
+                  "mainhand": "minecraft:stick|model\u003dminecraft:stick",
+                  "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots",
+                  "legs": "minecraft:leather_leggings|model\u003dminecraft:leather_leggings"
                 },
                 "appearance": ""
               },

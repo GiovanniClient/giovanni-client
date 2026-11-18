@@ -32,10 +32,10 @@
                 "type": "minecraft:zombie",
                 "name": "",
                 "equipment": {
-                  "head": "minecraft:blue_stained_glass|model\u003dminecraft:blue_stained_glass",
-                  "chest": "minecraft:leather_chestplate|model\u003dminecraft:leather_chestplate|dye\u003dDyedItemColor[rgb\u003d255]",
                   "legs": "minecraft:leather_leggings|model\u003dminecraft:leather_leggings|dye\u003dDyedItemColor[rgb\u003d255]",
-                  "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots|dye\u003dDyedItemColor[rgb\u003d255]"
+                  "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots|dye\u003dDyedItemColor[rgb\u003d255]",
+                  "head": "minecraft:blue_stained_glass|model\u003dminecraft:blue_stained_glass",
+                  "chest": "minecraft:leather_chestplate|model\u003dminecraft:leather_chestplate|dye\u003dDyedItemColor[rgb\u003d255]"
                 },
                 "appearance": ""
               },
@@ -99,11 +99,11 @@
                 "type": "minecraft:zombie",
                 "name": "",
                 "equipment": {
-                  "feet": "minecraft:diamond_boots|model\u003dminecraft:diamond_boots",
-                  "head": "minecraft:diamond_helmet|model\u003dminecraft:diamond_helmet",
                   "chest": "minecraft:diamond_chestplate|model\u003dminecraft:diamond_chestplate",
                   "legs": "minecraft:diamond_leggings|model\u003dminecraft:diamond_leggings",
-                  "mainhand": "minecraft:diamond_sword|model\u003dminecraft:diamond_sword"
+                  "mainhand": "minecraft:diamond_sword|model\u003dminecraft:diamond_sword",
+                  "feet": "minecraft:diamond_boots|model\u003dminecraft:diamond_boots",
+                  "head": "minecraft:diamond_helmet|model\u003dminecraft:diamond_helmet"
                 },
                 "appearance": ""
               },
@@ -120,11 +120,11 @@
                 "type": "minecraft:zombie",
                 "name": "",
                 "equipment": {
-                  "feet": "minecraft:diamond_boots|model\u003dminecraft:diamond_boots",
-                  "head": "minecraft:diamond_block|model\u003dminecraft:diamond_block",
                   "chest": "minecraft:diamond_chestplate|model\u003dminecraft:diamond_chestplate",
                   "legs": "minecraft:diamond_leggings|model\u003dminecraft:diamond_leggings",
-                  "mainhand": "minecraft:diamond_sword|model\u003dminecraft:diamond_sword"
+                  "mainhand": "minecraft:diamond_sword|model\u003dminecraft:diamond_sword",
+                  "feet": "minecraft:diamond_boots|model\u003dminecraft:diamond_boots",
+                  "head": "minecraft:diamond_block|model\u003dminecraft:diamond_block"
                 },
                 "appearance": ""
               },
@@ -146,11 +146,11 @@
                 "type": "minecraft:skeleton",
                 "name": "",
                 "equipment": {
-                  "feet": "minecraft:diamond_boots|model\u003dminecraft:diamond_boots",
-                  "head": "minecraft:diamond_helmet|model\u003dminecraft:diamond_helmet",
                   "chest": "minecraft:diamond_chestplate|model\u003dminecraft:diamond_chestplate",
                   "legs": "minecraft:diamond_leggings|model\u003dminecraft:diamond_leggings",
-                  "mainhand": "minecraft:bow|model\u003dminecraft:bow"
+                  "mainhand": "minecraft:bow|model\u003dminecraft:bow",
+                  "feet": "minecraft:diamond_boots|model\u003dminecraft:diamond_boots",
+                  "head": "minecraft:diamond_helmet|model\u003dminecraft:diamond_helmet"
                 },
                 "appearance": ""
               },
@@ -167,11 +167,11 @@
                 "type": "minecraft:skeleton",
                 "name": "",
                 "equipment": {
-                  "feet": "minecraft:diamond_boots|model\u003dminecraft:diamond_boots",
-                  "head": "minecraft:diamond_block|model\u003dminecraft:diamond_block",
                   "chest": "minecraft:diamond_chestplate|model\u003dminecraft:diamond_chestplate",
                   "legs": "minecraft:diamond_leggings|model\u003dminecraft:diamond_leggings",
-                  "mainhand": "minecraft:bow|model\u003dminecraft:bow"
+                  "mainhand": "minecraft:bow|model\u003dminecraft:bow",
+                  "feet": "minecraft:diamond_boots|model\u003dminecraft:diamond_boots",
+                  "head": "minecraft:diamond_block|model\u003dminecraft:diamond_block"
                 },
                 "appearance": ""
               },

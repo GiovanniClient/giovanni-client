@@ -236,6 +236,28 @@
           ]
         }
       ]
+    },
+    {
+      "name": "Firefly",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "",
+                "equipment": {
+                  "head": "minecraft:player_head|skin\u003d4ce79e90adf34718f313ec24d6c6135b69b3788c618498446ccc83ca640c0b14|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "VISUAL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
     }
   ]
 }

@@ -1,0 +1,131 @@
+{
+  "version": 1,
+  "island": "scope:fishing",
+  "entries": [
+    {
+      "name": "Blue Ringed Octopus",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "",
+                "equipment": {
+                  "head": "minecraft:player_head|skin\u003db2b6074d0c9d6b89a494cf4f74158282a64ee23ba8a0725633ad70932ada1a8f|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "VISUAL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Silkbreeze",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:breeze",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Giant Isopod",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "",
+                "equipment": {
+                  "head": "minecraft:player_head|skin\u003d3fcb203b029aac4958407daf4072a01a353105162373ce7e559c669d78325bcb|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "VISUAL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Wiki Tiki",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "",
+                "equipment": {
+                  "head": "minecraft:player_head|skin\u003df3c802e580bfefc18c4af94cceb82968b5b4aeab0d832346a633a7473a41dfac|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "VISUAL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "",
+                "equipment": {
+                  "head": "minecraft:player_head|skin\u003de64331c8fb750f9043334320c94580e7896955695156d80689e5d0a6c60a10e7|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "VISUAL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.7
+            },
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "",
+                "equipment": {
+                  "head": "minecraft:player_head|skin\u003d9122f7a19b3197766b381fb36bfeb6f442d62509e44cc7847c75c8e8c387225a|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "VISUAL",
+              "horizontalOffset": 0.0,
+              "yOffset": 1.4
+            },
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "",
+                "equipment": {
+                  "head": "minecraft:player_head|skin\u003dc5fd6b9a59ec5b97db8bdc158fbd5f91ef7b317b859fcebe6d09e7bd80eaca9d|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "VISUAL",
+              "horizontalOffset": 0.0,
+              "yOffset": 2.1
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

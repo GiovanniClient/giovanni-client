@@ -23,37 +23,6 @@
       ]
     },
     {
-      "name": "Phanpyre",
-      "variants": [
-        {
-          "parts": [
-            {
-              "signature": {
-                "type": "minecraft:armor_stand",
-                "name": " phanpyre",
-                "equipment": {},
-                "appearance": ""
-              },
-              "role": "LABEL",
-              "horizontalOffset": 0.0,
-              "yOffset": 0.0
-            },
-            {
-              "signature": {
-                "type": "minecraft:phantom",
-                "name": "",
-                "equipment": {},
-                "appearance": ""
-              },
-              "role": "BODY",
-              "horizontalOffset": 0.0,
-              "yOffset": -2.0
-            }
-          ]
-        }
-      ]
-    },
-    {
       "name": "Chill",
       "variants": [
         {
@@ -180,6 +149,110 @@
             {
               "signature": {
                 "type": "minecraft:frog",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Phanflare",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:phantom",
+                "name": "",
+                "equipment": {},
+                "appearance": "",
+                "baseMaxHealth": 200.0
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Phanpyre",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:phantom",
+                "name": "",
+                "equipment": {},
+                "appearance": "",
+                "baseMaxHealth": 200.0
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Stag Beetle",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "",
+                "equipment": {
+                  "head": "minecraft:player_head|skin\u003de08fc1ae87a7035d32b0b0da58de4801463aaf8b238618024aacb0c515ae3bba|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "VISUAL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Dreadwing",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:phantom",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Lumisquid",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:glow_squid",
                 "name": "",
                 "equipment": {},
                 "appearance": ""

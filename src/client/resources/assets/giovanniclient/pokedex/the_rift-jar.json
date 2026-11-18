@@ -1,0 +1,923 @@
+{
+  "version": 1,
+  "island": "The Rift",
+  "entries": [
+    {
+      "name": "Barking Wolf",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:wolf",
+                "name": "",
+                "equipment": {},
+                "appearance": "",
+                "baseMaxHealth": 150.0
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Shy",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "",
+                "equipment": {
+                  "head": "minecraft:player_head|skin\u003dac9adcd975a916914b5d29adacf5f52e7951478583476552a4f6fe8d94f48c2a|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "VISUAL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Deadgehog",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:player",
+                "name": "deadgehog",
+                "equipment": {
+                  "head": "minecraft:player_head|skin\u003dfd4c142c382a6be00caeee9a02306f06544e6e46b953bcc8cac65e5c89d4790a|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Larva",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "",
+                "equipment": {
+                  "head": "minecraft:player_head|skin\u003d4ceb0ed8fc2272b3d3d820676d52a38e7b2e8da8c687a233e0dabaa16c0e96df|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "VISUAL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "",
+                "equipment": {
+                  "head": "minecraft:player_head|skin\u003d4ceb0ed8fc2272b3d3d820676d52a38e7b2e8da8c687a233e0dabaa16c0e96df|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "VISUAL",
+              "horizontalOffset": 0.53,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "",
+                "equipment": {
+                  "head": "minecraft:player_head|skin\u003d4ceb0ed8fc2272b3d3d820676d52a38e7b2e8da8c687a233e0dabaa16c0e96df|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "VISUAL",
+              "horizontalOffset": 0.47,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Odonata",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "",
+                "equipment": {
+                  "mainhand": "minecraft:player_head|skin\u003d9fd806defdfdf59b1f2609c8ee364666de66127a623415b5430c9358c601ef7c|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "VISUAL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Enigma Soul",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "",
+                "equipment": {
+                  "head": "minecraft:player_head|skin\u003d930fe771fcc3ecc0530ee9545ab07797437f95e09a0eaa9b512497fe892f52fb|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "VISUAL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Lagoon Leech",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:zombie",
+                "name": "",
+                "equipment": {
+                  "legs": "minecraft:chainmail_leggings|model\u003dminecraft:chainmail_leggings",
+                  "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots|dye\u003dDyedItemColor[rgb\u003d0]",
+                  "head": "minecraft:player_head|skin\u003dd976ffdd292c34fdabb2acfa62dbfd4f0d130008785809be016d3d7257bb31f2|model\u003dminecraft:player_head",
+                  "chest": "minecraft:leather_chestplate|model\u003dminecraft:leather_chestplate|dye\u003dDyedItemColor[rgb\u003d2106643]"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Shadow",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "",
+                "equipment": {
+                  "head": "minecraft:player_head|skin\u003d6133c08112ea652a8f8b8df45cb62f2dbb40737cdd47865f135d84f90c80983e|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "VISUAL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Volt",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "",
+                "equipment": {
+                  "head": "minecraft:player_head|skin\u003d7aea6251e58e3d20552a035d424561eaee083feacd1e6cb3c2a5cf945ce6d76e|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "VISUAL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Globowl",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:slime",
+                "name": "",
+                "equipment": {},
+                "appearance": "",
+                "baseMaxHealth": 42.0
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Blobbercyst",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:player",
+                "name": "blobbercyst",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Temporal Pillar",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:enderman",
+                "name": "dinnerbone",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:enderman",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": -5.61
+            },
+            {
+              "signature": {
+                "type": "minecraft:enderman",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": -2.81
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Scribe",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "",
+                "equipment": {
+                  "head": "minecraft:player_head|skin\u003d1aa266be18d652b66de189508c7d2b7419d6991d1660be9f01efb505e54e543b|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "VISUAL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Autonull",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:player",
+                "name": "autonull",
+                "equipment": {
+                  "chest": "minecraft:chainmail_chestplate|model\u003dminecraft:chainmail_chestplate",
+                  "legs": "minecraft:chainmail_leggings|model\u003dminecraft:chainmail_leggings",
+                  "mainhand": "minecraft:diamond_sword|model\u003dminecraft:diamond_sword",
+                  "feet": "minecraft:chainmail_boots|model\u003dminecraft:chainmail_boots",
+                  "head": "minecraft:chainmail_helmet|model\u003dminecraft:chainmail_helmet"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Frozille",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "",
+                "equipment": {
+                  "head": "minecraft:player_head|skin\u003da7e1e4ab0a7ba5cec8296d925da63b25c831a7e966b26050d99a3148ce10f63b|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "VISUAL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Thrall",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:zombie",
+                "name": "",
+                "equipment": {
+                  "chest": "minecraft:leather_chestplate|model\u003dminecraft:leather_chestplate|dye\u003dDyedItemColor[rgb\u003d7341319]",
+                  "legs": "minecraft:leather_leggings|model\u003dminecraft:leather_leggings|dye\u003dDyedItemColor[rgb\u003d11012879]",
+                  "mainhand": "minecraft:stone_axe|model\u003dminecraft:stone_axe",
+                  "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots|dye\u003dDyedItemColor[rgb\u003d10160136]",
+                  "head": "minecraft:player_head|skin\u003dad0b8cd865d5b00f0d5d00fdcc284316412021efc09c678223f83b5a3f94d50d|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        },
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:zombie",
+                "name": "",
+                "equipment": {
+                  "legs": "minecraft:leather_leggings|model\u003dminecraft:leather_leggings|dye\u003dDyedItemColor[rgb\u003d11012879]",
+                  "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots|dye\u003dDyedItemColor[rgb\u003d10160136]",
+                  "head": "minecraft:player_head|skin\u003dad0b8cd865d5b00f0d5d00fdcc284316412021efc09c678223f83b5a3f94d50d|model\u003dminecraft:player_head",
+                  "chest": "minecraft:leather_chestplate|model\u003dminecraft:leather_chestplate|dye\u003dDyedItemColor[rgb\u003d7341319]"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Splatter",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "",
+                "equipment": {
+                  "head": "minecraft:player_head|skin\u003dad90b2e2f396f04e67bdb5d6762a92228e18aae2cc359522b1b1792c07f03d14|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "VISUAL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Fledgling",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:player",
+                "name": "fledgling",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Puff",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:zombie",
+                "name": "",
+                "equipment": {
+                  "head": "minecraft:player_head|skin\u003dba5f715a62a29054622412eb673dff548e35061ad845caf4317b1b2ee8f408f0|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Sage",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "sage",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "LABEL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:rabbit",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": -1.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Joy",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "joy",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "LABEL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:rabbit",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": -0.99
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Speedy",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "speedy",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "LABEL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:rabbit",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": -0.76
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Scrabble",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "scrabble",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "LABEL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:rabbit",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.06,
+              "yOffset": -1.01
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Flash",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "flash",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "LABEL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:rabbit",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": -1.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Pika",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "pika",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "LABEL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:rabbit",
+                "name": "",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": -1.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Montezuma",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "",
+                "equipment": {
+                  "mainhand": "minecraft:bone|model\u003dminecraft:bone"
+                },
+                "appearance": ""
+              },
+              "role": "VISUAL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "",
+                "equipment": {
+                  "head": "minecraft:player_head|skin\u003ddf656c06e8a5cb4692564ee21748bddec9d785d1834284aaa1439601bba47d6b|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "VISUAL",
+              "horizontalOffset": 0.0,
+              "yOffset": -0.03
+            },
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "",
+                "equipment": {
+                  "mainhand": "minecraft:bone|model\u003dminecraft:bone"
+                },
+                "appearance": ""
+              },
+              "role": "VISUAL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "",
+                "equipment": {
+                  "mainhand": "minecraft:bone|model\u003dminecraft:bone"
+                },
+                "appearance": ""
+              },
+              "role": "VISUAL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "",
+                "equipment": {
+                  "mainhand": "minecraft:bone|model\u003dminecraft:bone"
+                },
+                "appearance": ""
+              },
+              "role": "VISUAL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Leech Supreme",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:player",
+                "name": "leech supreme",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        },
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:player",
+                "name": "leech supreme",
+                "equipment": {
+                  "mainhand": "minecraft:player_head|skin\u003d41edb24099ce95e6e98e9dbf77a0a92811e9f804d6e1a6c5ba214bac8b0806a0|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Slime Pound",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:giant",
+                "name": "",
+                "equipment": {
+                  "mainhand": "minecraft:player_head|skin\u003de01ce68842074dde053185b218e34ee3259cb36ac471d80998f9cb01f32e51c7|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Leech Alpha",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:player",
+                "name": "leech alpha",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Leech Swarm",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:zombie",
+                "name": "",
+                "equipment": {
+                  "legs": "minecraft:chainmail_leggings|model\u003dminecraft:chainmail_leggings",
+                  "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots|dye\u003dDyedItemColor[rgb\u003d0]",
+                  "head": "minecraft:player_head|skin\u003dd976ffdd292c34fdabb2acfa62dbfd4f0d130008785809be016d3d7257bb31f2|model\u003dminecraft:player_head",
+                  "chest": "minecraft:leather_chestplate|model\u003dminecraft:leather_chestplate|dye\u003dDyedItemColor[rgb\u003d2106643]"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Sun Gecko",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:player",
+                "name": "sun gecko",
+                "equipment": {
+                  "mainhand": "minecraft:stick|model\u003dminecraft:stick"
+                },
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "sun gecko",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "LABEL",
+              "horizontalOffset": 0.08,
+              "yOffset": 2.37
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Sun Gecko?",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:player",
+                "name": "sun gecko",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "BODY",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "sun gecko?",
+                "equipment": {},
+                "appearance": ""
+              },
+              "role": "LABEL",
+              "horizontalOffset": 4.3,
+              "yOffset": 1.11
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

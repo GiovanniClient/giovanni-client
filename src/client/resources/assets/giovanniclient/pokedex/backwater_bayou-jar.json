@@ -1,0 +1,249 @@
+{
+  "version": 1,
+  "island": "Backwater Bayou",
+  "entries": [
+    {
+      "name": "Titanoboa",
+      "variants": [
+        {
+          "parts": [
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "",
+                "equipment": {
+                  "head": "minecraft:player_head|skin\u003db82086882b25e9e914362f2048c285c18c8d698a336f7e83f0a1964c760b11|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "VISUAL",
+              "horizontalOffset": 0.0,
+              "yOffset": 0.0
+            },
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "",
+                "equipment": {
+                  "head": "minecraft:player_head|skin\u003db82086882b25e9e914362f2048c285c18c8d698a336f7e83f0a1964c760b11|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "VISUAL",
+              "horizontalOffset": 0.25,
+              "yOffset": 0.38
+            },
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "",
+                "equipment": {
+                  "head": "minecraft:player_head|skin\u003db82086882b25e9e914362f2048c285c18c8d698a336f7e83f0a1964c760b11|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "VISUAL",
+              "horizontalOffset": 0.69,
+              "yOffset": -0.41
+            },
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "",
+                "equipment": {
+                  "head": "minecraft:player_head|skin\u003db82086882b25e9e914362f2048c285c18c8d698a336f7e83f0a1964c760b11|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "VISUAL",
+              "horizontalOffset": 0.44,
+              "yOffset": -0.5
+            },
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "",
+                "equipment": {
+                  "head": "minecraft:player_head|skin\u003db82086882b25e9e914362f2048c285c18c8d698a336f7e83f0a1964c760b11|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "VISUAL",
+              "horizontalOffset": 0.44,
+              "yOffset": -0.5
+            },
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "",
+                "equipment": {
+                  "head": "minecraft:player_head|skin\u003db82086882b25e9e914362f2048c285c18c8d698a336f7e83f0a1964c760b11|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "VISUAL",
+              "horizontalOffset": 0.11,
+              "yOffset": -0.19
+            },
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "",
+                "equipment": {
+                  "head": "minecraft:player_head|skin\u003db82086882b25e9e914362f2048c285c18c8d698a336f7e83f0a1964c760b11|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "VISUAL",
+              "horizontalOffset": 0.11,
+              "yOffset": -0.31
+            },
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "",
+                "equipment": {
+                  "head": "minecraft:player_head|skin\u003db82086882b25e9e914362f2048c285c18c8d698a336f7e83f0a1964c760b11|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "VISUAL",
+              "horizontalOffset": 0.38,
+              "yOffset": -0.5
+            },
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "",
+                "equipment": {
+                  "head": "minecraft:player_head|skin\u003db82086882b25e9e914362f2048c285c18c8d698a336f7e83f0a1964c760b11|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "VISUAL",
+              "horizontalOffset": 0.38,
+              "yOffset": -0.5
+            },
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "",
+                "equipment": {
+                  "head": "minecraft:player_head|skin\u003db82086882b25e9e914362f2048c285c18c8d698a336f7e83f0a1964c760b11|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "VISUAL",
+              "horizontalOffset": 0.72,
+              "yOffset": -0.41
+            },
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "",
+                "equipment": {
+                  "head": "minecraft:player_head|skin\u003db82086882b25e9e914362f2048c285c18c8d698a336f7e83f0a1964c760b11|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "VISUAL",
+              "horizontalOffset": 0.44,
+              "yOffset": -0.5
+            },
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "",
+                "equipment": {
+                  "head": "minecraft:player_head|skin\u003db82086882b25e9e914362f2048c285c18c8d698a336f7e83f0a1964c760b11|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "VISUAL",
+              "horizontalOffset": 0.44,
+              "yOffset": -0.5
+            },
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "",
+                "equipment": {
+                  "head": "minecraft:player_head|skin\u003db82086882b25e9e914362f2048c285c18c8d698a336f7e83f0a1964c760b11|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "VISUAL",
+              "horizontalOffset": 0.72,
+              "yOffset": -0.34
+            },
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "",
+                "equipment": {
+                  "head": "minecraft:player_head|skin\u003db82086882b25e9e914362f2048c285c18c8d698a336f7e83f0a1964c760b11|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "VISUAL",
+              "horizontalOffset": 0.72,
+              "yOffset": -0.34
+            },
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "",
+                "equipment": {
+                  "head": "minecraft:player_head|skin\u003db82086882b25e9e914362f2048c285c18c8d698a336f7e83f0a1964c760b11|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "VISUAL",
+              "horizontalOffset": 0.38,
+              "yOffset": -0.31
+            },
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "",
+                "equipment": {
+                  "head": "minecraft:player_head|skin\u003db82086882b25e9e914362f2048c285c18c8d698a336f7e83f0a1964c760b11|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "VISUAL",
+              "horizontalOffset": 0.38,
+              "yOffset": -0.31
+            },
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "",
+                "equipment": {
+                  "head": "minecraft:player_head|skin\u003db82086882b25e9e914362f2048c285c18c8d698a336f7e83f0a1964c760b11|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "VISUAL",
+              "horizontalOffset": 0.38,
+              "yOffset": -0.31
+            },
+            {
+              "signature": {
+                "type": "minecraft:armor_stand",
+                "name": "",
+                "equipment": {
+                  "head": "minecraft:player_head|skin\u003db82086882b25e9e914362f2048c285c18c8d698a336f7e83f0a1964c760b11|model\u003dminecraft:player_head"
+                },
+                "appearance": ""
+              },
+              "role": "VISUAL",
+              "horizontalOffset": 0.38,
+              "yOffset": -0.31
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

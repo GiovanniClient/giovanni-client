@@ -173,8 +173,8 @@
                 "type": "minecraft:wither_skeleton",
                 "name": "",
                 "equipment": {
-                  "chest": "minecraft:leather_chestplate|model\u003dminecraft:leather_chestplate|dye\u003dDyedItemColor[rgb\u003d0]",
-                  "head": "minecraft:obsidian|model\u003dminecraft:obsidian"
+                  "head": "minecraft:obsidian|model\u003dminecraft:obsidian",
+                  "chest": "minecraft:leather_chestplate|model\u003dminecraft:leather_chestplate|dye\u003dDyedItemColor[rgb\u003d0]"
                 },
                 "appearance": ""
               },
@@ -269,11 +269,11 @@
                 "type": "minecraft:skeleton",
                 "name": "",
                 "equipment": {
-                  "head": "minecraft:player_head|skin\u003dd3d48224aff85357c3745951a4d85e924a12c2580dc3ad2854cbcf3c12aea4d7|model\u003dminecraft:player_head",
-                  "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots|dye\u003dDyedItemColor[rgb\u003d0]",
-                  "mainhand": "minecraft:bow|model\u003dminecraft:bow",
+                  "chest": "minecraft:leather_chestplate|model\u003dminecraft:leather_chestplate|dye\u003dDyedItemColor[rgb\u003d0]",
                   "legs": "minecraft:leather_leggings|model\u003dminecraft:leather_leggings|dye\u003dDyedItemColor[rgb\u003d0]",
-                  "chest": "minecraft:leather_chestplate|model\u003dminecraft:leather_chestplate|dye\u003dDyedItemColor[rgb\u003d0]"
+                  "mainhand": "minecraft:bow|model\u003dminecraft:bow",
+                  "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots|dye\u003dDyedItemColor[rgb\u003d0]",
+                  "head": "minecraft:player_head|skin\u003dd3d48224aff85357c3745951a4d85e924a12c2580dc3ad2854cbcf3c12aea4d7|model\u003dminecraft:player_head"
                 },
                 "appearance": ""
               },

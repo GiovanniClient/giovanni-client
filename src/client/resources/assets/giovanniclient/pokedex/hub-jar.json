@@ -3,44 +3,21 @@
   "island": "Hub",
   "entries": [
     {
-      "name": "Wolf",
+      "name": "Crypt Ghoul",
       "variants": [
         {
           "parts": [
             {
               "signature": {
-                "type": "minecraft:armor_stand",
-                "name": " wolf",
-                "equipment": {},
+                "type": "minecraft:zombie",
+                "name": "",
+                "equipment": {
+                  "feet": "minecraft:chainmail_boots|model\u003dminecraft:chainmail_boots",
+                  "legs": "minecraft:chainmail_leggings|model\u003dminecraft:chainmail_leggings",
+                  "chest": "minecraft:chainmail_chestplate|model\u003dminecraft:chainmail_chestplate",
+                  "mainhand": "minecraft:iron_sword|model\u003dminecraft:iron_sword"
+                },
                 "appearance": ""
-              },
-              "role": "LABEL",
-              "horizontalOffset": 0.0,
-              "yOffset": 0.0
-            },
-            {
-              "signature": {
-                "type": "minecraft:wolf",
-                "name": "",
-                "equipment": {},
-                "appearance": "",
-                "baseMaxHealth": 500
-              },
-              "role": "BODY",
-              "horizontalOffset": 0.0,
-              "yOffset": -1.0
-            }
-          ]
-        },
-        {
-          "parts": [
-            {
-              "signature": {
-                "type": "minecraft:wolf",
-                "name": "",
-                "equipment": {},
-                "appearance": "",
-                "baseMaxHealth": 500
               },
               "role": "BODY",
               "horizontalOffset": 0.0,
@@ -51,44 +28,46 @@
       ]
     },
     {
-      "name": "Old Wolf",
+      "name": "Golden Ghoul",
       "variants": [
         {
           "parts": [
             {
               "signature": {
-                "type": "minecraft:armor_stand",
-                "name": " old wolf",
-                "equipment": {},
-                "appearance": ""
-              },
-              "role": "LABEL",
-              "horizontalOffset": 0.0,
-              "yOffset": 0.0
-            },
-            {
-              "signature": {
-                "type": "minecraft:wolf",
+                "type": "minecraft:zombie",
                 "name": "",
-                "equipment": {},
-                "appearance": "",
-                "baseMaxHealth": 15000
+                "equipment": {
+                  "feet": "minecraft:golden_boots|model\u003dminecraft:golden_boots",
+                  "legs": "minecraft:golden_leggings|model\u003dminecraft:golden_leggings",
+                  "chest": "minecraft:golden_chestplate|model\u003dminecraft:golden_chestplate",
+                  "mainhand": "minecraft:golden_sword|model\u003dminecraft:golden_sword"
+                },
+                "appearance": ""
               },
               "role": "BODY",
               "horizontalOffset": 0.0,
-              "yOffset": -1.0
+              "yOffset": 0.0
             }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "name": "Zombie Villager",
+      "variants": [
         {
           "parts": [
             {
               "signature": {
-                "type": "minecraft:wolf",
+                "type": "minecraft:zombie_villager",
                 "name": "",
-                "equipment": {},
-                "appearance": "",
-                "baseMaxHealth": 15000
+                "equipment": {
+                  "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots",
+                  "legs": "minecraft:leather_leggings|model\u003dminecraft:leather_leggings",
+                  "chest": "minecraft:leather_chestplate|model\u003dminecraft:leather_chestplate",
+                  "head": "minecraft:leather_helmet|model\u003dminecraft:leather_helmet"
+                },
+                "appearance": ""
               },
               "role": "BODY",
               "horizontalOffset": 0.0,
@@ -105,17 +84,6 @@
           "parts": [
             {
               "signature": {
-                "type": "minecraft:armor_stand",
-                "name": " graveyard zombie",
-                "equipment": {},
-                "appearance": ""
-              },
-              "role": "LABEL",
-              "horizontalOffset": 0.0,
-              "yOffset": 0.0
-            },
-            {
-              "signature": {
                 "type": "minecraft:zombie",
                 "name": "",
                 "equipment": {},
@@ -123,115 +91,49 @@
               },
               "role": "BODY",
               "horizontalOffset": 0.0,
-              "yOffset": -1.86
+              "yOffset": 0.0
             }
           ]
         }
       ]
     },
     {
-      "name": "Zombie Villager",
+      "name": "Old Wolf",
       "variants": [
         {
           "parts": [
             {
               "signature": {
-                "type": "minecraft:armor_stand",
-                "name": " zombie villager",
-                "equipment": {},
-                "appearance": ""
-              },
-              "role": "LABEL",
-              "horizontalOffset": 0.0,
-              "yOffset": 0.0
-            },
-            {
-              "signature": {
-                "type": "minecraft:zombie_villager",
+                "type": "minecraft:wolf",
                 "name": "",
-                "equipment": {
-                  "legs": "minecraft:leather_leggings|model\u003dminecraft:leather_leggings",
-                  "feet": "minecraft:leather_boots|model\u003dminecraft:leather_boots",
-                  "head": "minecraft:leather_helmet|model\u003dminecraft:leather_helmet",
-                  "chest": "minecraft:leather_chestplate|model\u003dminecraft:leather_chestplate"
-                },
-                "appearance": ""
+                "equipment": {},
+                "appearance": "",
+                "baseMaxHealth": 15000.0
               },
               "role": "BODY",
               "horizontalOffset": 0.0,
-              "yOffset": -2.2
+              "yOffset": 0.0
             }
           ]
         }
       ]
     },
     {
-      "name": "Crypt Ghoul",
+      "name": "Wolf",
       "variants": [
         {
           "parts": [
             {
               "signature": {
-                "type": "minecraft:armor_stand",
-                "name": " crypt ghoul",
-                "equipment": {},
-                "appearance": ""
-              },
-              "role": "LABEL",
-              "horizontalOffset": 0.0,
-              "yOffset": 0.0
-            },
-            {
-              "signature": {
-                "type": "minecraft:zombie",
+                "type": "minecraft:wolf",
                 "name": "",
-                "equipment": {
-                  "legs": "minecraft:chainmail_leggings|model\u003dminecraft:chainmail_leggings",
-                  "feet": "minecraft:chainmail_boots|model\u003dminecraft:chainmail_boots",
-                  "mainhand": "minecraft:iron_sword|model\u003dminecraft:iron_sword",
-                  "chest": "minecraft:chainmail_chestplate|model\u003dminecraft:chainmail_chestplate"
-                },
-                "appearance": ""
+                "equipment": {},
+                "appearance": "",
+                "baseMaxHealth": 500.0
               },
               "role": "BODY",
               "horizontalOffset": 0.0,
-              "yOffset": -2.1
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "Golden Ghoul",
-      "variants": [
-        {
-          "parts": [
-            {
-              "signature": {
-                "type": "minecraft:armor_stand",
-                "name": " golden ghoul",
-                "equipment": {},
-                "appearance": ""
-              },
-              "role": "LABEL",
-              "horizontalOffset": 0.0,
               "yOffset": 0.0
-            },
-            {
-              "signature": {
-                "type": "minecraft:zombie",
-                "name": "",
-                "equipment": {
-                  "legs": "minecraft:golden_leggings|model\u003dminecraft:golden_leggings",
-                  "feet": "minecraft:golden_boots|model\u003dminecraft:golden_boots",
-                  "mainhand": "minecraft:golden_sword|model\u003dminecraft:golden_sword",
-                  "chest": "minecraft:golden_chestplate|model\u003dminecraft:golden_chestplate"
-                },
-                "appearance": ""
-              },
-              "role": "BODY",
-              "horizontalOffset": 0.0,
-              "yOffset": -2.1
             }
           ]
         }
