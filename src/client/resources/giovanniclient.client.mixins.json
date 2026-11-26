@@ -16,6 +16,7 @@
     "FishingMobSoundsMixin",
     "LocalCommandPacketGuardMixin",
     "PlayerListHudAccessor",
+    "keybinds.GuiScaleKeybindMixin",
     "keybinds.KeyMappingPrivacyMixin",
     "keybinds.KeyBindsListMixin",
     "keybinds.KeyMappingCategoryMixin",
