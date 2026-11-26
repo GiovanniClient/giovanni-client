@@ -22,6 +22,11 @@ public class MiscConfig {
     public boolean CHAT_HISTORY_PREFIX = false;
 
     @Expose
+    @ConfigOption(name = "Ctrl to Walk", desc = "Sprint automatically. Hold your Sprint key (Left Ctrl by default) to walk.")
+    @ConfigEditorBoolean
+    public boolean CTRL_TO_WALK = false;
+
+    @Expose
     @ConfigOption(name = "AutoReconnect", desc = "Reconnect after 5 seconds")
     @ConfigEditorBoolean
     public boolean AUTO_RECONNECT = false;

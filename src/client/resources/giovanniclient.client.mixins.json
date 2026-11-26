@@ -12,6 +12,7 @@
     "ChatMessageMixin",
     "ClientDisconnectMixin",
     "ClientPlayNetworkHandlerMixin",
+    "CtrlToWalkMixin",
     "FishingMobSoundsMixin",
     "LocalCommandPacketGuardMixin",
     "PlayerListHudAccessor",
