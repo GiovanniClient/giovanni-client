@@ -8,6 +8,7 @@ import rocket.giovanniclient.client.features.autosolvers.AutoFusion;
 import rocket.giovanniclient.client.features.autosolvers.AutoLoudmouthBass;
 import rocket.giovanniclient.client.features.autosolvers.AutoMelody;
 import rocket.giovanniclient.client.features.autosolvers.AutoShardsClaim;
+import rocket.giovanniclient.client.features.dungeons.SpiritLeap;
 import rocket.giovanniclient.client.features.farming.AutoPestCycle;
 import rocket.giovanniclient.client.features.farming.MagicJellybeanHider;
 import rocket.giovanniclient.client.features.fun.FakeMotesLoss;
@@ -47,6 +48,7 @@ public class FeatureManager {
         register(new AutoExperiments());
         register(new AutoFusion());
         register(new AutoLoudmouthBass());
+        register(new SpiritLeap());
         register(new AutoPestCycle());
         register(new MagicJellybeanHider());
         register(new AutoSoulcry());
